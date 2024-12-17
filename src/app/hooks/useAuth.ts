@@ -13,13 +13,16 @@ export const useAuth = () => {
     mutationFn: (credentials: LoginState) => authApi.login(credentials),
     onSuccess: (data) => {
       setUserData({
+        token: data.token,
         id: data.id,
         name: data.name,
         email: data.email,
       });
 
       localStorage.setItem('token', data.token);
+
       console.log('token:', localStorage.getItem('token'));
+
       toast.success('Login Successful', {
         autoClose: 2000,
         onClose: () => router.push('/login'),
