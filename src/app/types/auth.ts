@@ -16,8 +16,9 @@ export interface LoginState {
     userData: {
       id: string;
       name: string;
+      email: string;
     } | null
-    setUserData: (data: { token: string; id: string; name: string }) => void
+    setUserData: (data: { token: string; id: string; name: string; email: string }) => void
     clearUserData: () => void
   }
   
@@ -26,6 +27,7 @@ export interface LoginState {
     data: {
       id: string;
       name: string;
+      email: string;
     };
     message: string;
   }
