@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Import Ant Design styles */
-@import 'antd/dist/reset.css';
+@import "antd/dist/reset.css";
 
 :root {
   --foreground-rgb: 0, 0, 0;

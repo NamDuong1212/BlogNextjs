@@ -1,9 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import { authApi } from '../services/api';
-import useAuthStore from '../store/useAuthStore';
-import { LoginState, RegisterState } from '../types/auth';
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { authApi } from "../services/api";
+import useAuthStore from "../store/useAuthStore";
+import { LoginState, RegisterState } from "../types/auth";
 
 export const useAuth = () => {
   const router = useRouter();
@@ -15,21 +15,21 @@ export const useAuth = () => {
       setUserData({
         token: data.token,
         id: data.id,
-        name: data.name,
+        username: data.username,
         email: data.email,
       });
 
-      localStorage.setItem('token', data.token);
+      localStorage.setItem("token", data.token);
 
-      console.log('token:', localStorage.getItem('token'));
+      console.log("token:", localStorage.getItem("token"));
 
-      toast.success('Login Successful', {
+      toast.success("Login Successful", {
         autoClose: 2000,
-        onClose: () => router.push('/login'),
+        onClose: () => router.push("/login"),
       });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Invalid Credentials', {
+      toast.error(error.message || "Invalid Credentials", {
         autoClose: 2000,
       });
     },
@@ -38,13 +38,13 @@ export const useAuth = () => {
   const registerMutation = useMutation({
     mutationFn: (userData: RegisterState) => authApi.register(userData),
     onSuccess: () => {
-      toast.success('Registration Successful', {
+      toast.success("Registration Successful", {
         autoClose: 2000,
-        onClose: () => router.push('/login'),
+        onClose: () => router.push("/login"),
       });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Error during registration', {
+      toast.error(error.message || "Error during registration", {
         autoClose: 2000,
       });
     },

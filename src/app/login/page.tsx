@@ -1,14 +1,14 @@
 "use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Form, Input, Button, Card, Space } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { toast } from 'react-toastify';
-import { useAuth } from '../hooks/useAuth';
-import { validateLogin } from '../utils/validation';
-import { LoginState } from '../types/auth';
+import { Form, Input, Button, Card, Space } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
+import { useAuth } from "../hooks/useAuth";
+import { validateLogin } from "../utils/validation";
+import { LoginState } from "../types/auth";
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -16,9 +16,9 @@ const Login: React.FC = () => {
   const [form] = Form.useForm();
 
   React.useEffect(() => {
-    const accessToken = localStorage.getItem('token');
+    const accessToken = localStorage.getItem("token");
     if (accessToken) {
-      router.push('/login'); 
+      router.push("/");
     }
   }, [router]);
 
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="mx-auto px-4 py-8">
-      <Card 
+      <Card
         title={<h2 className="text-center text-2xl font-bold">Login</h2>}
         className="max-w-md mx-auto"
       >
@@ -48,27 +48,21 @@ const Login: React.FC = () => {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
+              { required: true, message: "Please input your email!" },
+              { type: "email", message: "Please enter a valid email!" },
             ]}
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="Email"
-            />
+            <Input prefix={<UserOutlined />} placeholder="Email" />
           </Form.Item>
 
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: 'Please input your password!' },
-              { min: 6, message: 'Password must be at least 6 characters!' }
+              { required: true, message: "Please input your password!" },
+              { min: 6, message: "Password must be at least 6 characters!" },
             ]}
           >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Password"
-            />
+            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
           </Form.Item>
 
           <Form.Item>
@@ -78,15 +72,15 @@ const Login: React.FC = () => {
               block
               loading={loginMutation.isPending}
             >
-              {loginMutation.isPending ? 'Logging in...' : 'Login'}
+              {loginMutation.isPending ? "Logging in..." : "Login"}
             </Button>
           </Form.Item>
 
           <div className="text-center">
             <Space>
               <span>Need an account?</span>
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 className="text-blue-500 hover:text-blue-700"
               >
                 Register

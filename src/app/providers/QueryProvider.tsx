@@ -1,8 +1,8 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, type ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useState, type ReactNode } from "react";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ export default function QueryProvider({ children }: ProvidersProps) {
             staleTime: 60 * 1000,
           },
         },
-      })
+      }),
   );
 
   return (
