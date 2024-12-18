@@ -7,24 +7,35 @@ const useAuthStore = create<UserState>()(
     (set) => ({
       accessToken: null,
       userData: null,
-      setUserData: (data) =>
+      setUserData: (data) => {
+        const { token, user } = data;
+      
         set({
-          accessToken: data.token,
-          userData: {
-            id: data.id,
-            username: data.username,
-            email: data.email,
-          },
-        }),
-      clearUserData: () =>
+          accessToken: token,
+          userData: user, 
+        });
+      
+        console.log("setUserData called with:", data);
+        console.log("Auth store state updated:", {
+          accessToken: token,
+          userData: user,
+        });
+      },
+      
+      clearUserData: () => {
         set({
           accessToken: null,
           userData: null,
-        }),
+        });
+
+        console.log("User data cleared");
+      },
     }),
     {
       name: "auth-store",
-      partialize: (state) => ({ userData: state.userData }),
+      partialize: (state) => ({
+        userData: state.userData,
+      }),
     },
   ),
 );

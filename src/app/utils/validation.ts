@@ -20,9 +20,9 @@ export const validateLogin = (formData: LoginState): string | null => {
 };
 
 export const validateRegister = (formData: RegisterState): string | null => {
-  const { username, email, password} = formData;
+  const { username, email, password } = formData;
 
-  if (!username || !email || !password ) {
+  if (!username || !email || !password) {
     return "All fields are required";
   }
 

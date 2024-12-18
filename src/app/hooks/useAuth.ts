@@ -14,20 +14,23 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setUserData({
         token: data.token,
-        id: data.id,
-        username: data.username,
-        email: data.email,
+        user: data.user, 
       });
-
+    
+      console.log("User logged in:", {
+        token: data.token,
+        user: data.user,
+      });
+    
       localStorage.setItem("token", data.token);
-
       console.log("token:", localStorage.getItem("token"));
-
+    
       toast.success("Login Successful", {
         autoClose: 2000,
-        onClose: () => router.push("/login"),
+        onClose: () => router.push("/"),
       });
     },
+    
     onError: (error: Error) => {
       toast.error(error.message || "Invalid Credentials", {
         autoClose: 2000,
