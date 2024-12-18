@@ -12,12 +12,12 @@ export interface RegisterState {
 export interface UserState {
   accessToken: string | null;
   userData: {
-    [key: string]: any; 
+    [key: string]: any;
   } | null;
   setUserData: (data: {
     token: string;
     user: {
-      [key: string]: any; 
+      [key: string]: any;
     };
   }) => void;
   clearUserData: () => void;

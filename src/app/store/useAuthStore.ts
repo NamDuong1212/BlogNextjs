@@ -9,19 +9,19 @@ const useAuthStore = create<UserState>()(
       userData: null,
       setUserData: (data) => {
         const { token, user } = data;
-      
+
         set({
           accessToken: token,
-          userData: user, 
+          userData: user,
         });
-      
+
         console.log("setUserData called with:", data);
         console.log("Auth store state updated:", {
           accessToken: token,
           userData: user,
         });
       },
-      
+
       clearUserData: () => {
         set({
           accessToken: null,

@@ -38,7 +38,12 @@ const Navbar = () => {
                   href="/profile"
                   className="flex items-center text-gray-600 hover:text-gray-900"
                 >
-                  <Avatar shape="square" icon={<UserOutlined />} className="mr-2" size={30} />
+                  <Avatar
+                    shape="square"
+                    icon={<UserOutlined />}
+                    className="mr-2"
+                    size={30}
+                  />
                   {userData.username}
                 </Link>
                 <button

@@ -3,7 +3,13 @@
 import React from "react";
 import useAuthStore from "../store/useAuthStore";
 import { Card, Descriptions, Avatar, Button, Divider } from "antd";
-import { EditOutlined, UserOutlined, CalendarOutlined, MailOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  MailOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 
 interface UserData {
   username: string;
@@ -32,18 +38,18 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
-        <Card 
+        <Card
           className="shadow-xl rounded-2xl overflow-hidden"
           bordered={false}
         >
           <div className="flex flex-col items-center mb-8">
             <div className="relative">
-              <Avatar 
+              <Avatar
                 size={120}
-                src={userData.avatar || 'https://i.imgur.com/CzXTtJV.jpg'}
+                src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
                 className="border-4 border-white shadow-lg"
               />
-              <Button 
+              <Button
                 type="primary"
                 shape="circle"
                 icon={<EditOutlined />}
@@ -64,7 +70,7 @@ const Profile = () => {
             className="bg-white p-6 rounded-xl"
             column={{ xs: 1, sm: 2, md: 2 }}
           >
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
                   <UserOutlined className="text-blue-500" />
@@ -75,7 +81,7 @@ const Profile = () => {
               {userData.username}
             </Descriptions.Item>
 
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
                   <MailOutlined className="text-blue-500" />
@@ -86,7 +92,7 @@ const Profile = () => {
               {userData.email}
             </Descriptions.Item>
 
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
                   <CalendarOutlined className="text-blue-500" />
@@ -97,7 +103,7 @@ const Profile = () => {
               {userData.birthday}
             </Descriptions.Item>
 
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
                   <InfoCircleOutlined className="text-blue-500" />
@@ -113,7 +119,7 @@ const Profile = () => {
           </Descriptions>
 
           <div className="mt-8 flex justify-center">
-            <Button 
+            <Button
               type="primary"
               size="large"
               icon={<EditOutlined />}
