@@ -71,6 +71,7 @@ const Register: React.FC = () => {
               type="primary"
               htmlType="submit"
               block
+              className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:from-green-600 hover:to-teal-600 transition-all duration-300"
               loading={registerMutation.isPending}
             >
               {registerMutation.isPending ? "Signing up..." : "Sign Up"}

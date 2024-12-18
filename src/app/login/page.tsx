@@ -66,10 +66,11 @@ const Login: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button
+            <Button 
               type="primary"
               htmlType="submit"
               block
+              className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300"
               loading={loginMutation.isPending}
             >
               {loginMutation.isPending ? "Logging in..." : "Login"}
