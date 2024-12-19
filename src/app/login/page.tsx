@@ -66,7 +66,7 @@ const Login: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button 
+            <Button
               type="primary"
               htmlType="submit"
               block

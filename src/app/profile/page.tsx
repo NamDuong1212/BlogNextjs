@@ -1,8 +1,18 @@
 "use client";
 
-import React from "react";
-import useAuthStore from "../store/useAuthStore";
-import { Card, Descriptions, Avatar, Button, Divider } from "antd";
+import React, { useState } from "react";
+import moment from "moment";
+import {
+  Modal,
+  Form,
+  Input,
+  Button,
+  Card,
+  Descriptions,
+  Avatar,
+  Divider,
+  DatePicker,
+} from "antd";
 import {
   EditOutlined,
   UserOutlined,
@@ -10,18 +20,14 @@ import {
   MailOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-
-interface UserData {
-  username: string;
-  email: string;
-  bio: string;
-  birthday: string;
-  avatar?: string;
-  id: string;
-}
+import useAuthStore from "../store/useAuthStore";
+import { useProfile } from "../hooks/useProfile";
 
 const Profile = () => {
   const { userData } = useAuthStore();
+  const { updateProfileMutation } = useProfile();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
 
   if (!userData) {
     return (
@@ -32,7 +38,23 @@ const Profile = () => {
   }
 
   const handleEditProfile = () => {
-    alert("Edit profile feature coming soon!");
+    setIsModalOpen(true);
+  };
+
+  const handleSaveChanges = (values: any) => {
+    const formattedValues = {
+      ...values,
+      birthday: values.birthday
+        ? moment(values.birthday).toISOString()
+        : undefined,
+    };
+
+    updateProfileMutation.mutate(formattedValues, {
+      onSuccess: () => {
+        setIsModalOpen(false);
+        form.resetFields();
+      },
+    });
   };
 
   return (
@@ -80,7 +102,6 @@ const Profile = () => {
             >
               {userData.username}
             </Descriptions.Item>
-
             <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
@@ -91,7 +112,6 @@ const Profile = () => {
             >
               {userData.email}
             </Descriptions.Item>
-
             <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
@@ -100,9 +120,10 @@ const Profile = () => {
                 </span>
               }
             >
-              {userData.birthday}
+              {userData.birthday
+                ? moment(userData.birthday).format("YYYY-MM-DD")
+                : "N/A"}
             </Descriptions.Item>
-
             <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
@@ -131,6 +152,45 @@ const Profile = () => {
           </div>
         </Card>
       </div>
+
+      <Modal
+        title="Edit Profile"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSaveChanges}
+          initialValues={{
+            username: userData.username,
+            bio: userData.bio,
+            birthday: userData.birthday ? moment(userData.birthday) : undefined,
+          }}
+        >
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[{ required: true, message: "Please enter your username" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label="Bio" name="bio">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item label="Birthday" name="birthday">
+            <DatePicker
+              format="YYYY-MM-DD"
+              className="w-full"
+              placeholder="Select your birthday"
+            />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" className="w-full">
+            Save Changes
+          </Button>
+        </Form>
+      </Modal>
     </div>
   );
 };

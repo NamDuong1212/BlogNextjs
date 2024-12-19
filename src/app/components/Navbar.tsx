@@ -33,8 +33,8 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
-              Home
+            <Link href="/admin/category-manager" className="text-gray-600 hover:text-gray-900">
+              Category
             </Link>
 
             {userData ? (
@@ -43,11 +43,7 @@ const Navbar = () => {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
                 >
-                  <Avatar
-                    shape="square"
-                    icon={<UserOutlined />}
-                    size={30}
-                  />
+                  <Avatar shape="square" icon={<UserOutlined />} size={30} />
                   <span>{userData.username}</span>
                 </button>
                 {dropDown && (
