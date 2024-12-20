@@ -2,6 +2,7 @@ import axios from "axios";
 import { LoginState, RegisterState } from "../types/auth";
 import { UpdateUser } from "../types/profile";
 import { CreateCategoryType, UpdateCategoryType } from "../types/category";
+import { Post, CreatePostState, UpdatePostState } from "../types/post";
 
 const getAuthToken = () => localStorage.getItem("token");
 
@@ -50,26 +51,35 @@ export const categoryApi = {
     return response.data;
   },
 
-  updateCategory: async (
-    id: string,
-    data: UpdateCategoryType,
-  ): Promise<any> => {
-    const response = await api.put(`/category/${id}`, data);
-    return response.data;
-  },
-
-  getCategoryById: async (id: string): Promise<any> => {
-    const response = await api.get(`/category/${id}`);
-    return response.data;
-  },
-
-  deleteCategory: async (id: string): Promise<any> => {
-    const response = await api.delete(`/category/${id}`);
-    return response.data;
-  },
-
   getCategories: async (): Promise<any> => {
     const response = await api.get("/category/getAll");
+    return response.data.data;
+  },
+};
+
+export const postApi = {
+  createPost: async (data: CreatePostState): Promise<any> => {
+    const response = await api.post("/post/create", data);
     return response.data;
+  },
+
+  getPosts: async (): Promise<any> => {
+    const response = await api.get("/post/getAll");
+    return response.data.data || [];
+  },
+
+  getPostById: async (id: string): Promise<any> => {
+    const response = await api.get(`/post/${id}`);
+    return response.data;
+  },
+
+  updatePost: async (data: UpdatePostState): Promise<any> => {
+    const response = await api.patch(`/post/${data.id}`, data);
+    return response.data;
+  },
+
+  deletePost: async (id: string): Promise<any> => {
+    const response = await api.delete(`/post/${id}`);
+    return response.data.data;
   },
 };

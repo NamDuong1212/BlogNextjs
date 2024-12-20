@@ -33,8 +33,17 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href="/admin/category-manager" className="text-gray-600 hover:text-gray-900">
-              Category
+            <Link
+              href="/admin/create-post"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Post
+            </Link>
+            <Link
+              href="/post-list"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              List
             </Link>
 
             {userData ? (
