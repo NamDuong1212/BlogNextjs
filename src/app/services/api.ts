@@ -1,8 +1,7 @@
 import axios from "axios";
 import { LoginState, RegisterState } from "../types/auth";
 import { UpdateUser } from "../types/profile";
-import { CreateCategoryType, UpdateCategoryType } from "../types/category";
-import { Post, CreatePostState, UpdatePostState } from "../types/post";
+import { CreateCategoryType } from "../types/category";
 
 const getAuthToken = () => localStorage.getItem("token");
 
@@ -58,7 +57,7 @@ export const categoryApi = {
 };
 
 export const postApi = {
-  createPost: async (data: CreatePostState): Promise<any> => {
+  createPost: async (data: any): Promise<any> => {
     const response = await api.post("/post/create", data);
     return response.data;
   },
@@ -68,7 +67,7 @@ export const postApi = {
     return response.data.data || [];
   },
 
-  getPostById: async (id: string): Promise<any> => {
+  getPostById: async (id: any): Promise<any> => {
     const response = await api.get(`/post/${id}`);
     return response.data.data;
   },
@@ -78,7 +77,7 @@ export const postApi = {
     return response.data.data;
   },
 
-  deletePost: async (id: string): Promise<any> => {
+  deletePost: async (id: any): Promise<any> => {
     const response = await api.delete(`/post/${id}`);
     return response.data.data;
   },
