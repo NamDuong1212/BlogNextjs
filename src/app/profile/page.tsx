@@ -2,8 +2,24 @@
 
 import React, { useState } from "react";
 import moment from "moment";
-import {Modal,Form,Input,Button,Card,Descriptions,Avatar,Divider,DatePicker} from "antd";
-import {EditOutlined,UserOutlined,CalendarOutlined,MailOutlined,InfoCircleOutlined} from "@ant-design/icons";
+import {
+  Modal,
+  Form,
+  Input,
+  Button,
+  Card,
+  Descriptions,
+  Avatar,
+  Divider,
+  DatePicker,
+} from "antd";
+import {
+  EditOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  MailOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
 

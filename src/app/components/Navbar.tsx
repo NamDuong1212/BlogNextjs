@@ -23,7 +23,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg">
+    <nav className="bg-white shadow-lg fixed top-0 left-0 w-full z-50">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
@@ -34,7 +34,7 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4">
             <Link
-              href="/admin/create-post"
+              href="/admin/post/create"
               className="text-gray-600 hover:text-gray-900"
             >
               Post

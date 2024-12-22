@@ -70,12 +70,12 @@ export const postApi = {
 
   getPostById: async (id: string): Promise<any> => {
     const response = await api.get(`/post/${id}`);
-    return response.data;
+    return response.data.data;
   },
 
-  updatePost: async (data: UpdatePostState): Promise<any> => {
+  updatePost: async (data: any): Promise<any> => {
     const response = await api.patch(`/post/${data.id}`, data);
-    return response.data;
+    return response.data.data;
   },
 
   deletePost: async (id: string): Promise<any> => {

@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi, categoryApi } from "../services/api";
 import { toast } from "react-toastify";
-import { CreatePostState, UpdatePostState } from "../types/post";
 export const usePost = () => {
   const queryClient = useQueryClient();
 
@@ -12,7 +11,7 @@ export const usePost = () => {
     });
   };
 
-  const useGetPostById = (id: string) => {
+  const useGetPostById = (id: any) => {
     return useQuery({
       queryKey: ["post", id],
       queryFn: () => postApi.getPostById(id),
@@ -29,7 +28,7 @@ export const usePost = () => {
 
   const useCreatePost = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: (data: CreatePostState) => postApi.createPost(data),
+      mutationFn: (data: any) => postApi.createPost(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
         toast.success("Post created successfully");
@@ -43,7 +42,7 @@ export const usePost = () => {
 
   const useUpdatePost = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: (data: UpdatePostState) => postApi.updatePost(data),
+      mutationFn: (data: any) => postApi.updatePost(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
         toast.success("Post updated successfully");
@@ -57,7 +56,7 @@ export const usePost = () => {
 
   const useDeletePost = () => {
     return useMutation({
-      mutationFn: (id: string) => postApi.deletePost(id),
+      mutationFn: (id: any) => postApi.deletePost(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
         toast.success("Post deleted successfully");
