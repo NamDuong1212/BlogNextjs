@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoginState, RegisterState } from "../types/auth";
+import { LoginState, RegisterState, VerifyOtpState } from "../types/auth";
 import { UpdateUser } from "../types/profile";
 import { CreateCategoryType } from "../types/category";
 
@@ -30,9 +30,12 @@ export const authApi = {
     const response = await api.post("/auth/login", credentials);
     return response.data;
   },
-
   register: async (userData: RegisterState): Promise<any> => {
     const response = await api.post("/auth/signup", userData);
+    return response.data;
+  },
+  verifyOtp: async (data: any): Promise<any> => {
+    const response = await api.post("/auth/verify-otp", data);
     return response.data;
   },
 };
@@ -62,8 +65,8 @@ export const postApi = {
     return response.data;
   },
 
-  getPosts: async (): Promise<any> => {
-    const response = await api.get("/post/getAll");
+  getPosts: async (page: number = 1, limit: number = 10): Promise<any> => {
+    const response = await api.get(`/post/getAll?page=${page}&limit=${limit}`);
     return response.data.data || [];
   },
 
@@ -80,5 +83,27 @@ export const postApi = {
   deletePost: async (id: any): Promise<any> => {
     const response = await api.delete(`/post/${id}`);
     return response.data.data;
+  },
+};
+
+export const commentApi = {
+  getCommentsByPostId: async (postId: any): Promise<any> => {
+    const response = await api.get(`/comment/${postId}`);
+    return response.data.data;
+  },
+
+  createComment: async (data: any): Promise<any> => {
+    const response = await api.post(`/comment/create`, data);
+    return response.data;
+  },
+
+  updateComment: async (id: any, data: any): Promise<any> => {
+    const response = await api.patch(`/comment/${id}`, data);
+    return response.data;
+  },
+
+  deleteComment: async (id: any): Promise<any> => {
+    const response = await api.delete(`/comment/${id}`);
+    return response.data;
   },
 };

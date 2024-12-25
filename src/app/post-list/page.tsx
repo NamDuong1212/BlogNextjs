@@ -8,26 +8,15 @@ import {
   Space,
   Typography,
   Divider,
+  Tag,
 } from "antd";
 import { useRouter } from "next/navigation";
 import { usePost } from "../hooks/usePost";
 import { Post } from "../types/post";
 import EditPostForm from "../components/EditPostForm";
+import { formatDateTime } from "../utils/formatDateTime";
 
 const { Text, Title } = Typography;
-
-const formatDateTime = (isoString: any) => {
-  const date = new Date(isoString);
-  return date.toLocaleString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
-};
-
 export const PostList = () => {
   const router = useRouter();
   const { useGetPosts, useDeletePost } = usePost();
@@ -40,7 +29,7 @@ export const PostList = () => {
     ?.slice()
     .sort(
       (a: any, b: any) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
 
   return (
@@ -60,7 +49,9 @@ export const PostList = () => {
             style={{ width: "100%" }}
             extra={
               <Space size="middle">
-                <Text style={{ color: "red" }}>{post.category.name}</Text>
+                <Tag bordered={false} color="processing">
+                  {post.category.name}
+                </Tag>
                 <Divider type="vertical" />
                 <Text type="secondary">
                   Created: {formatDateTime(post.createdAt)}

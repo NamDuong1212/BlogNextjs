@@ -22,3 +22,8 @@ export interface UserState {
   }) => void;
   clearUserData: () => void;
 }
+
+export interface VerifyOtpState {
+  email: string;
+  otp: string;
+}

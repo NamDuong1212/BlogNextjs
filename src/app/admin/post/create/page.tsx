@@ -58,7 +58,7 @@ export const CreatePostForm: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          name="categoryIds"
+          name="categoryId"
           label="Category"
           rules={[{ required: true, message: "Please select a category" }]}
         >
@@ -68,10 +68,7 @@ export const CreatePostForm: React.FC = () => {
             <Select placeholder="Select a category">
               {categories?.map(
                 (category: { id: number | string; name: string }) => (
-                  <Option
-                    key={category.id.toString()}
-                    value={category.id.toString()}
-                  >
+                  <Option key={category.id} value={category.id}>
                     {category.name}
                   </Option>
                 ),

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuthStore from "../store/useAuthStore";
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar } from "antd";
+import { Avatar, Input } from "antd";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const router = useRouter();
   const { userData, clearUserData } = useAuthStore();
   const [dropDown, setDropDown] = useState(false);
@@ -22,6 +22,15 @@ const Navbar = () => {
     setDropDown((prev) => !prev);
   };
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.trim();
+    if (value) {
+      router.push(`/?search=${encodeURIComponent(value)}`);
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <nav className="bg-white shadow-lg fixed top-0 left-0 w-full z-50">
       <div className="max-w-6xl mx-auto px-4">
@@ -30,6 +39,15 @@ const Navbar = () => {
             <Link href="/" className="text-xl font-bold text-gray-800">
               Mirai
             </Link>
+          </div>
+
+          <div className="flex-1 max-w-md mx-4">
+            <Input
+              placeholder="Search posts..."
+              size="middle"
+              onChange={handleSearch}
+              className="w-full"
+            />
           </div>
 
           <div className="flex items-center space-x-4">

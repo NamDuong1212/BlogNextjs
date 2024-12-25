@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 export const usePost = () => {
   const queryClient = useQueryClient();
 
-  const useGetPosts = () => {
+  const useGetPosts = (page: number = 1, limit: number = 10) => {
     return useQuery({
-      queryKey: ["posts"],
-      queryFn: postApi.getPosts,
+      queryKey: ["posts", page, limit],
+      queryFn: () => postApi.getPosts(page, limit),
     });
   };
 

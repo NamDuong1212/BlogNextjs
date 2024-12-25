@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Space, Input, Button, message } from "antd";
+import { Space, Input, Button } from "antd";
 import { Post } from "../types/post";
 import { usePost } from "../hooks/usePost";
 

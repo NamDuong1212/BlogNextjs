@@ -5,32 +5,29 @@ import { Avatar, Space, Typography } from "antd";
 import { CalendarOutlined, UserOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
-import Comment from "@/app/components/Comment";
+import CommentSection from "@/app/components/Comment";
+import NotFound from "@/app/not-found";
+import { formatDateTime } from "@/app/utils/formatDateTime";
+
 const { Title, Paragraph } = Typography;
 
-const PostDetail = () => {
-  const { id } = useParams();
-  const { useGetPostById } = usePost();
-  const { data: post, isLoading } = useGetPostById(id);
+const PostDetail: React.FC = () => {
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  const formatDateTime = (isoString: any) => {
-    const date = new Date(isoString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "2-digit",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-  };
+  const { useGetPostById } = usePost();
+  const { data: post, isLoading } = useGetPostById(id as string);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!post) {
-    return <div>Post not found</div>;
+  if (!post || !id) {
+    return (
+      <div>
+        <NotFound />
+      </div>
+    );
   }
 
   return (
@@ -43,7 +40,7 @@ const PostDetail = () => {
             icon={<UserOutlined />}
             style={{ marginBottom: "10px" }}
           />
-          <Title level={4}>{post.author}</Title>
+          <Title level={4}>{post.author || "Testing"}</Title>
           <Paragraph>
             <Space>
               <span>{post.category.name}</span>
@@ -58,14 +55,19 @@ const PostDetail = () => {
           {post.title}
         </Title>
 
-        {post.image && (
+        {post.image ? (
           <div style={{ textAlign: "center" }}>
             <img
-              src={
-                post.image ||
-                "https://farm6.staticflickr.com/5590/14821526429_5c6ea60405_z_d.jpg"
-              }
-              alt={post.title}
+              src={post.image}
+              alt="Post Image"
+              style={{ width: "100%", borderRadius: "8px" }}
+            />
+          </div>
+        ) : (
+          <div style={{ textAlign: "center" }}>
+            <img
+              src="https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"
+              alt="Default Image"
               style={{ width: "100%", borderRadius: "8px" }}
             />
           </div>
@@ -73,7 +75,22 @@ const PostDetail = () => {
 
         <Paragraph>{post.content}</Paragraph>
 
-        <Comment postId={id} />
+        {id && (
+          <CommentSection
+            postId={id}
+            id={""}
+            content={""}
+            createdAt={""}
+            updatedAt={""}
+            user={{
+              id: "",
+              name: "",
+            }}
+            post={{
+              id: "",
+            }}
+          />
+        )}
       </Space>
     </div>
   );
