@@ -22,7 +22,7 @@ const Register: React.FC = () => {
   const [registeredEmail, setRegisteredEmail] = useState("");
 
   const handleSubmit = async (values: RegisterState): Promise<void> => {
-    console.log("Starting registration with values:", values); 
+    console.log("Starting registration with values:", values);
 
     const validationError = validateRegister(values);
     if (validationError) {
@@ -32,27 +32,27 @@ const Register: React.FC = () => {
 
     try {
       await registerMutation.mutateAsync(values);
-      console.log("Registration successful"); 
+      console.log("Registration successful");
       setRegisteredEmail(values.email);
       setShowOtpForm(true);
       toast.success("Please check your email for OTP verification code", {
         autoClose: 3000,
       });
     } catch (error) {
-      console.error("Registration error:", error); 
+      console.error("Registration error:", error);
       toast.error("Registration failed. Please try again.");
     }
   };
 
   const handleOtpSubmit = async (values: { otp: string }): Promise<void> => {
-    console.log("Submitting OTP:", values.otp); 
+    console.log("Submitting OTP:", values.otp);
 
     try {
       await verifyOtpMutation.mutateAsync({
         email: registeredEmail,
         otp: values.otp,
       });
-      console.log("OTP verification successful"); 
+      console.log("OTP verification successful");
       toast.success("Account verified successfully!", {
         autoClose: 2000,
         onClose: () => router.push("/login"),
@@ -63,7 +63,7 @@ const Register: React.FC = () => {
     }
   };
 
-  console.log("Current state - showOtpForm:", showOtpForm); 
+  console.log("Current state - showOtpForm:", showOtpForm);
 
   if (showOtpForm) {
     return (

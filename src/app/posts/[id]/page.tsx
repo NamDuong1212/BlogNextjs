@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Avatar, Space, Typography } from "antd";
+import { Avatar, Space, Typography, Tag } from "antd";
 import { CalendarOutlined, UserOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
@@ -43,7 +43,13 @@ const PostDetail: React.FC = () => {
           <Title level={4}>{post.author || "Testing"}</Title>
           <Paragraph>
             <Space>
-              <span>{post.category.name}</span>
+                <Tag 
+                  bordered={false} 
+                  color={"processing"}
+                  style={{ cursor: "pointer" }}
+                >
+                  {post.category.name}
+                </Tag>
               <span>
                 <CalendarOutlined /> {formatDateTime(post.createdAt)}
               </span>

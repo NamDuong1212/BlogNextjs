@@ -1,19 +1,28 @@
 "use client";
-import React from "react";
+import React, {useEffect}from "react";
 import { Form, Input, Select, Button, Card, Spin } from "antd";
 import useAuthStore from "@/app/store/useAuthStore";
 import { usePost } from "@/app/hooks/usePost";
+import { useRouter } from "next/navigation";
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export const CreatePostForm: React.FC = () => {
+  const router = useRouter();
   const [form] = Form.useForm();
   const { userData } = useAuthStore();
   const { useGetCategories, useCreatePost } = usePost();
   const { data: categories, isLoading: isCategoriesLoading } =
     useGetCategories();
   const createMutation = useCreatePost();
+
+  useEffect(() => {
+      if (!userData?.isCreator) {
+        router.replace("/"); 
+      }
+    }, [userData, router]);
+  
 
   const onFinish = (values: any) => {
     const dataToSubmit = {

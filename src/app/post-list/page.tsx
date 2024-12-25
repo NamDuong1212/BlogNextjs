@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   List,
   Card,
@@ -15,30 +16,55 @@ import { usePost } from "../hooks/usePost";
 import { Post } from "../types/post";
 import EditPostForm from "../components/EditPostForm";
 import { formatDateTime } from "../utils/formatDateTime";
+import useAuthStore from "../store/useAuthStore";
 
 const { Text, Title } = Typography;
+
 export const PostList = () => {
   const router = useRouter();
   const { useGetPosts, useDeletePost } = usePost();
   const { data: posts, isLoading } = useGetPosts();
   const deleteMutation = useDeletePost();
-
+  const { userData } = useAuthStore();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [updatePostId, setUpdatePostId] = useState<any>(null);
+  const searchParams = new URLSearchParams(window.location.search);
+  const searchQuery = searchParams.get("search");
 
-  const Posts = posts
-    ?.slice()
-    .sort(
-      (a: any, b: any) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+  useEffect(() => {
+    if (!userData?.isCreator) {
+      router.replace("/");
+    }
+  }, [userData, router]);
+
+  const filteredPosts = posts?.filter((post: Post) => {
+      const matchesSearch =
+        !searchQuery ||
+        post.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = 
+        !selectedCategory || 
+        post.category.id === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  
+    const sortedPosts = filteredPosts
+      ?.slice()
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
+    const handleCategoryClick = (e: React.MouseEvent, categoryId: string) => {
+        e.stopPropagation();
+        setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
+      };
 
   return (
     <List
       loading={isLoading}
-      dataSource={Posts}
+      dataSource={sortedPosts}
       pagination={{
         pageSize: 4,
-        total: Posts?.length,
+        total: sortedPosts?.length,
         showSizeChanger: false,
         showTotal: (total) => `Total ${total} posts`,
         style: { textAlign: "center", marginTop: "20px" },
@@ -49,7 +75,12 @@ export const PostList = () => {
             style={{ width: "100%" }}
             extra={
               <Space size="middle">
-                <Tag bordered={false} color="processing">
+                <Tag 
+                  bordered={false} 
+                  color={selectedCategory === post.category.id ? "success" : "processing"}
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => handleCategoryClick(e, post.category.id)}
+                >
                   {post.category.name}
                 </Tag>
                 <Divider type="vertical" />
@@ -99,7 +130,19 @@ export const PostList = () => {
                 <Title level={4} style={{ margin: 0 }}>
                   {post.title}
                 </Title>
-                <div>{post.content}</div>
+                <div
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    lineHeight: "1.5em",
+                    maxHeight: "3em"
+                  }}
+                >
+                  {post.content}
+                </div>
               </Space>
             )}
           </Card>

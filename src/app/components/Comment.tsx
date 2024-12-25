@@ -7,6 +7,7 @@ import { useComment } from "../hooks/useComment";
 import useAuthStore from "../store/useAuthStore";
 import { formatDateTime } from "../utils/formatDateTime";
 import { CommentSectionState } from "../types/comment";
+
 const { TextArea } = Input;
 const { Title } = Typography;
 
@@ -14,6 +15,8 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const [newComment, setNewComment] = useState<string>("");
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string>("");
+  const [replyingTo, setReplyingTo] = useState<{ id: string; username: string } | null>(null);
+
   const userData = useAuthStore((state) => state.userData);
 
   const {
@@ -26,7 +29,10 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const { data: commentsData = [], isLoading } = useGetComments();
   const comments: any[] = Array.isArray(commentsData) ? commentsData : [];
 
-  const createCommentMutation = useCreateComment(() => setNewComment(""));
+  const createCommentMutation = useCreateComment(() => {
+    setNewComment("");
+    setReplyingTo(null);
+  });
   const updateCommentMutation = useUpdateComment(() => {
     setEditingComment(null);
     setEditContent("");
@@ -36,11 +42,12 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const handleCommentSubmit = () => {
     if (!newComment.trim() || !userData) return;
     createCommentMutation.mutate({
-      content: newComment,
+      content: newComment,  
       postId,
+      replyTo: replyingTo?.id || null,
     });
   };
-
+  
   const handleUpdateComment = () => {
     if (!editContent.trim() || !userData) return;
     updateCommentMutation.mutate({
@@ -54,10 +61,21 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     setEditContent(comment.content);
   };
 
+  const startReplying = (comment: any) => {
+    setReplyingTo({ id: comment.id, username: comment.user.username });
+    setNewComment(`@${comment.user.username} `); 
+  };
+
   const actions = (comment: any) => {
-    if (userData && comment.user.id === userData.id) {
-      return [
-        <EditOutlined key="edit" onClick={() => startEditing(comment)} />,
+    const isOwner = userData && comment.user.id === userData.id;
+    return [
+      <span key="reply" onClick={() => startReplying(comment)}>
+        Reply
+      </span>,
+      isOwner && (
+        <EditOutlined key="edit" onClick={() => startEditing(comment)} />
+      ),
+      isOwner && (
         <Popconfirm
           title="Are you sure you want to delete this comment?"
           onConfirm={() => deleteCommentMutation.mutate(comment.id)}
@@ -65,10 +83,9 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
           cancelText="No"
         >
           <DeleteOutlined key="delete" style={{ color: "#ff4d4f" }} />
-        </Popconfirm>,
-      ];
-    }
-    return [];
+        </Popconfirm>
+      ),
+    ].filter(Boolean);
   };
 
   return (
@@ -106,10 +123,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                   >
                     {updateCommentMutation.isPending ? "Loading..." : "Finish"}
                   </Button>
-
-                  <Button onClick={() => setEditingComment(null)}>
-                    Cancel
-                  </Button>
+                  <Button onClick={() => setEditingComment(null)}>Cancel</Button>
                 </div>
               ) : (
                 comment.content

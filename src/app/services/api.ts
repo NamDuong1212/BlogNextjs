@@ -65,7 +65,7 @@ export const postApi = {
     return response.data;
   },
 
-  getPosts: async (page: number = 1, limit: number = 10): Promise<any> => {
+  getPosts: async (page: number = 1, limit: number = 20): Promise<any> => {
     const response = await api.get(`/post/getAll?page=${page}&limit=${limit}`);
     return response.data.data || [];
   },

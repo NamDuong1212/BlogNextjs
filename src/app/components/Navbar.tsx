@@ -12,6 +12,8 @@ const Navbar: React.FC = () => {
   const { userData, clearUserData } = useAuthStore();
   const [dropDown, setDropDown] = useState(false);
 
+  const isCreator = userData?.isCreator || false;
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     clearUserData();
@@ -51,18 +53,22 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link
-              href="/admin/post/create"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              Post
-            </Link>
-            <Link
-              href="/post-list"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              List
-            </Link>
+            {isCreator && (
+              <>
+                <Link
+                  href="/admin/post/create"
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Post
+                </Link>
+                <Link
+                  href="/post-list"
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  List
+                </Link>
+              </>
+            )}
 
             {userData ? (
               <div className="relative">

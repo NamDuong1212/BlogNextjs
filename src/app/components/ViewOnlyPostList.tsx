@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { List, Card, Typography, Space, Divider, Tag } from "antd";
 import { useRouter } from "next/navigation";
 import { usePost } from "../hooks/usePost";
@@ -11,25 +11,36 @@ const { Title, Text } = Typography;
 export const ViewOnlyPostList: React.FC = () => {
   const router = useRouter();
   const { useGetPosts } = usePost();
-  const [page, setPage] = React.useState(1);
-  const { data: posts, isLoading } = useGetPosts(page, 10);
+  const { data: posts, isLoading } = useGetPosts();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const searchParams = new URLSearchParams(window.location.search);
   const searchQuery = searchParams.get("search");
 
-  const filteredPosts = posts?.filter(
-    (post: any) =>
+  const filteredPosts = posts?.filter((post: Post) => {
+    const matchesSearch =
       !searchQuery ||
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+      post.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = 
+      !selectedCategory || 
+      post.category.id === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
-  const Posts = filteredPosts
+  const sortedPosts = filteredPosts
     ?.slice()
     .sort(
       (a: any, b: any) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
 
+  const handleCategoryClick = (e: React.MouseEvent, categoryId: string) => {
+    e.stopPropagation();
+    setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
+  };
+
   return (
+    
     <List
       style={{
         marginLeft: "40px",
@@ -37,15 +48,16 @@ export const ViewOnlyPostList: React.FC = () => {
         marginBottom: "300px",
       }}
       loading={isLoading}
-      dataSource={Posts}
+      dataSource={sortedPosts}
       pagination={{
         pageSize: 10,
-        current: page,
-        total: Posts?.length,
+        total: sortedPosts?.length,
         showSizeChanger: false,
-        onChange: (page) => setPage(page),
         showTotal: (total) => `Total ${total} posts`,
-        style: { textAlign: "right", marginBottom: "20px" },
+        style: {
+          textAlign: "right",
+          marginBottom: "10px",
+        },
       }}
       renderItem={(post: Post) => (
         <List.Item>
@@ -58,7 +70,12 @@ export const ViewOnlyPostList: React.FC = () => {
             onClick={() => router.push(`/posts/${post.id}`)}
             extra={
               <Space size="small">
-                <Tag bordered={false} color="processing">
+                <Tag 
+                  bordered={false} 
+                  color={selectedCategory === post.category.id ? "success" : "processing"}
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => handleCategoryClick(e, post.category.id)}
+                >
                   {post.category.name}
                 </Tag>
                 <Divider type="vertical" />
@@ -77,24 +94,24 @@ export const ViewOnlyPostList: React.FC = () => {
             >
               {post.title}
             </Title>
-            <Text
+            <div
               style={{
-                fontSize: "12px",
                 overflow: "hidden",
-                maxHeight: "20px",
                 textOverflow: "ellipsis",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
+                lineHeight: "1.5em",
+                maxHeight: "3em"
               }}
             >
-              {post.content.length > 260
-                ? `${post.content.slice(0, 260)}...`
-                : post.content}
-            </Text>
+              {post.content}
+            </div>
           </Card>
         </List.Item>
       )}
     />
   );
 };
+
+export default ViewOnlyPostList;
