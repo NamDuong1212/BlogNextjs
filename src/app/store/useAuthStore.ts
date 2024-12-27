@@ -9,7 +9,6 @@ const useAuthStore = create<UserState>()(
       userData: null,
       setUserData: (data) => {
         const { token, user } = data;
-
         set({
           accessToken: token,
           userData: user,

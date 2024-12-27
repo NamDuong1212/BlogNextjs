@@ -10,7 +10,7 @@ export const useAuth = () => {
   const setUserData = useAuthStore((state) => state.setUserData);
 
   const loginMutation = useMutation({
-    mutationFn: (credentials: LoginState) => authApi.login(credentials),
+    mutationFn: (userData: LoginState) => authApi.login(userData),
     onSuccess: (data) => {
       setUserData({
         token: data.token,

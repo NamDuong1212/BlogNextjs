@@ -13,8 +13,7 @@ export const CreatePostForm: React.FC = () => {
   const [form] = Form.useForm();
   const { userData } = useAuthStore();
   const { useGetCategories, useCreatePost } = usePost();
-  const { data: categories, isLoading: isCategoriesLoading } =
-    useGetCategories();
+  const { data: categories, isLoading: isCategoriesLoading } = useGetCategories();
   const createMutation = useCreatePost();
 
   useEffect(() => {

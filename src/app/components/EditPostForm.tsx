@@ -29,7 +29,9 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         onSuccess: () => {
           onSave();
         },
-        onError: () => {},
+        onError: () => {
+          onCancel();
+        },
       },
     );
   };

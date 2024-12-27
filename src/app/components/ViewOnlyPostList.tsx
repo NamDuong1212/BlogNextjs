@@ -45,7 +45,6 @@ export const ViewOnlyPostList: React.FC = () => {
       style={{
         marginLeft: "40px",
         marginRight: "300px",
-        marginBottom: "300px",
       }}
       loading={isLoading}
       dataSource={sortedPosts}
@@ -98,9 +97,6 @@ export const ViewOnlyPostList: React.FC = () => {
               style={{
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
                 lineHeight: "1.5em",
                 maxHeight: "3em"
               }}

@@ -134,9 +134,6 @@ export const PostList = () => {
                   style={{
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
                     lineHeight: "1.5em",
                     maxHeight: "3em"
                   }}

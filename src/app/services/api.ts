@@ -26,8 +26,8 @@ api.interceptors.request.use(
 );
 
 export const authApi = {
-  login: async (credentials: LoginState): Promise<any> => {
-    const response = await api.post("/auth/login", credentials);
+  login: async (userData: LoginState): Promise<any> => {
+    const response = await api.post("/auth/login", userData);
     return response.data;
   },
   register: async (userData: RegisterState): Promise<any> => {

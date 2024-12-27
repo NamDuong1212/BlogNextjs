@@ -14,10 +14,6 @@ export const useProfile = () => {
         token: accessToken!,
         user: response.data,
       });
-      console.log("Check data:", {
-        token: response.token,
-        user: response.data,
-      });
       toast.success(response.message);
     },
     onError: (error: Error) => {
