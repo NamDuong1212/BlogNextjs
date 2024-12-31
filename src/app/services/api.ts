@@ -101,6 +101,17 @@ export const postApi = {
     const response = await api.delete(`/post/${id}`);
     return response.data.data;
   },
+  uploadPostImage: async (id: any, file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await api.patch(`/post/${id}/upload-image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 export const commentApi = {

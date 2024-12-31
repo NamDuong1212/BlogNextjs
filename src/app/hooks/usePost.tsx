@@ -76,12 +76,28 @@ export const usePost = () => {
     });
   };
 
+  const useUploadPostImage = (onSuccess?: () => void) => {
+    return useMutation({
+      mutationFn: ({ id, file }: { id: any; file: File }) => postApi.uploadPostImage(id, file),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["post"] });
+        toast.success("Image uploaded successfully");
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        toast.error(error.message || "Error uploading image");
+      },
+    });
+  };
+
   return {
     useGetPosts,
+    useGetPostsByCategory,
     useGetPostById,
     useGetCategories,
     useCreatePost,
     useUpdatePost,
     useDeletePost,
+    useUploadPostImage,
   };
 };
