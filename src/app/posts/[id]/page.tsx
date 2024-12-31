@@ -8,7 +8,7 @@ import { usePost } from "@/app/hooks/usePost";
 import CommentSection from "@/app/components/Comment";
 import NotFound from "@/app/not-found";
 import { formatDateTime } from "@/app/utils/formatDateTime";
-
+import ImageComponentPostImage from "@/app/components/ImageComponentPostImage";
 const { Title, Paragraph } = Typography;
 
 const PostDetail: React.FC = () => {
@@ -43,13 +43,13 @@ const PostDetail: React.FC = () => {
           <Title level={4}>{post.author || "Testing"}</Title>
           <Paragraph>
             <Space>
-                <Tag 
-                  bordered={false} 
-                  color={"processing"}
-                  style={{ cursor: "pointer" }}
-                >
-                  {post.category.name}
-                </Tag>
+              <Tag
+                bordered={false}
+                color={"processing"}
+                style={{ cursor: "pointer" }}
+              >
+                {post.category.name}
+              </Tag>
               <span>
                 <CalendarOutlined /> {formatDateTime(post.createdAt)}
               </span>
@@ -63,11 +63,7 @@ const PostDetail: React.FC = () => {
 
         {post.image ? (
           <div style={{ textAlign: "center" }}>
-            <img
-              src={post.image}
-              alt="Post Image"
-              style={{ width: "100%", borderRadius: "8px" }}
-            />
+            <ImageComponentPostImage src={post.image} alt="Post Image" />
           </div>
         ) : (
           <div style={{ textAlign: "center" }}>

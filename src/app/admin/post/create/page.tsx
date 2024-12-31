@@ -1,6 +1,7 @@
 "use client";
-import React, {useEffect}from "react";
-import { Form, Input, Select, Button, Card, Spin } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Select, Button, Card, Spin, Upload, message } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import useAuthStore from "@/app/store/useAuthStore";
 import { usePost } from "@/app/hooks/usePost";
 import { useRouter } from "next/navigation";
@@ -12,23 +13,49 @@ export const CreatePostForm: React.FC = () => {
   const router = useRouter();
   const [form] = Form.useForm();
   const { userData } = useAuthStore();
-  const { useGetCategories, useCreatePost } = usePost();
-  const { data: categories, isLoading: isCategoriesLoading } = useGetCategories();
+  const { useGetCategories, useCreatePost, useUploadPostImage } = usePost();
+  const { data: categories, isLoading: isCategoriesLoading } =
+    useGetCategories();
   const createMutation = useCreatePost();
+  const uploadMutation = useUploadPostImage();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
-      if (!userData?.isCreator) {
-        router.replace("/"); 
-      }
-    }, [userData, router]);
-  
+    if (!userData?.isCreator) {
+      router.replace("/");
+    }
+  }, [userData, router]);
 
-  const onFinish = (values: any) => {
-    const dataToSubmit = {
-      ...values,
-      author: userData?.username,
-    };
-    createMutation.mutate(dataToSubmit);
+  const onFinish = async (values: any) => {
+    try {
+      const dataToSubmit = {
+        ...values,
+        author: userData?.username,
+      };
+
+      const createdPost = await createMutation.mutateAsync(dataToSubmit);
+
+      if (selectedFile && createdPost?.id) {
+        await uploadMutation.mutateAsync({
+          id: createdPost.id,
+          file: selectedFile,
+        });
+      }
+
+      router.push("/posts");
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  };
+
+  const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("You can only upload image files!");
+      return false;
+    }
+    setSelectedFile(file);
+    return false;
   };
 
   React.useEffect(() => {
@@ -85,11 +112,34 @@ export const CreatePostForm: React.FC = () => {
           )}
         </Form.Item>
 
+        <Form.Item label="Post Image" help="Upload an image for your post">
+          <Upload
+            beforeUpload={beforeUpload}
+            maxCount={1}
+            accept="image/*"
+            fileList={
+              selectedFile
+                ? [
+                    {
+                      uid: "-1",
+                      name: selectedFile.name,
+                      status: "done",
+                      url: URL.createObjectURL(selectedFile),
+                    },
+                  ]
+                : []
+            }
+            onRemove={() => setSelectedFile(null)}
+          >
+            <Button icon={<UploadOutlined />}>Select Image</Button>
+          </Upload>
+        </Form.Item>
+
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
-            loading={createMutation.isPending}
+            loading={createMutation.isPending || uploadMutation.isPending}
           >
             Create Post
           </Button>

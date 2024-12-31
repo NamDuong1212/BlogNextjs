@@ -7,7 +7,7 @@ interface ImageComponentProps {
   size?: number;
 }
 
-const ImageComponent: React.FC<ImageComponentProps> = ({ src, alt, size = 40 }) => {
+const ImageComponentAvatar: React.FC<ImageComponentProps> = ({ src, alt, size = 40 }) => {
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const defaultAvatar = "https://i.imgur.com/CzXTtJV.jpg";
   const imageUrl = src ? `${baseURL}${src}` : defaultAvatar;
@@ -23,4 +23,4 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ src, alt, size = 40 }) 
   );
 };
 
-export default ImageComponent;
+export default ImageComponentAvatar;

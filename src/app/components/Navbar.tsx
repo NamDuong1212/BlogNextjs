@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import useAuthStore from "../store/useAuthStore";
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Input } from "antd";
-import ImageComponent from "./ImageComponent";
+import ImageComponentAvatar from "./ImageComponentAvatar";
 
 const Navbar: React.FC = () => {
   const router = useRouter();
@@ -77,7 +77,7 @@ const Navbar: React.FC = () => {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
                 >
-                  <ImageComponent
+                  <ImageComponentAvatar
                     size={50}
                     src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
                     alt="User Avatar"

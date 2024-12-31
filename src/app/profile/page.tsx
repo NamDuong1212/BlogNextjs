@@ -25,8 +25,8 @@ import {
 } from "@ant-design/icons";
 import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
-import type { RcFile } from 'antd/es/upload/interface';
-import ImageComponent from "../components/ImageComponent";
+import type { RcFile } from "antd/es/upload/interface";
+import ImageComponentAvatar from "../components/ImageComponentAvatar";
 
 const Profile = () => {
   const { userData } = useAuthStore();
@@ -63,15 +63,15 @@ const Profile = () => {
   };
 
   const handleAvatarChange = async (file: RcFile) => {
-    const isImage = file.type.startsWith('image/');
+    const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error('You can only upload image files!');
+      message.error("You can only upload image files!");
       return false;
     }
 
     try {
       await updateAvatarMutation.mutateAsync(file);
-      return false; 
+      return false;
     } catch (error) {
       return false;
     }
@@ -86,10 +86,10 @@ const Profile = () => {
         >
           <div className="flex flex-col items-center mb-8">
             <div className="relative group">
-              <ImageComponent
-                 size={120}  
-                 src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
-                 alt="User Avatar"
+              <ImageComponentAvatar
+                size={120}
+                src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
+                alt="User Avatar"
               />
               <Upload
                 accept="image/*"
