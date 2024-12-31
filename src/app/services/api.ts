@@ -46,6 +46,17 @@ export const profileApi = {
     const response = await api.patch("/user/profile", data);
     return response.data;
   },
+  updateAvatar: async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const response = await api.patch('/user/profile/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 export const categoryApi = {
@@ -68,6 +79,11 @@ export const postApi = {
 
   getPosts: async (): Promise<any> => {
     const response = await api.get("/post/getAll"); 
+    return response.data.data || [];
+  },
+
+  getPostsByCategory: async (id: any): Promise<any> => {
+    const response = await api.get(`/post/GetByCategory/${id}`);
     return response.data.data || [];
   },
 

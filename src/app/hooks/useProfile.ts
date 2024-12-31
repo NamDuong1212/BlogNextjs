@@ -21,7 +21,22 @@ export const useProfile = () => {
     },
   });
 
+  const updateAvatarMutation = useMutation({
+    mutationFn: (file: File) => profileApi.updateAvatar(file),
+    onSuccess: (response) => {
+      setUserData({
+        token: accessToken!,
+        user: response.data,
+      });
+      toast.success(response.message || "Avatar updated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Error updating avatar");
+    },
+  });
+
   return {
     updateProfileMutation,
+    updateAvatarMutation,
   };
 };

@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { ViewOnlyPostList } from "./components/ViewOnlyPostList";
 
 export default function Home() {
@@ -14,14 +13,16 @@ export default function Home() {
           <br />
           Blog
         </h1>
-        <p className="text-lg text-gray-700">
+        <p className="text-lg text-gray-700 flex flex-col space-y-2">
           Stories are the threads that weave us together; your blog is where
           those threads become a tapestry of shared experiences.
         </p>
       </div>
 
-      <div className="w-full">
-        <ViewOnlyPostList />
+      <div className="h-screen left-0 top-0 sticky p-5 flex flex-col gap-10 bg-white">
+        <div className="flex-1 overflow-auto">
+          <ViewOnlyPostList />
+        </div>
       </div>
     </div>
   );

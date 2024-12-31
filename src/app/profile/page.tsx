@@ -12,6 +12,8 @@ import {
   Avatar,
   Divider,
   DatePicker,
+  Upload,
+  message,
 } from "antd";
 import {
   EditOutlined,
@@ -19,13 +21,16 @@ import {
   CalendarOutlined,
   MailOutlined,
   InfoCircleOutlined,
+  CameraOutlined,
 } from "@ant-design/icons";
 import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
+import type { RcFile } from 'antd/es/upload/interface';
+import ImageComponent from "../components/ImageComponent";
 
 const Profile = () => {
   const { userData } = useAuthStore();
-  const { updateProfileMutation } = useProfile();
+  const { updateProfileMutation, updateAvatarMutation } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
@@ -57,6 +62,21 @@ const Profile = () => {
     });
   };
 
+  const handleAvatarChange = async (file: RcFile) => {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('You can only upload image files!');
+      return false;
+    }
+
+    try {
+      await updateAvatarMutation.mutateAsync(file);
+      return false; 
+    } catch (error) {
+      return false;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
@@ -65,20 +85,27 @@ const Profile = () => {
           bordered={false}
         >
           <div className="flex flex-col items-center mb-8">
-            <div className="relative">
-              <Avatar
-                size={120}
-                src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
-                className="border-4 border-white shadow-lg"
+            <div className="relative group">
+              <ImageComponent
+                 size={120}  
+                 src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
+                 alt="User Avatar"
               />
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<EditOutlined />}
-                size="small"
+              <Upload
+                accept="image/*"
+                showUploadList={false}
+                beforeUpload={handleAvatarChange}
                 className="absolute bottom-0 right-0"
-                onClick={handleEditProfile}
-              />
+              >
+                <Button
+                  type="primary"
+                  shape="circle"
+                  icon={<CameraOutlined />}
+                  size="small"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </Upload>
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-full transition-all duration-200" />
             </div>
             <h1 className="text-2xl font-bold mt-4 text-gray-800">
               {userData.username}

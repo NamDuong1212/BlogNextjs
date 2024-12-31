@@ -10,9 +10,9 @@ import {
   NumberOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { useAuth } from "../hooks/useAuth";
-import { validateRegister } from "../utils/validation";
-import { RegisterState } from "../types/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { validateRegister } from "../../utils/validation";
+import { RegisterState } from "../../types/auth";
 
 const Register: React.FC = () => {
   const router = useRouter();

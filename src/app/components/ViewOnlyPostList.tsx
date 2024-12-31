@@ -44,7 +44,7 @@ export const ViewOnlyPostList: React.FC = () => {
     <List
       style={{
         marginLeft: "40px",
-        marginRight: "300px",
+        marginRight: "40px",
       }}
       loading={isLoading}
       dataSource={sortedPosts}
@@ -59,12 +59,13 @@ export const ViewOnlyPostList: React.FC = () => {
         },
       }}
       renderItem={(post: Post) => (
-        <List.Item>
+        <List.Item style={{
+          width: "100%"}}>
           <Card
             style={{
               cursor: "pointer",
               padding: "0px",
-              width: "1500px",
+              width: "100%",
             }}
             onClick={() => router.push(`/posts/${post.id}`)}
             extra={

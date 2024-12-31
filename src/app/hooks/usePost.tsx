@@ -11,6 +11,15 @@ export const usePost = () => {
     });
   };
 
+  const useGetPostsByCategory = (categoryId: string) => {
+    return useQuery({
+      queryKey: ["posts", "category", categoryId],
+      queryFn: () => postApi.getPostsByCategory(categoryId),
+      enabled: !!categoryId,
+    });
+  };
+
+
   const useGetPostById = (id: any) => {
     return useQuery({
       queryKey: ["post", id],

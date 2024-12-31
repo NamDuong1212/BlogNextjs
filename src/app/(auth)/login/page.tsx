@@ -6,9 +6,9 @@ import Link from "next/link";
 import { Form, Input, Button, Card, Space } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { useAuth } from "../hooks/useAuth";
-import { validateLogin } from "../utils/validation";
-import { LoginState } from "../types/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { validateLogin } from "../../utils/validation";
+import { LoginState } from "../../types/auth";
 
 const Login: React.FC = () => {
   const router = useRouter();
