@@ -26,7 +26,7 @@ export const PostList = () => {
   const { data: posts, isLoading } = useGetPosts();
   const deleteMutation = useDeletePost();
   const { userData } = useAuthStore();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [updatePostId, setUpdatePostId] = useState<any>(null);
   const searchParams = new URLSearchParams(window.location.search);
   const searchQuery = searchParams.get("search");

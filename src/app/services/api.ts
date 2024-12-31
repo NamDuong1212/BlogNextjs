@@ -1,9 +1,10 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { LoginState, RegisterState, VerifyOtpState } from "../types/auth";
 import { UpdateUser } from "../types/profile";
 import { CreateCategoryType } from "../types/category";
 
-const getAuthToken = () => localStorage.getItem("token");
+const getAuthToken = () => Cookies.get("token");
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -65,8 +66,8 @@ export const postApi = {
     return response.data;
   },
 
-  getPosts: async (page: number = 1, limit: number = 20): Promise<any> => {
-    const response = await api.get(`/post/getAll?page=${page}&limit=${limit}`);
+  getPosts: async (): Promise<any> => {
+    const response = await api.get("/post/getAll"); 
     return response.data.data || [];
   },
 

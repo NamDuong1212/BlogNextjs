@@ -45,7 +45,7 @@ export const useComment = (postId: any) => {
 
   const useDeleteComment = () => {
     return useMutation({
-      mutationFn: (id: string) => commentApi.deleteComment(id),
+      mutationFn: (id: any) => commentApi.deleteComment(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
         toast.success("Comment deleted successfully");

@@ -12,7 +12,7 @@ export const ViewOnlyPostList: React.FC = () => {
   const router = useRouter();
   const { useGetPosts } = usePost();
   const { data: posts, isLoading } = useGetPosts();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
   const searchParams = new URLSearchParams(window.location.search);
   const searchQuery = searchParams.get("search");

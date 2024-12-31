@@ -59,19 +59,11 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const startEditing = (comment: any) => {
     setEditingComment(comment.id);
     setEditContent(comment.content);
-  };
-
-  const startReplying = (comment: any) => {
-    setReplyingTo({ id: comment.id, username: comment.user.username });
-    setNewComment(`@${comment.user.username} `); 
-  };
+  }
 
   const actions = (comment: any) => {
     const isOwner = userData && comment.user.id === userData.id;
     return [
-      <span key="reply" onClick={() => startReplying(comment)}>
-        Reply
-      </span>,
       isOwner && (
         <EditOutlined key="edit" onClick={() => startEditing(comment)} />
       ),

@@ -17,8 +17,6 @@ export const useAuth = () => {
         user: data.user,
       });
 
-      localStorage.setItem("token", data.token);
-
       toast.success("Login Successful", {
         autoClose: 2000,
         onClose: () => router.push("/"),
