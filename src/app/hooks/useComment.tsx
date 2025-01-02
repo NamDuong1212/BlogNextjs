@@ -11,6 +11,7 @@ export const useComment = (postId: any) => {
       queryKey: ["comments", postId],
       queryFn: () => commentApi.getCommentsByPostId(postId),
       enabled: !!postId,
+      staleTime: 0,
     });
   };
 

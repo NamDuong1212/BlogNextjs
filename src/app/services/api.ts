@@ -1,11 +1,9 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 import { LoginState, RegisterState, VerifyOtpState } from "../types/auth";
 import { UpdateUser } from "../types/profile";
 import { CreateCategoryType } from "../types/category";
 
-const getAuthToken = () => Cookies.get("token");
-
+const getAuthToken = () => localStorage.getItem("token");
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {

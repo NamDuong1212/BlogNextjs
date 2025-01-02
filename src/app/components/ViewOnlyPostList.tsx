@@ -21,8 +21,9 @@ export const ViewOnlyPostList: React.FC = () => {
     const matchesSearch =
       !searchQuery ||
       post.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      !selectedCategory || post.category.id === selectedCategory;
+    const matchesCategory = 
+      !selectedCategory || 
+      post.category.id === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -39,6 +40,7 @@ export const ViewOnlyPostList: React.FC = () => {
   };
 
   return (
+    
     <List
       style={{
         marginLeft: "40px",
@@ -57,11 +59,8 @@ export const ViewOnlyPostList: React.FC = () => {
         },
       }}
       renderItem={(post: Post) => (
-        <List.Item
-          style={{
-            width: "100%",
-          }}
-        >
+        <List.Item style={{
+          width: "100%"}}>
           <Card
             style={{
               cursor: "pointer",
@@ -71,13 +70,9 @@ export const ViewOnlyPostList: React.FC = () => {
             onClick={() => router.push(`/posts/${post.id}`)}
             extra={
               <Space size="small">
-                <Tag
-                  bordered={false}
-                  color={
-                    selectedCategory === post.category.id
-                      ? "success"
-                      : "processing"
-                  }
+                <Tag 
+                  bordered={false} 
+                  color={selectedCategory === post.category.id ? "success" : "processing"}
                   style={{ cursor: "pointer" }}
                   onClick={(e) => handleCategoryClick(e, post.category.id)}
                 >
@@ -85,6 +80,8 @@ export const ViewOnlyPostList: React.FC = () => {
                 </Tag>
                 <Divider type="vertical" />
                 <Text type="secondary">{formatDateTime(post.updatedAt)}</Text>
+                <Divider type="vertical" />
+                <Text type="success">{post.user.username}</Text>
               </Space>
             }
           >

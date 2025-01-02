@@ -97,15 +97,6 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
                   url: URL.createObjectURL(selectedFile),
                 },
               ]
-            : post.image
-              ? [
-                  {
-                    uid: "-1",
-                    name: "Current Image",
-                    status: "done",
-                    url: post.image,
-                  },
-                ]
               : []
         }
         onRemove={() => setSelectedFile(null)}

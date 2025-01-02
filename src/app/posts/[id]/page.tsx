@@ -37,10 +37,10 @@ const PostDetail: React.FC = () => {
         <div style={{ textAlign: "center" }}>
           <ImageComponentAvatar
             size={80}
-            src={post.user.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
+            src={post.user?.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
             alt="User Avatar"
           />
-          <Title level={4}>{post.user.username || "Testing"}</Title>
+          <Title level={4}>{post.user?.username || "Testing"}</Title>
           <Paragraph>
             <Space>
               <Tag
@@ -75,7 +75,7 @@ const PostDetail: React.FC = () => {
           </div>
         )}
 
-        <Paragraph>{post.content}</Paragraph>
+        <Paragraph style={{ whiteSpace: "pre-wrap" }}>{post.content}</Paragraph>
 
         {id && (
           <CommentSection

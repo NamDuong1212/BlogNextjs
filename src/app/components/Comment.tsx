@@ -7,6 +7,7 @@ import { useComment } from "../hooks/useComment";
 import useAuthStore from "../store/useAuthStore";
 import { formatDateTime } from "../utils/formatDateTime";
 import { CommentSectionState } from "../types/comment";
+import ImageComponentAvatar from "./ImageComponentAvatar";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -97,9 +98,9 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
             author={comment.user.username}
             avatar={
               comment.user.avatar ? (
-                <Avatar src={comment.user.avatar} />
+                <ImageComponentAvatar src={comment.user.avatar} alt="User Avatar"/>
               ) : (
-                <Avatar src="https://i.imgur.com/OB0y6MR.jpg" />
+                <ImageComponentAvatar src="https://i.imgur.com/OB0y6MR.jpg" alt="User Avatar"/>
               )
             }
             content={

@@ -24,6 +24,7 @@ export const usePost = () => {
       queryKey: ["post", id],
       queryFn: () => postApi.getPostById(id),
       enabled: !!id,
+      staleTime: 0,
     });
   };
 
