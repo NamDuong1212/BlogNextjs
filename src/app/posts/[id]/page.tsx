@@ -5,12 +5,14 @@ import { Space, Typography, Tag } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
-import CommentSection from "@/app/components/Comment";
+import CommentSection from "@/app/components/CommentSection";
+import LikeSection from "@/app/components/LikeSection";
 import NotFound from "@/app/not-found";
 import { formatDateTime } from "@/app/utils/formatDateTime";
 import ImageComponentPostImage from "@/app/components/ImageComponentPostImage";
-const { Title, Paragraph } = Typography;
 import ImageComponentAvatar from "@/app/components/ImageComponentAvatar";
+
+const { Title, Paragraph } = Typography;
 
 const PostDetail: React.FC = () => {
   const params = useParams();
@@ -76,6 +78,8 @@ const PostDetail: React.FC = () => {
         )}
 
         <Paragraph style={{ whiteSpace: "pre-wrap" }}>{post.content}</Paragraph>
+
+        <LikeSection postId={id} />
 
         {id && (
           <CommentSection

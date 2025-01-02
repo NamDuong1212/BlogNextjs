@@ -1,8 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { List, Avatar, Button, Input, Typography, Popconfirm } from "antd";
+import { List, Button, Input, Typography, Popconfirm } from "antd";
 import { Comment } from "@ant-design/compatible";
-import { UserOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  CommentOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { useComment } from "../hooks/useComment";
 import useAuthStore from "../store/useAuthStore";
 import { formatDateTime } from "../utils/formatDateTime";
@@ -90,7 +94,12 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       <List
         loading={isLoading}
         dataSource={comments}
-        header={`${comments.length} ${comments.length > 1 ? "comments" : "comment"}`}
+        header={
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <CommentOutlined style={{ fontSize: "20px" }} />
+            {`${comments.length} ${comments.length > 1 ? "comments" : "comment"}`}
+          </div>
+        }
         itemLayout="horizontal"
         renderItem={(comment: any) => (
           <Comment

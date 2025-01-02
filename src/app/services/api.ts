@@ -112,6 +112,23 @@ export const postApi = {
   },
 };
 
+export const likeApi = {
+  likePost: async (postId: string): Promise<any> => {
+    const response = await api.post(`/like/${postId}`);
+    return response.data;
+  },
+
+  unlikePost: async (postId: string): Promise<any> => {
+    const response = await api.delete(`/like/${postId}`);
+    return response.data;
+  },
+
+  getLikeCount: async (postId: string): Promise<any> => {
+    const response = await api.get(`/like/${postId}/count`);
+    return response.data;
+  },
+};
+
 export const commentApi = {
   getCommentsByPostId: async (postId: any): Promise<any> => {
     const response = await api.get(`/comment/${postId}`);
