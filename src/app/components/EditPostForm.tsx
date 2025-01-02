@@ -24,6 +24,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
   const [updateData, setUpdateData] = React.useState<Partial<Post>>({
     title: post.title,
     content: post.content,
+    image: post.image,
   });
 
   const beforeUpload = (file: File) => {

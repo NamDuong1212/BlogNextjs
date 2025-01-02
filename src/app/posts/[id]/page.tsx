@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Avatar, Space, Typography, Tag } from "antd";
-import { CalendarOutlined, UserOutlined } from "@ant-design/icons";
+import { Space, Typography, Tag } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
 import CommentSection from "@/app/components/Comment";
@@ -10,6 +10,7 @@ import NotFound from "@/app/not-found";
 import { formatDateTime } from "@/app/utils/formatDateTime";
 import ImageComponentPostImage from "@/app/components/ImageComponentPostImage";
 const { Title, Paragraph } = Typography;
+import ImageComponentAvatar from "@/app/components/ImageComponentAvatar";
 
 const PostDetail: React.FC = () => {
   const params = useParams();
@@ -34,13 +35,12 @@ const PostDetail: React.FC = () => {
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
         <div style={{ textAlign: "center" }}>
-          <Avatar
-            src="https://i.imgur.com/CzXTtJV.jpg"
-            size={64}
-            icon={<UserOutlined />}
-            style={{ marginBottom: "10px" }}
+          <ImageComponentAvatar
+            size={80}
+            src={post.user.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
+            alt="User Avatar"
           />
-          <Title level={4}>{post.author || "Testing"}</Title>
+          <Title level={4}>{post.user.username || "Testing"}</Title>
           <Paragraph>
             <Space>
               <Tag

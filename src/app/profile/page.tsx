@@ -9,7 +9,6 @@ import {
   Button,
   Card,
   Descriptions,
-  Avatar,
   Divider,
   DatePicker,
   Upload,

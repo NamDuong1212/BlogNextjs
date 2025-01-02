@@ -7,7 +7,7 @@ export const usePost = () => {
   const useGetPosts = () => {
     return useQuery({
       queryKey: ["posts"],
-      queryFn: () => postApi.getPosts(), 
+      queryFn: () => postApi.getPosts(),
     });
   };
 
@@ -18,7 +18,6 @@ export const usePost = () => {
       enabled: !!categoryId,
     });
   };
-
 
   const useGetPostById = (id: any) => {
     return useQuery({
@@ -78,7 +77,8 @@ export const usePost = () => {
 
   const useUploadPostImage = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: ({ id, file }: { id: any; file: File }) => postApi.uploadPostImage(id, file),
+      mutationFn: ({ id, file }: { id: any; file: File }) =>
+        postApi.uploadPostImage(id, file),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["post"] });
         toast.success("Image uploaded successfully");

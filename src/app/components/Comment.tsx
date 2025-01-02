@@ -15,7 +15,10 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const [newComment, setNewComment] = useState<string>("");
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string>("");
-  const [replyingTo, setReplyingTo] = useState<{ id: string; username: string } | null>(null);
+  const [replyingTo, setReplyingTo] = useState<{
+    id: string;
+    username: string;
+  } | null>(null);
 
   const userData = useAuthStore((state) => state.userData);
 
@@ -42,12 +45,12 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const handleCommentSubmit = () => {
     if (!newComment.trim() || !userData) return;
     createCommentMutation.mutate({
-      content: newComment,  
+      content: newComment,
       postId,
       replyTo: replyingTo?.id || null,
     });
   };
-  
+
   const handleUpdateComment = () => {
     if (!editContent.trim() || !userData) return;
     updateCommentMutation.mutate({
@@ -59,7 +62,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const startEditing = (comment: any) => {
     setEditingComment(comment.id);
     setEditContent(comment.content);
-  }
+  };
 
   const actions = (comment: any) => {
     const isOwner = userData && comment.user.id === userData.id;
@@ -115,7 +118,9 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                   >
                     {updateCommentMutation.isPending ? "Loading..." : "Finish"}
                   </Button>
-                  <Button onClick={() => setEditingComment(null)}>Cancel</Button>
+                  <Button onClick={() => setEditingComment(null)}>
+                    Cancel
+                  </Button>
                 </div>
               ) : (
                 comment.content

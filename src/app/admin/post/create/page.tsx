@@ -28,9 +28,16 @@ export const CreatePostForm: React.FC = () => {
 
   const onFinish = async (values: any) => {
     try {
+      if (!userData?.id) {
+        message.error("User ID is required");
+        return;
+      }
+
       const dataToSubmit = {
-        ...values,
-        author: userData?.username,
+        userId: userData.id,
+        title: values.title,
+        content: values.content,
+        categoryId: values.categoryId,
       };
 
       const createdPost = await createMutation.mutateAsync(dataToSubmit);
@@ -42,9 +49,10 @@ export const CreatePostForm: React.FC = () => {
         });
       }
 
-      router.push("/posts");
+      return router.push("/post-list");
     } catch (error) {
       console.error("Error creating post:", error);
+      message.error("Failed to create post");
     }
   };
 
@@ -58,20 +66,9 @@ export const CreatePostForm: React.FC = () => {
     return false;
   };
 
-  React.useEffect(() => {
-    form.setFieldValue("author", userData?.username);
-  }, [userData]);
-
   return (
     <Card title="Create Post" style={{ maxWidth: 800, margin: "0 auto" }}>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{
-          author: userData?.username,
-        }}
-      >
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item label="Author">
           <Input value={userData?.username || ""} disabled />
         </Form.Item>

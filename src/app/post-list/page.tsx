@@ -38,25 +38,24 @@ export const PostList = () => {
   }, [userData, router]);
 
   const filteredPosts = posts?.filter((post: Post) => {
-      const matchesSearch =
-        !searchQuery ||
-        post.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = 
-        !selectedCategory || 
-        post.category.id === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  
-    const sortedPosts = filteredPosts
-      ?.slice()
-      .sort(
-        (a: any, b: any) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-      );
-    const handleCategoryClick = (e: React.MouseEvent, categoryId: string) => {
-        e.stopPropagation();
-        setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
-      };
+    const matchesSearch =
+      !searchQuery ||
+      post.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      !selectedCategory || post.category.id === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const sortedPosts = filteredPosts
+    ?.slice()
+    .sort(
+      (a: any, b: any) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+  const handleCategoryClick = (e: React.MouseEvent, categoryId: string) => {
+    e.stopPropagation();
+    setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
+  };
 
   return (
     <List
@@ -75,9 +74,13 @@ export const PostList = () => {
             style={{ width: "100%" }}
             extra={
               <Space size="middle">
-                <Tag 
-                  bordered={false} 
-                  color={selectedCategory === post.category.id ? "success" : "processing"}
+                <Tag
+                  bordered={false}
+                  color={
+                    selectedCategory === post.category.id
+                      ? "success"
+                      : "processing"
+                  }
                   style={{ cursor: "pointer" }}
                   onClick={(e) => handleCategoryClick(e, post.category.id)}
                 >
@@ -135,7 +138,7 @@ export const PostList = () => {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     lineHeight: "1.5em",
-                    maxHeight: "3em"
+                    maxHeight: "3em",
                   }}
                 >
                   {post.content}
