@@ -6,4 +6,5 @@ export interface Post {
   category: any;
   createdAt?: string;
   updatedAt?: string;
+  image?: string;
 }
