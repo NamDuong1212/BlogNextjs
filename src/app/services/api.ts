@@ -150,3 +150,10 @@ export const commentApi = {
     return response.data;
   },
 };
+
+export const walletApi ={
+  createWallet: async (userId: any): Promise<any> => {
+    const response = await api.post(`/wallet/create/${userId}`);
+    return response.data;
+  }
+}
