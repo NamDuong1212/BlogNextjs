@@ -21,16 +21,19 @@ import {
   MailOutlined,
   InfoCircleOutlined,
   CameraOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
 import type { RcFile } from "antd/es/upload/interface";
 import ImageComponentAvatar from "../components/ImageComponentAvatar";
-
+import { useWallet } from "../hooks/useWallet";
 const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { useCreateWallet } = useWallet(userData?.id || "");
+  const createWalletMutation = useCreateWallet();
   const [form] = Form.useForm();
 
   if (!userData) {
@@ -74,6 +77,14 @@ const Profile = () => {
     } catch (error) {
       return false;
     }
+  };
+
+  const handleCreateWallet = async () => {
+    try {
+      await createWalletMutation.mutateAsync({
+        userId: userData.id,
+      });
+    } catch (error) {}
   };
 
   return (
@@ -166,15 +177,22 @@ const Profile = () => {
             <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
-                  <InfoCircleOutlined className="text-blue-500" />
+                  <WalletOutlined className="text-blue-500" />
                   <span className="font-medium">Wallet</span>
                 </span>
               }
               span={2}
             >
               {userData.isCreator ? (
-                <Button color="primary" variant="outlined" className="w-50">
-                  + Create Wallet
+                <Button
+                  color="primary" 
+                  variant="outlined" 
+                  className="w-50"
+                  onClick={handleCreateWallet}
+                  loading={createWalletMutation.isPending}
+                  icon={<WalletOutlined />}
+                >
+                  Create Wallet
                 </Button>
               ) : (
                 <span>You do not have access to Wallet</span>
