@@ -22,7 +22,6 @@ const Register: React.FC = () => {
   const [registeredEmail, setRegisteredEmail] = useState("");
 
   const handleSubmit = async (values: RegisterState): Promise<void> => {
-
     const validationError = validateRegister(values);
     if (validationError) {
       toast.error(validationError, { autoClose: 2000 });

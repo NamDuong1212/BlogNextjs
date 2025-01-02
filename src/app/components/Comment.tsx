@@ -98,9 +98,15 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
             author={comment.user.username}
             avatar={
               comment.user.avatar ? (
-                <ImageComponentAvatar src={comment.user.avatar} alt="User Avatar"/>
+                <ImageComponentAvatar
+                  src={comment.user.avatar}
+                  alt="User Avatar"
+                />
               ) : (
-                <ImageComponentAvatar src="https://i.imgur.com/OB0y6MR.jpg" alt="User Avatar"/>
+                <ImageComponentAvatar
+                  src="https://i.imgur.com/OB0y6MR.jpg"
+                  alt="User Avatar"
+                />
               )
             }
             content={

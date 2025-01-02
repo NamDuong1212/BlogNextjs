@@ -46,11 +46,11 @@ export const profileApi = {
   },
   updateAvatar: async (file: File): Promise<any> => {
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append("avatar", file);
 
-    const response = await api.patch('/user/profile/avatar', formData, {
+    const response = await api.patch("/user/profile/avatar", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
@@ -76,7 +76,7 @@ export const postApi = {
   },
 
   getPosts: async (): Promise<any> => {
-    const response = await api.get("/post/getAll"); 
+    const response = await api.get("/post/getAll");
     return response.data.data || [];
   },
 
@@ -101,11 +101,11 @@ export const postApi = {
   },
   uploadPostImage: async (id: any, file: File): Promise<any> => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
 
     const response = await api.patch(`/post/${id}/upload-image`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;

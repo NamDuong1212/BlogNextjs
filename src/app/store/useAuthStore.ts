@@ -13,20 +13,20 @@ const useAuthStore = create<UserState>()(
           accessToken: token,
           userData: user,
         });
-        
+
         console.log("setUserData called with:", data);
         console.log("Auth store state updated:", {
           accessToken: token,
           userData: user,
         });
       },
-      
+
       clearUserData: () => {
         set({
           accessToken: null,
           userData: null,
         });
-        
+
         console.log("User data cleared");
       },
     }),
@@ -36,8 +36,8 @@ const useAuthStore = create<UserState>()(
         accessToken: state.accessToken,
         userData: state.userData,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useAuthStore;

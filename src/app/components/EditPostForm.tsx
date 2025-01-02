@@ -97,7 +97,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
                   url: URL.createObjectURL(selectedFile),
                 },
               ]
-              : []
+            : []
         }
         onRemove={() => setSelectedFile(null)}
       >
