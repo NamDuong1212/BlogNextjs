@@ -87,7 +87,7 @@ export const postApi = {
 
   getPostById: async (id: any): Promise<any> => {
     const response = await api.get(`/post/${id}`);
-    return response.data.data;
+    return response.data;
   },
 
   updatePost: async (data: any): Promise<any> => {
