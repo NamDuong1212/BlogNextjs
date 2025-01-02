@@ -163,6 +163,23 @@ const Profile = () => {
                 {userData.bio || "Nothing here"}
               </div>
             </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <span className="flex items-center gap-2">
+                  <InfoCircleOutlined className="text-blue-500" />
+                  <span className="font-medium">Wallet</span>
+                </span>
+              }
+              span={2}
+            >
+              {userData.isCreator ? (
+                <Button color="primary" variant="outlined" className="w-50">
+                  + Create Wallet
+                </Button>
+              ) : (
+                <span>You do not have access to Wallet</span>
+              )}
+            </Descriptions.Item>
           </Descriptions>
 
           <div className="mt-8 flex justify-center">
