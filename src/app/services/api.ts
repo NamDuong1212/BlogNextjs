@@ -151,9 +151,13 @@ export const commentApi = {
   },
 };
 
-export const walletApi ={
+export const walletApi = {
+  getWalletByUserId: async (userId: any): Promise<any> => {
+    const response = await api.get(`/wallet/${userId}`);
+    return response.data;
+  },
   createWallet: async (userId: any): Promise<any> => {
     const response = await api.post(`/wallet/create/${userId}`);
     return response.data;
-  }
-}
+  },
+};

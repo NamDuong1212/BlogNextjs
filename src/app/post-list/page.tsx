@@ -93,6 +93,7 @@ export const PostList = () => {
                 <Text type="secondary">
                   Modified: {formatDateTime(post.updatedAt)}
                 </Text>
+                <Text type="success">Views: {post.viewCount || 0}</Text>
                 <Button
                   type="link"
                   onClick={() => router.push(`/posts/${post.id}`)}

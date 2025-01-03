@@ -8,4 +8,5 @@ export interface Post {
   createdAt?: string;
   updatedAt?: string;
   image?: string;
+  viewCount?: number;
 }

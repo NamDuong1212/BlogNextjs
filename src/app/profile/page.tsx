@@ -13,6 +13,7 @@ import {
   DatePicker,
   Upload,
   message,
+  Spin,
 } from "antd";
 import {
   EditOutlined,
@@ -32,7 +33,11 @@ const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { useCreateWallet } = useWallet(userData?.id || "");
+  const { useCreateWallet, useGetWalletByUserId } = useWallet(
+    userData?.id || "",
+  );
+  const { data: walletData, isPending: isWalletPending } =
+    useGetWalletByUserId();
   const createWalletMutation = useCreateWallet();
   const [form] = Form.useForm();
 
@@ -183,10 +188,14 @@ const Profile = () => {
               }
               span={2}
             >
-              {userData.isCreator ? (
+              {isWalletPending ? (
+                <Spin />
+              ) : walletData?.balance !== undefined ? (
+                <span>Balance: {walletData.balance}</span>
+              ) : userData.isCreator ? (
                 <Button
-                  color="primary" 
-                  variant="outlined" 
+                  color="primary"
+                  variant="outlined"
                   className="w-50"
                   onClick={handleCreateWallet}
                   loading={createWalletMutation.isPending}
