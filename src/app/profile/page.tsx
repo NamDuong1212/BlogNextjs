@@ -29,6 +29,7 @@ import { useProfile } from "../hooks/useProfile";
 import type { RcFile } from "antd/es/upload/interface";
 import ImageComponentAvatar from "../components/ImageComponentAvatar";
 import { useWallet } from "../hooks/useWallet";
+import { toast } from "react-toastify";
 const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
@@ -191,7 +192,17 @@ const Profile = () => {
               {isWalletPending ? (
                 <Spin />
               ) : walletData?.balance !== undefined ? (
-                <span>Balance: {walletData.balance}</span>
+                <div className="flex flex-col gap-4">
+                  <span>Balance: {walletData.balance} $</span>
+                  <Button
+                    type="default"
+                    className="w-50"
+                    onClick={() => toast.info("Withdraw coming soon!")}
+                    icon={<WalletOutlined />}
+                  >
+                    Withdraw
+                  </Button>
+                </div>
               ) : userData.isCreator ? (
                 <Button
                   color="primary"
