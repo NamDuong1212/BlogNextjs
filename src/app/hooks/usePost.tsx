@@ -8,6 +8,7 @@ export const usePost = () => {
     return useQuery({
       queryKey: ["posts"],
       queryFn: () => postApi.getPosts(),
+      staleTime: 0,
     });
   };
 

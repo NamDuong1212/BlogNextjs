@@ -20,16 +20,26 @@ import useAuthStore from "../store/useAuthStore";
 
 const { Text, Title } = Typography;
 
+const POLLING_INTERVAL = 1000;
+
 export const PostList = () => {
   const router = useRouter();
   const { useGetPosts, useDeletePost } = usePost();
-  const { data: posts, isLoading } = useGetPosts();
+  const { data: posts, isLoading, refetch } = useGetPosts();
   const deleteMutation = useDeletePost();
   const { userData } = useAuthStore();
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [updatePostId, setUpdatePostId] = useState<any>(null);
   const searchParams = new URLSearchParams(window.location.search);
   const searchQuery = searchParams.get("search");
+
+  useEffect(() => {
+    const pollingInterval = setInterval(() => {
+      refetch();
+    }, POLLING_INTERVAL);
+
+    return () => clearInterval(pollingInterval);
+  }, [refetch]);
 
   useEffect(() => {
     if (!userData?.isCreator) {
@@ -52,6 +62,7 @@ export const PostList = () => {
       (a: any, b: any) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
+
   const handleCategoryClick = (e: React.MouseEvent, categoryId: string) => {
     e.stopPropagation();
     setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
@@ -93,7 +104,7 @@ export const PostList = () => {
                 <Text type="secondary">
                   Modified: {formatDateTime(post.updatedAt)}
                 </Text>
-                <Text type="success">Views: {post.viewCount || 0}</Text>
+                <Text type="success">Today Views: {post.viewCount || 0}</Text>
                 <Button
                   type="link"
                   onClick={() => router.push(`/posts/${post.id}`)}

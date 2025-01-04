@@ -174,7 +174,6 @@ const Profile = () => {
                   <span className="font-medium">Bio</span>
                 </span>
               }
-              span={2}
             >
               <div className="prose max-w-none">
                 {userData.bio || "Nothing here"}
@@ -187,7 +186,6 @@ const Profile = () => {
                   <span className="font-medium">Wallet</span>
                 </span>
               }
-              span={2}
             >
               {isWalletPending ? (
                 <Spin />
