@@ -11,7 +11,7 @@ import NotFound from "@/app/not-found";
 import { formatDateTime } from "@/app/utils/formatDateTime";
 import ImageComponentPostImage from "@/app/components/ImageComponentPostImage";
 import ImageComponentAvatar from "@/app/components/ImageComponentAvatar";
-import Linkify from 'react-linkify';
+import Linkify from "react-linkify";
 
 const { Title, Paragraph } = Typography;
 
@@ -80,7 +80,37 @@ const PostDetail: React.FC = () => {
 
         <Paragraph style={{ whiteSpace: "pre-wrap" }}>
           <Linkify
-            componentDecorator={(href: string | undefined, text: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined, key: React.Key | null | undefined) => (
+            componentDecorator={(
+              href: string | undefined,
+              text:
+                | string
+                | number
+                | bigint
+                | boolean
+                | React.ReactElement<
+                    unknown,
+                    string | React.JSXElementConstructor<any>
+                  >
+                | Iterable<React.ReactNode>
+                | React.ReactPortal
+                | Promise<
+                    | string
+                    | number
+                    | bigint
+                    | boolean
+                    | React.ReactPortal
+                    | React.ReactElement<
+                        unknown,
+                        string | React.JSXElementConstructor<any>
+                      >
+                    | Iterable<React.ReactNode>
+                    | null
+                    | undefined
+                  >
+                | null
+                | undefined,
+              key: React.Key | null | undefined,
+            ) => (
               <a
                 href={href}
                 key={key}

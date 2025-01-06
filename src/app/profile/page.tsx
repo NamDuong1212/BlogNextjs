@@ -29,7 +29,7 @@ import { useProfile } from "../hooks/useProfile";
 import type { RcFile } from "antd/es/upload/interface";
 import ImageComponentAvatar from "../components/ImageComponentAvatar";
 import { useWallet } from "../hooks/useWallet";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
@@ -195,7 +195,9 @@ const Profile = () => {
                   <Button
                     type="default"
                     className="w-50"
-                    onClick={() => toast.info("Withdraw coming soon!")}
+                    onClick={() => toast("Withdraw coming soon!",{
+                      icon: 'ℹ️',
+                    })}
                     icon={<WalletOutlined />}
                   >
                     Withdraw

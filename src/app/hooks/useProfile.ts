@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { profileApi } from "../services/api";
 import useAuthStore from "../store/useAuthStore";
 import { UpdateUser } from "../types/profile";

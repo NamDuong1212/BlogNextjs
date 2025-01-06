@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Form, Input, Button, Card, Space } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { useAuth } from "../../hooks/useAuth";
 import { validateLogin } from "../../utils/validation";
 import { LoginState } from "../../types/auth";
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: LoginState): Promise<void> => {
     const validationError = validateLogin(values);
     if (validationError) {
-      toast.error(validationError, { autoClose: 2000 });
+      toast.error(validationError);
       return;
     }
 

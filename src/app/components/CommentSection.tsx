@@ -148,12 +148,19 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       />
       {userData ? (
         <div style={{ marginTop: "20px" }}>
-          <TextArea
-            rows={3}
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-          />
+          <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
+            <ImageComponentAvatar
+              src={userData.avatar || "https://i.imgur.com/OB0y6MR.jpg"}
+              alt="Your Avatar"
+            />
+            <TextArea
+              rows={3}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              style={{ flex: 1 }}
+            />
+          </div>
           <Button
             type="primary"
             onClick={handleCommentSubmit}

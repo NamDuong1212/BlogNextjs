@@ -9,7 +9,7 @@ import {
   MailOutlined,
   NumberOutlined,
 } from "@ant-design/icons";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { useAuth } from "../../hooks/useAuth";
 import { validateRegister } from "../../utils/validation";
 import { RegisterState } from "../../types/auth";
@@ -24,7 +24,7 @@ const Register: React.FC = () => {
   const handleSubmit = async (values: RegisterState): Promise<void> => {
     const validationError = validateRegister(values);
     if (validationError) {
-      toast.error(validationError, { autoClose: 2000 });
+      toast.error(validationError);
       return;
     }
 
@@ -32,9 +32,7 @@ const Register: React.FC = () => {
       await registerMutation.mutateAsync(values);
       setRegisteredEmail(values.email);
       setShowOtpForm(true);
-      toast.success("Please check your email for OTP verification code", {
-        autoClose: 3000,
-      });
+      toast.success("Please check your email for OTP verification code");
     } catch (error) {
       toast.error("Registration failed. Please try again.");
     }
@@ -46,10 +44,8 @@ const Register: React.FC = () => {
         email: registeredEmail,
         otp: values.otp,
       });
-      toast.success("Account verified successfully!", {
-        autoClose: 2000,
-        onClose: () => router.push("/login"),
-      });
+      toast.success("Account verified successfully!");
+      router.push("/login");
     } catch (error) {
       toast.error("OTP verification failed. Please try again.");
     }

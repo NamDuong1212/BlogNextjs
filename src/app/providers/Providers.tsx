@@ -3,8 +3,7 @@
 import { ReactNode } from "react";
 import QueryProvider from "./QueryProvider";
 import AntProvider from "./AntProvider";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -15,7 +14,16 @@ export default function Providers({ children }: ProvidersProps) {
     <QueryProvider>
       <AntProvider>
         {children}
-        <ToastContainer />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 1000,
+            style: {
+              background: "white",
+              color: "black",
+            },
+          }}
+        />
       </AntProvider>
     </QueryProvider>
   );

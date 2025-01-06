@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { walletApi } from "../services/api";
-import { toast } from "react-toastify";
-import { use } from "react";
+import { toast } from "react-hot-toast";
 
 export const useWallet = (userId: string) => {
   const queryClient = useQueryClient();
@@ -31,7 +30,7 @@ export const useWallet = (userId: string) => {
 
   const useRequestWithdrawal = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: (data: { amount: number }) => 
+      mutationFn: (data: { amount: number }) =>
         walletApi.requestWithdrawal({ userId, amount: data.amount }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["wallet", userId] });

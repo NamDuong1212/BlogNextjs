@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { usePost } from "../hooks/usePost";
 import { Post } from "../types/post";
 import { formatDateTime } from "../utils/formatDateTime";
+import ImageComponentPostImage from "./ImageComponentPostImage";
 
 const { Title, Text } = Typography;
 
@@ -62,56 +63,77 @@ export const ViewOnlyPostList: React.FC = () => {
             width: "100%",
           }}
         >
-          <Card
+          <div
             style={{
-              cursor: "pointer",
-              padding: "0px",
+              display: "flex",
               width: "100%",
+              gap: "16px",
+              minHeight: "200px",
             }}
-            onClick={() => router.push(`/posts/${post.id}`)}
-            extra={
-              <Space size="small">
-                <Tag
-                  bordered={false}
-                  color={
-                    selectedCategory === post.category.id
-                      ? "success"
-                      : "processing"
-                  }
-                  style={{ cursor: "pointer" }}
-                  onClick={(e) => handleCategoryClick(e, post.category.id)}
-                >
-                  {post.category.name}
-                </Tag>
-                <Divider type="vertical" />
-                <Text type="secondary">{formatDateTime(post.updatedAt)}</Text>
-                <Divider type="vertical" />
-                <Text type="success">{post.user.username}</Text>
-              </Space>
-            }
           >
-            <Title
-              level={5}
-              style={{
-                margin: "0 0 5px 0",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {post.title}
-            </Title>
             <div
               style={{
+                flexShrink: 0,
+                width: "200px",
+                height: "200px", // Ensure the container has a fixed height
+                borderRadius: "8px",
                 overflow: "hidden",
-                textOverflow: "ellipsis",
-                lineHeight: "1.5em",
-                maxHeight: "3em",
+                position: "relative",
               }}
             >
-              {post.content}
+              <ImageComponentPostImage src={post.image} alt="Post Image" />
             </div>
-          </Card>
+            <Card
+              style={{
+                cursor: "pointer",
+                padding: "0px",
+                flex: 1,
+              }}
+              onClick={() => router.push(`/posts/${post.id}`)}
+              extra={
+                <Space size="small">
+                  <Tag
+                    bordered={false}
+                    color={
+                      selectedCategory === post.category.id
+                        ? "success"
+                        : "processing"
+                    }
+                    style={{ cursor: "pointer" }}
+                    onClick={(e) => handleCategoryClick(e, post.category.id)}
+                  >
+                    {post.category.name}
+                  </Tag>
+                  <Divider type="vertical" />
+                  <Text type="secondary">{formatDateTime(post.updatedAt)}</Text>
+                  <Divider type="vertical" />
+                  <Text type="success">{post.user.username}</Text>
+                </Space>
+              }
+            >
+              <Title
+                level={5}
+                style={{
+                  margin: "0 0 5px 0",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {post.title}
+              </Title>
+              <div
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  lineHeight: "1.5em",
+                  maxHeight: "3em",
+                }}
+              >
+                {post.content}
+              </div>
+            </Card>
+          </div>
         </List.Item>
       )}
     />

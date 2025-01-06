@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi, categoryApi } from "../services/api";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
+
 export const usePost = () => {
   const queryClient = useQueryClient();
 
