@@ -23,6 +23,7 @@ import {
   InfoCircleOutlined,
   CameraOutlined,
   WalletOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
@@ -34,9 +35,10 @@ const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { useCreateWallet, useGetWalletByUserId } = useWallet(
-    userData?.id || "",
-  );
+  const { useCreateWallet, useGetWalletByUserId, useRequestWithdrawal } =
+    useWallet(userData?.id || "");
+  const requestWithdrawalMutation = useRequestWithdrawal();
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   const { data: walletData, isPending: isWalletPending } =
     useGetWalletByUserId();
   const createWalletMutation = useCreateWallet();
@@ -87,10 +89,19 @@ const Profile = () => {
 
   const handleCreateWallet = async () => {
     try {
-      await createWalletMutation.mutateAsync({
-        userId: userData.id,
-      });
+      await createWalletMutation.mutateAsync();
     } catch (error) {}
+  };
+
+  const handleRequestWithdrawal = async () => {
+    try {
+      await requestWithdrawalMutation.mutateAsync({ amount: withdrawAmount });
+      setWithdrawAmount(0);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Error requesting withdrawal",
+      );
+    }
   };
 
   return (
@@ -192,12 +203,26 @@ const Profile = () => {
               ) : walletData?.balance !== undefined ? (
                 <div className="flex flex-col gap-4">
                   <span>Balance: {walletData.balance} $</span>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={walletData.balance}
+                      value={withdrawAmount}
+                      onChange={(e) =>
+                        setWithdrawAmount(Number(e.target.value))
+                      }
+                      prefix={<DollarOutlined className="text-gray-400" />}
+                    />
+                  </div>
                   <Button
                     type="default"
                     className="w-50"
-                    onClick={() => toast("Withdraw coming soon!",{
-                      icon: 'ℹ️',
-                    })}
+                    onClick={handleRequestWithdrawal}
+                    loading={requestWithdrawalMutation.isPending}
+                    disabled={
+                      withdrawAmount <= 0 || withdrawAmount > walletData.balance
+                    }
                     icon={<WalletOutlined />}
                   >
                     Withdraw

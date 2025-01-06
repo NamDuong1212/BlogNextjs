@@ -7,8 +7,8 @@ export const useWallet = (userId: string) => {
 
   const useGetWalletByUserId = () => {
     return useQuery({
-      queryKey: ["wallet", userId],
-      queryFn: () => walletApi.getWalletByUserId(userId),
+      queryKey: ["wallet"],
+      queryFn: () => walletApi.getWalletByUserId(),
       enabled: !!userId,
       staleTime: 0,
     });
@@ -16,7 +16,7 @@ export const useWallet = (userId: string) => {
 
   const useCreateWallet = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: (data: any) => walletApi.createWallet(data),
+      mutationFn: () => walletApi.createWallet(),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["wallet", userId] });
         toast.success("Wallet created successfully");
@@ -31,14 +31,16 @@ export const useWallet = (userId: string) => {
   const useRequestWithdrawal = (onSuccess?: () => void) => {
     return useMutation({
       mutationFn: (data: { amount: number }) =>
-        walletApi.requestWithdrawal({ userId, amount: data.amount }),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["wallet", userId] });
-        toast.success("Withdrawal request submitted successfully");
+        walletApi.requestWithdrawal(data),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        toast.success(`Successfully requested withdrawal of ${variables.amount} $`);
         onSuccess?.();
       },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error requesting withdrawal");
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message || "Error requesting withdrawal",
+        );
       },
     });
   };

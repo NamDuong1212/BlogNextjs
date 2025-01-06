@@ -152,19 +152,16 @@ export const commentApi = {
 };
 
 export const walletApi = {
-  getWalletByUserId: async (userId: any): Promise<any> => {
-    const response = await api.get(`/wallet/${userId}`);
+  getWalletByUserId: async (): Promise<any> => {
+    const response = await api.get("/wallet");
     return response.data;
   },
-  createWallet: async (userId: any): Promise<any> => {
-    const response = await api.post(`/wallet/create/${userId}`);
+  createWallet: async (): Promise<any> => {
+    const response = await api.post("/wallet/create");
     return response.data;
   },
-  requestWithdrawal: async (data: {
-    userId: string;
-    amount: any;
-  }): Promise<any> => {
-    const response = await api.post("/wallet/withdrawals", data);
+  requestWithdrawal: async ({ amount }: { amount: number }): Promise<any> => {
+    const response = await api.post("/wallet/withdrawals", { amount });
     return response.data;
   },
 };
