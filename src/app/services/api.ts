@@ -160,4 +160,8 @@ export const walletApi = {
     const response = await api.post(`/wallet/create/${userId}`);
     return response.data;
   },
+  requestWithdrawal: async (data: { userId: string, amount: any }): Promise<any> => {
+    const response = await api.post('/wallet/withdrawals', data);
+    return response.data;
+  },
 };
