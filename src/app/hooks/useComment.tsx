@@ -56,10 +56,26 @@ export const useComment = (postId: any) => {
     });
   };
 
+  const useReplyComment = (onSuccess?: () => void) => {
+    return useMutation({
+      mutationFn: ({ parentId, data }: { parentId: string; data: any }) =>
+        commentApi.replyToComment(parentId, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+        toast.success("Reply added successfully");
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        toast.error(error.message || "Error adding reply");
+      },
+    });
+  };
+
   return {
     useGetComments,
     useCreateComment,
     useUpdateComment,
     useDeleteComment,
+    useReplyComment,
   };
 };

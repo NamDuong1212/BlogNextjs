@@ -149,6 +149,11 @@ export const commentApi = {
     const response = await api.delete(`/comment/${id}`);
     return response.data;
   },
+
+  replyToComment: async (parentId: string, data: any): Promise<any> => {
+    const response = await api.post(`/comment/reply/${parentId}`, data);
+    return response.data.data;
+  },
 };
 
 export const walletApi = {
