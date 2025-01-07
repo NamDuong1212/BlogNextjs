@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuthStore from "../store/useAuthStore";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { Avatar, Input } from "antd";
 import ImageComponentAvatar from "./ImageComponentAvatar";
 
@@ -12,6 +12,7 @@ const Navbar: React.FC = () => {
   const router = useRouter();
   const { userData, clearUserData } = useAuthStore();
   const [dropDown, setDropDown] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const isCreator = userData?.isCreator || false;
 
@@ -25,12 +26,18 @@ const Navbar: React.FC = () => {
     setDropDown((prev) => !prev);
   };
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.trim();
+  const handleSearch = () => {
+    const value = searchValue.trim();
     if (value) {
       router.push(`/?search=${encodeURIComponent(value)}`);
     } else {
       router.push("/");
+    }
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -44,13 +51,21 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          <div className="flex-1 max-w-md mx-4">
+          <div className="flex-1 max-w-md mx-4 flex gap-2">
             <Input
               placeholder="Search posts..."
               size="middle"
-              onChange={handleSearch}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyPress={onKeyPress}
               className="w-full"
             />
+            <button
+              onClick={handleSearch}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center"
+            >
+              <SearchOutlined />
+            </button>
           </div>
 
           <div className="flex items-center space-x-4">
