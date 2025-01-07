@@ -176,4 +176,9 @@ export const ratingApi = {
     const response = await api.get(`/rating/${postId}`);
     return response.data;
   },
+
+  getUserRating: async (postId: string): Promise<any> => {
+    const response = await api.get(`/rating/${postId}/user`);
+    return response.data;
+  },
 };

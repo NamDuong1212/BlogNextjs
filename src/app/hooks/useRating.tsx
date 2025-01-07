@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { ratingApi } from "../services/api";
 import { toast } from "react-hot-toast";
+import { use } from "react";
 
 export const useRating = (postId: string) => {
   const queryClient = useQueryClient();
@@ -28,8 +29,18 @@ export const useRating = (postId: string) => {
     });
   };
 
+  const useGetUserRating = () => {
+    return useQuery({
+      queryKey: ["rating", postId, "user"],
+      queryFn: () => ratingApi.getUserRating(postId),
+      enabled: !!postId,
+      staleTime: 0,
+    });
+  };
+
   return {
     useGetAverageRating,
     useCreateRating,
+    useGetUserRating,
   };
 };
