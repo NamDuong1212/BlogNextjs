@@ -165,3 +165,15 @@ export const walletApi = {
     return response.data;
   },
 };
+
+export const ratingApi = {
+  createRating: async (postId: string, stars: number): Promise<any> => {
+    const response = await api.post('/rating', { postId, stars });
+    return response.data;
+  },
+
+  getAverageRating: async (postId: string): Promise<any> => {
+    const response = await api.get(`/rating/${postId}`);
+    return response.data;
+  },
+};

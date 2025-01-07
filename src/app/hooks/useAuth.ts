@@ -12,7 +12,6 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: (userData: LoginState) => authApi.login(userData),
     onSuccess: (data) => {
-      // Set user data first
       setUserData({
         token: data.token,
         user: data.user,

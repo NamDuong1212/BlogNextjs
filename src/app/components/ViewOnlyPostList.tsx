@@ -75,7 +75,7 @@ export const ViewOnlyPostList: React.FC = () => {
               style={{
                 flexShrink: 0,
                 width: "200px",
-                height: "200px", // Ensure the container has a fixed height
+                height: "200px", 
                 borderRadius: "8px",
                 overflow: "hidden",
                 position: "relative",
