@@ -28,15 +28,12 @@ const Navbar: React.FC = () => {
 
   const handleSearch = () => {
     const value = searchValue.trim();
-    if (value) {
-      router.push(`/?search=${encodeURIComponent(value)}`);
-    } else {
-      router.push("/");
-    }
+    router.push(`/?search=${encodeURIComponent(value)}`);
   };
 
-  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
       handleSearch();
     }
   };
@@ -56,16 +53,13 @@ const Navbar: React.FC = () => {
               placeholder="Search posts..."
               size="middle"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyPress={onKeyPress}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                const value = e.target.value.trim();
+                router.push(`/?search=${encodeURIComponent(value)}`);
+              }}
               className="w-full"
             />
-            <button
-              onClick={handleSearch}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center"
-            >
-              <SearchOutlined />
-            </button>
           </div>
 
           <div className="flex items-center space-x-4">

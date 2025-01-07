@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { List, Card, Typography, Space, Divider, Tag, Button } from "antd";
 import { useRouter } from "next/navigation";
@@ -14,8 +16,7 @@ export const ViewOnlyPostList: React.FC = () => {
   const { useGetPosts, useGetPostsByCategory, useGetCategories } = usePost();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const searchParams = new URLSearchParams(window.location.search);
-  const searchQuery = searchParams.get("search");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: categories } = useGetCategories();
   const { data: postsByCategory, isLoading: isCategoryLoading } =
@@ -25,11 +26,18 @@ export const ViewOnlyPostList: React.FC = () => {
   const posts = selectedCategory ? postsByCategory : allPosts;
   const isLoading = selectedCategory ? isCategoryLoading : isAllPostsLoading;
 
-  const filteredPosts = posts?.filter(
-    (post: Post) =>
-      !searchQuery ||
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setSearchQuery(params.get("search") || "");
+  }, [window.location.search]);
+
+  const filteredPosts = React.useMemo(() => {
+    return posts?.filter((post: Post) =>
+      searchQuery
+        ? post.title.toLowerCase().includes(searchQuery.toLowerCase())
+        : true,
+    );
+  }, [posts, searchQuery]);
 
   const sortedPosts = filteredPosts
     ?.slice()
