@@ -80,6 +80,11 @@ export const postApi = {
     return response.data.data || [];
   },
 
+  getPostByCreator: async (userId: string): Promise<any> => {
+    const response = await api.get(`/post/by-user/${userId}`);
+    return response.data.data || [];
+  },
+
   getPostsByCategory: async (id: any): Promise<any> => {
     const response = await api.get(`/post/GetByCategory/${id}`);
     return response.data.data || [];
@@ -152,7 +157,7 @@ export const commentApi = {
 
   replyToComment: async (parentId: string, data: any): Promise<any> => {
     const response = await api.post(`/comment/reply/${parentId}`, data);
-    return response.data.data;
+    return response.data;
   },
 };
 
@@ -182,8 +187,8 @@ export const ratingApi = {
     return response.data;
   },
 
-  getUserRating: async (postId: string): Promise<any> => {
-    const response = await api.get(`/rating/${postId}/user`);
+  getUserRating: async (ratingId: string): Promise<any> => {
+    const response = await api.get(`/rating/get/${ratingId}`);
     return response.data;
   },
 };

@@ -13,6 +13,14 @@ export const usePost = () => {
     });
   };
 
+  const useGetPostByCreator = (userId: string) => {
+    return useQuery({
+      queryKey: ["posts", "creator", userId],
+      queryFn: () => postApi.getPostByCreator(userId),
+      enabled: !!userId,
+    });
+  }
+
   const useGetPostsByCategory = (categoryId: string) => {
     return useQuery({
       queryKey: ["posts", "category", categoryId],
@@ -102,5 +110,6 @@ export const usePost = () => {
     useUpdatePost,
     useDeletePost,
     useUploadPostImage,
+    useGetPostByCreator
   };
 };

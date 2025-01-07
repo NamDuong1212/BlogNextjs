@@ -24,10 +24,10 @@ const POLLING_INTERVAL = 1000;
 
 export const PostList = () => {
   const router = useRouter();
-  const { useGetPosts, useDeletePost } = usePost();
-  const { data: posts, isLoading, refetch } = useGetPosts();
-  const deleteMutation = useDeletePost();
+  const { useGetPostByCreator, useDeletePost } = usePost();
   const { userData } = useAuthStore();
+  const { data: posts, isLoading, refetch } = useGetPostByCreator(userData?.id);
+  const deleteMutation = useDeletePost();
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [updatePostId, setUpdatePostId] = useState<any>(null);
   const searchParams = new URLSearchParams(window.location.search);

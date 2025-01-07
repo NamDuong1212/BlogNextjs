@@ -12,10 +12,8 @@ import useAuthStore from "../store/useAuthStore";
 import { formatDateTime } from "../utils/formatDateTime";
 import { CommentSectionState } from "../types/comment";
 import ImageComponentAvatar from "./ImageComponentAvatar";
-
 const { TextArea } = Input;
 const { Title } = Typography;
-
 const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const [newComment, setNewComment] = useState<string>("");
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -24,19 +22,15 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     id: string;
     username: string;
   } | null>(null);
-
   const userData = useAuthStore((state) => state.userData);
-
   const {
     useGetComments,
     useCreateComment,
     useUpdateComment,
     useDeleteComment,
   } = useComment(postId);
-
   const { data: commentsData = [], isLoading } = useGetComments();
   const comments: any[] = Array.isArray(commentsData) ? commentsData : [];
-
   const createCommentMutation = useCreateComment(() => {
     setNewComment("");
     setReplyingTo(null);
@@ -46,7 +40,6 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     setEditContent("");
   });
   const deleteCommentMutation = useDeleteComment();
-
   const handleCommentSubmit = () => {
     if (!newComment.trim() || !userData) return;
     createCommentMutation.mutate({
@@ -55,7 +48,6 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       replyTo: replyingTo?.id || null,
     });
   };
-
   const handleUpdateComment = () => {
     if (!editContent.trim() || !userData) return;
     updateCommentMutation.mutate({
@@ -63,12 +55,10 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       data: { content: editContent },
     });
   };
-
   const startEditing = (comment: any) => {
     setEditingComment(comment.id);
     setEditContent(comment.content);
   };
-
   const actions = (comment: any) => {
     const isOwner = userData && comment.user.id === userData.id;
     return [
@@ -87,7 +77,6 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       ),
     ].filter(Boolean);
   };
-
   return (
     <div style={{ marginTop: "40px" }}>
       <Title level={4}>Comments</Title>
@@ -178,5 +167,4 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     </div>
   );
 };
-
 export default CommentSection;
