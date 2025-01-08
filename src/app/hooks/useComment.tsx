@@ -11,6 +11,7 @@ export const useComment = (postId: any) => {
       queryFn: () => commentApi.getCommentsByPostId(postId),
       enabled: !!postId,
       staleTime: 0,
+      select: (response) => response.data // Extract the inner data array
     });
   };
 
@@ -59,7 +60,9 @@ export const useComment = (postId: any) => {
   const useReplyComment = (onSuccess?: () => void) => {
     return useMutation({
       mutationFn: ({ parentId, data }: { parentId: string; data: any }) =>
-        commentApi.replyToComment(parentId, data),
+        commentApi.replyToComment(postId, parentId, {
+          content: data.content,
+        }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
         toast.success("Reply added successfully");

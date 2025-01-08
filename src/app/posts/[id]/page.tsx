@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Space, Typography, Tag } from "antd";
-import { CalendarOutlined } from "@ant-design/icons";
+import { CalendarOutlined, EyeOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
 import CommentSection from "@/app/components/CommentSection";
@@ -47,7 +47,7 @@ const PostDetail: React.FC = () => {
           />
           <Title level={4}>{post.user?.username || "Testing"}</Title>
           <Paragraph>
-            <Space>
+            <Space size="large">
               <Tag
                 bordered={false}
                 color={"processing"}
@@ -56,7 +56,12 @@ const PostDetail: React.FC = () => {
                 {post.category.name}
               </Tag>
               <span>
-                <CalendarOutlined /> {formatDateTime(post.createdAt)}
+                <CalendarOutlined style={{ marginRight: 4 }} />
+                {formatDateTime(post.createdAt)}
+              </span>
+              <span>
+                <EyeOutlined style={{ marginRight: 4 }} />
+                {post.viewCount} views
               </span>
             </Space>
           </Paragraph>

@@ -31,8 +31,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     useDeleteComment,
     useReplyComment,
   } = useComment(postId);
-  const { data: commentsData = [], isLoading } = useGetComments();
-  const comments: any[] = Array.isArray(commentsData) ? commentsData : [];
+  const { data: comments = [], isLoading } = useGetComments();
   const createCommentMutation = useCreateComment(() => {
     setNewComment("");
     setReplyingTo(null);
@@ -67,9 +66,6 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       parentId: replyingTo.id,
       data: {
         content: replyContent,
-        postId: postId,
-        userId: userData.id,
-        parentId: replyingTo.id
       }
     });
   };
@@ -105,10 +101,48 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       ),
     ].filter(Boolean);
   };
-  const renderCommentItem = (comment: any, isReply = false) => (
+
+  const renderReplies = (replies: any[], level: number = 1) => {
+    if (!replies || replies.length === 0) return null;
+    
+    return replies.map((reply) => (
+      <React.Fragment key={reply.id}>
+        {renderCommentItem(reply, true, level)}
+        {replyingTo?.id === reply.id && (
+          <div style={{ marginLeft: 48 * (level + 1), marginTop: 16 }}>
+            <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
+              <ImageComponentAvatar
+                src={userData?.avatar || "https://i.imgur.com/OB0y6MR.jpg"}
+                alt="Your Avatar"
+              />
+              <TextArea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder={`Reply to ${replyingTo?.username || ""}...`}
+                rows={2}
+                style={{ flex: 1 }}
+              />
+            </div>
+            <Button
+              type="primary"
+              onClick={handleReplySubmit}
+              style={{ marginRight: 8 }}
+              loading={replyCommentMutation.isPending}
+            >
+              Reply
+            </Button>
+            <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
+          </div>
+        )}
+        {renderReplies(reply.replies, level + 1)}
+      </React.Fragment>
+    ));
+  };
+
+  const renderCommentItem = (comment: any, isReply = false, level: number = 1) => (
     <Comment
       key={comment.id}
-      actions={actions(comment)} // Allow actions for both comments and replies
+      actions={actions(comment)}
       author={comment.user.username}
       avatar={
         <ImageComponentAvatar
@@ -139,9 +173,23 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
         )
       }
       datetime={formatDateTime(comment.createdAt)}
-      style={isReply ? { marginLeft: 48 } : undefined}
+      style={isReply ? { marginLeft: 48 * level } : undefined}
     />
   );
+
+  // Add this helper function to count total comments including replies
+  const countTotalComments = (comments: any[]): number => {
+    return comments.reduce((total, comment) => {
+      // Count current comment
+      let count = 1;
+      // Add count of all nested replies recursively
+      if (comment.replies && comment.replies.length > 0) {
+        count += countTotalComments(comment.replies);
+      }
+      return total + count;
+    }, 0);
+  };
+
   return (
     <div style={{ marginTop: "40px" }}>
       <Title level={4}>Comments</Title>
@@ -151,44 +199,15 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
         header={
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <CommentOutlined style={{ fontSize: "20px" }} />
-            {`${comments.length} ${comments.length > 1 ? "comments" : "comment"}`}
+            {`${countTotalComments(comments)} ${
+              countTotalComments(comments) > 1 ? "comments" : "comment"
+            }`}
           </div>
         }
         itemLayout="horizontal"
         renderItem={(comment: any) => (
           <>
             {renderCommentItem(comment)}
-            {comment.replies?.map((reply: any) => (
-              <React.Fragment key={reply.id}>
-                {renderCommentItem(reply, true)}
-                {replyingTo?.id === reply.id && (
-                  <div style={{ marginLeft: 96, marginTop: 16 }}> {/* Increased margin for nested replies */}
-                    <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
-                      <ImageComponentAvatar
-                        src={userData?.avatar || "https://i.imgur.com/OB0y6MR.jpg"}
-                        alt="Your Avatar"
-                      />
-                      <TextArea
-                        value={replyContent}
-                        onChange={(e) => setReplyContent(e.target.value)}
-                        placeholder={`Reply to ${replyingTo?.username || ""}...`}
-                        rows={2}
-                        style={{ flex: 1 }}
-                      />
-                    </div>
-                    <Button
-                      type="primary"
-                      onClick={handleReplySubmit}
-                      style={{ marginRight: 8 }}
-                      loading={replyCommentMutation.isPending}
-                    >
-                      Reply
-                    </Button>
-                    <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
             {replyingTo?.id === comment.id && (
               <div style={{ marginLeft: 48, marginTop: 16 }}>
                 <div
@@ -217,6 +236,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                 <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
               </div>
             )}
+            {renderReplies(comment.replies)}
           </>
         )}
       />

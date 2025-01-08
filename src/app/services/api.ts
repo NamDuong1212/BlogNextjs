@@ -115,6 +115,16 @@ export const postApi = {
     });
     return response.data;
   },
+  downloadPostAsPdf: async (id: string): Promise<any> => {
+    try {
+      const response = await api.get(`/post/${id}/download`, {
+        responseType: 'blob'
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to download PDF');
+    }
+  },
 };
 
 export const likeApi = {
@@ -137,7 +147,7 @@ export const likeApi = {
 export const commentApi = {
   getCommentsByPostId: async (postId: any): Promise<any> => {
     const response = await api.get(`/comment/${postId}`);
-    return response.data.data;
+    return response.data.data || [];
   },
 
   createComment: async (data: any): Promise<any> => {
@@ -155,8 +165,8 @@ export const commentApi = {
     return response.data;
   },
 
-  replyToComment: async (parentId: string, data: any): Promise<any> => {
-    const response = await api.post(`/comment/reply/${parentId}`, data);
+  replyToComment: async (postId: any, parentId: any, data: any): Promise<any> => {
+    const response = await api.post(`/comment/reply/${postId}/${parentId}`, data);
     return response.data;
   },
 };
