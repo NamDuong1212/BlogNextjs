@@ -20,7 +20,7 @@ import useAuthStore from "../store/useAuthStore";
 
 const { Text, Title } = Typography;
 
-const POLLING_INTERVAL = 1000;
+const POLLING_INTERVAL = 10000;
 
 export const PostList = () => {
   const router = useRouter();
