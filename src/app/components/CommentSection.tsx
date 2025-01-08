@@ -22,12 +22,14 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     id: string;
     username: string;
   } | null>(null);
+  const [replyContent, setReplyContent] = useState<string>("");
   const userData = useAuthStore((state) => state.userData);
   const {
     useGetComments,
     useCreateComment,
     useUpdateComment,
     useDeleteComment,
+    useReplyComment,
   } = useComment(postId);
   const { data: commentsData = [], isLoading } = useGetComments();
   const comments: any[] = Array.isArray(commentsData) ? commentsData : [];
@@ -40,6 +42,10 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     setEditContent("");
   });
   const deleteCommentMutation = useDeleteComment();
+  const replyCommentMutation = useReplyComment(() => {
+    setReplyContent("");
+    setReplyingTo(null);
+  });
   const handleCommentSubmit = () => {
     if (!newComment.trim() || !userData) return;
     createCommentMutation.mutate({
@@ -55,6 +61,18 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       data: { content: editContent },
     });
   };
+  const handleReplySubmit = () => {
+    if (!replyContent.trim() || !userData || !replyingTo) return;
+    replyCommentMutation.mutate({
+      parentId: replyingTo.id,
+      data: {
+        content: replyContent,
+        postId: postId,
+        userId: userData.id,
+        parentId: replyingTo.id
+      }
+    });
+  };
   const startEditing = (comment: any) => {
     setEditingComment(comment.id);
     setEditContent(comment.content);
@@ -62,6 +80,16 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const actions = (comment: any) => {
     const isOwner = userData && comment.user.id === userData.id;
     return [
+      <Button
+        key="reply"
+        type="link"
+        onClick={() =>
+          setReplyingTo({ id: comment.id, username: comment.user.username })
+        }
+        icon={<CommentOutlined />}
+      >
+        Reply
+      </Button>,
       isOwner && (
         <EditOutlined key="edit" onClick={() => startEditing(comment)} />
       ),
@@ -77,6 +105,43 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       ),
     ].filter(Boolean);
   };
+  const renderCommentItem = (comment: any, isReply = false) => (
+    <Comment
+      key={comment.id}
+      actions={actions(comment)} // Allow actions for both comments and replies
+      author={comment.user.username}
+      avatar={
+        <ImageComponentAvatar
+          src={comment.user.avatar || "https://i.imgur.com/OB0y6MR.jpg"}
+          alt="User Avatar"
+        />
+      }
+      content={
+        editingComment === comment.id ? (
+          <div>
+            <TextArea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              rows={3}
+            />
+            <Button
+              type="primary"
+              onClick={handleUpdateComment}
+              style={{ marginTop: "10px", marginRight: "10px" }}
+              loading={updateCommentMutation.isPending}
+            >
+              {updateCommentMutation.isPending ? "Loading..." : "Update"}
+            </Button>
+            <Button onClick={() => setEditingComment(null)}>Cancel</Button>
+          </div>
+        ) : (
+          comment.content
+        )
+      }
+      datetime={formatDateTime(comment.createdAt)}
+      style={isReply ? { marginLeft: 48 } : undefined}
+    />
+  );
   return (
     <div style={{ marginTop: "40px" }}>
       <Title level={4}>Comments</Title>
@@ -91,48 +156,68 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
         }
         itemLayout="horizontal"
         renderItem={(comment: any) => (
-          <Comment
-            actions={actions(comment)}
-            author={comment.user.username}
-            avatar={
-              comment.user.avatar ? (
-                <ImageComponentAvatar
-                  src={comment.user.avatar}
-                  alt="User Avatar"
-                />
-              ) : (
-                <ImageComponentAvatar
-                  src="https://i.imgur.com/OB0y6MR.jpg"
-                  alt="User Avatar"
-                />
-              )
-            }
-            content={
-              editingComment === comment.id ? (
-                <div>
-                  <TextArea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    rows={3}
+          <>
+            {renderCommentItem(comment)}
+            {comment.replies?.map((reply: any) => (
+              <React.Fragment key={reply.id}>
+                {renderCommentItem(reply, true)}
+                {replyingTo?.id === reply.id && (
+                  <div style={{ marginLeft: 96, marginTop: 16 }}> {/* Increased margin for nested replies */}
+                    <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
+                      <ImageComponentAvatar
+                        src={userData?.avatar || "https://i.imgur.com/OB0y6MR.jpg"}
+                        alt="Your Avatar"
+                      />
+                      <TextArea
+                        value={replyContent}
+                        onChange={(e) => setReplyContent(e.target.value)}
+                        placeholder={`Reply to ${replyingTo?.username || ""}...`}
+                        rows={2}
+                        style={{ flex: 1 }}
+                      />
+                    </div>
+                    <Button
+                      type="primary"
+                      onClick={handleReplySubmit}
+                      style={{ marginRight: 8 }}
+                      loading={replyCommentMutation.isPending}
+                    >
+                      Reply
+                    </Button>
+                    <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+            {replyingTo?.id === comment.id && (
+              <div style={{ marginLeft: 48, marginTop: 16 }}>
+                <div
+                  style={{ display: "flex", gap: "16px", marginBottom: "16px" }}
+                >
+                  <ImageComponentAvatar
+                    src={userData?.avatar || "https://i.imgur.com/OB0y6MR.jpg"}
+                    alt="Your Avatar"
                   />
-                  <Button
-                    type="primary"
-                    onClick={handleUpdateComment}
-                    style={{ marginTop: "10px", marginRight: "10px" }}
-                    loading={updateCommentMutation.isPending}
-                  >
-                    {updateCommentMutation.isPending ? "Loading..." : "Finish"}
-                  </Button>
-                  <Button onClick={() => setEditingComment(null)}>
-                    Cancel
-                  </Button>
+                  <TextArea
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder={`Reply to ${replyingTo?.username || ""}...`}
+                    rows={2}
+                    style={{ flex: 1 }}
+                  />
                 </div>
-              ) : (
-                comment.content
-              )
-            }
-            datetime={formatDateTime(comment.createdAt)}
-          />
+                <Button
+                  type="primary"
+                  onClick={handleReplySubmit}
+                  style={{ marginRight: 8 }}
+                  loading={replyCommentMutation.isPending}
+                >
+                  Reply
+                </Button>
+                <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
+              </div>
+            )}
+          </>
         )}
       />
       {userData ? (

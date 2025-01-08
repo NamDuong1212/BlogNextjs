@@ -190,5 +190,5 @@ export const ratingApi = {
   getUserRating: async (ratingId: string): Promise<any> => {
     const response = await api.get(`/rating/get/${ratingId}`);
     return response.data;
-  },
+  }
 };

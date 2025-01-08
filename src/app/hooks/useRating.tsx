@@ -8,7 +8,7 @@ export const useRating = (postId: string) => {
 
   const useGetAverageRating = () => {
     return useQuery({
-      queryKey: ["rating", postId],
+      queryKey: ["rating", postId, "average"],
       queryFn: () => ratingApi.getAverageRating(postId),
       enabled: !!postId,
       staleTime: 0,
@@ -29,12 +29,13 @@ export const useRating = (postId: string) => {
     });
   };
 
-  const useGetUserRating = () => {
+  const useGetUserRating = (userId: string) => {
     return useQuery({
-      queryKey: ["rating", postId, "user"],
+      queryKey: ["rating", postId, "user", userId],
       queryFn: () => ratingApi.getUserRating(postId),
-      enabled: !!postId,
+      enabled: !!postId && !!userId,
       staleTime: 0,
+      retry: false
     });
   };
 
