@@ -19,7 +19,7 @@ export const usePost = () => {
       queryFn: () => postApi.getPostByCreator(userId),
       enabled: !!userId,
     });
-  }
+  };
 
   const useGetPostsByCategory = (categoryId: string) => {
     return useQuery({
@@ -105,32 +105,35 @@ export const usePost = () => {
     return useMutation({
       mutationFn: async (postId: string) => {
         try {
-          const blob = await postApi.downloadPostAsPdf(postId);
-          // Create a blob URL
+          const { blob, filename } = await postApi.downloadPostAsPdf(postId);
+
           const url = window.URL.createObjectURL(
-            new Blob([blob], { type: 'application/pdf' })
+            new Blob([blob], { type: "application/pdf" }),
           );
-          // Create temporary link
-          const link = document.createElement('a');
+
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', `post-${postId}.pdf`);
-          // Append to html page
+          link.setAttribute("download", filename);
+
           document.body.appendChild(link);
-          // Start download
+
           link.click();
-          // Clean up and remove the link
-          link.parentNode?.removeChild(link);
-          window.URL.revokeObjectURL(url);
+
+          setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+          }, 100);
         } catch (error) {
-          throw new Error('Failed to download PDF');
+          console.error("Download error:", error);
+          throw new Error("Failed to download PDF");
         }
       },
       onSuccess: () => {
-        toast.success('PDF downloaded successfully');
+        toast.success("PDF downloaded successfully");
       },
-      onError: () => {
-        toast.error('Failed to download PDF');
-      }
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to download PDF");
+      },
     });
   };
 
@@ -144,6 +147,6 @@ export const usePost = () => {
     useDeletePost,
     useUploadPostImage,
     useGetPostByCreator,
-    useDownloadPost
+    useDownloadPost,
   };
 };

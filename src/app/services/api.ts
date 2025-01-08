@@ -118,11 +118,19 @@ export const postApi = {
   downloadPostAsPdf: async (id: string): Promise<any> => {
     try {
       const response = await api.get(`/post/${id}/download`, {
-        responseType: 'blob'
+        responseType: "blob",
+        headers: {
+          Accept: "application/pdf",
+        },
       });
-      return response.data;
+      const filename = response.headers["content-disposition"]
+        ? response.headers["content-disposition"]
+            .split("filename=")[1]
+            .replace(/"/g, "")
+        : `post-${id}.pdf`;
+      return { blob: response.data, filename };
     } catch (error) {
-      throw new Error('Failed to download PDF');
+      throw new Error("Failed to download PDF");
     }
   },
 };
@@ -165,8 +173,15 @@ export const commentApi = {
     return response.data;
   },
 
-  replyToComment: async (postId: any, parentId: any, data: any): Promise<any> => {
-    const response = await api.post(`/comment/reply/${postId}/${parentId}`, data);
+  replyToComment: async (
+    postId: any,
+    parentId: any,
+    data: any,
+  ): Promise<any> => {
+    const response = await api.post(
+      `/comment/reply/${postId}/${parentId}`,
+      data,
+    );
     return response.data;
   },
 };
@@ -188,7 +203,7 @@ export const walletApi = {
 
 export const ratingApi = {
   createRating: async (postId: string, stars: number): Promise<any> => {
-    const response = await api.post('/rating', { postId, stars });
+    const response = await api.post("/rating", { postId, stars });
     return response.data;
   },
 
@@ -200,5 +215,5 @@ export const ratingApi = {
   getUserRating: async (ratingId: string): Promise<any> => {
     const response = await api.get(`/rating/get/${ratingId}`);
     return response.data;
-  }
+  },
 };
