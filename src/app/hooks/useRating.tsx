@@ -15,6 +15,14 @@ export const useRating = (postId: string) => {
     });
   };
 
+  const useGetRatingById = (ratingId: string) => {
+    return useQuery({
+      queryKey: ["rating", ratingId],
+      queryFn: () => ratingApi.getRatingById(ratingId),
+      enabled: !!ratingId,
+    });
+  };
+
   const useCreateRating = (onSuccess?: () => void) => {
     return useMutation({
       mutationFn: (stars: number) => ratingApi.createRating(postId, stars),
@@ -29,19 +37,9 @@ export const useRating = (postId: string) => {
     });
   };
 
-  const useGetUserRating = (userId: string) => {
-    return useQuery({
-      queryKey: ["rating", postId, "user", userId],
-      queryFn: () => ratingApi.getUserRating(postId),
-      enabled: !!postId && !!userId,
-      staleTime: 0,
-      retry: false
-    });
-  };
-
   return {
     useGetAverageRating,
+    useGetRatingById,
     useCreateRating,
-    useGetUserRating,
   };
 };
