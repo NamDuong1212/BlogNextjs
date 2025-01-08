@@ -101,42 +101,6 @@ export const usePost = () => {
     });
   };
 
-  const useDownloadPost = () => {
-    return useMutation({
-      mutationFn: async (postId: string) => {
-        try {
-          const { blob, filename } = await postApi.downloadPostAsPdf(postId);
-
-          const url = window.URL.createObjectURL(
-            new Blob([blob], { type: "application/pdf" }),
-          );
-
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", filename);
-
-          document.body.appendChild(link);
-
-          link.click();
-
-          setTimeout(() => {
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-          }, 100);
-        } catch (error) {
-          console.error("Download error:", error);
-          throw new Error("Failed to download PDF");
-        }
-      },
-      onSuccess: () => {
-        toast.success("PDF downloaded successfully");
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to download PDF");
-      },
-    });
-  };
-
   return {
     useGetPosts,
     useGetPostsByCategory,
@@ -147,6 +111,5 @@ export const usePost = () => {
     useDeletePost,
     useUploadPostImage,
     useGetPostByCreator,
-    useDownloadPost,
   };
 };

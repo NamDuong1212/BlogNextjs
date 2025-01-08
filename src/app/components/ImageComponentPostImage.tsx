@@ -17,10 +17,10 @@ const ImageComponentPostImage: React.FC<ImageComponentProps> = ({
     <img
       src={imageUrl}
       alt={alt}
+      crossOrigin="anonymous"
       style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
+        maxWidth: "100%",
+        height: "auto",
         borderRadius: "8px",
       }}
     />

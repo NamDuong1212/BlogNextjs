@@ -115,24 +115,6 @@ export const postApi = {
     });
     return response.data;
   },
-  downloadPostAsPdf: async (id: string): Promise<any> => {
-    try {
-      const response = await api.get(`/post/${id}/download`, {
-        responseType: "blob",
-        headers: {
-          Accept: "application/pdf",
-        },
-      });
-      const filename = response.headers["content-disposition"]
-        ? response.headers["content-disposition"]
-            .split("filename=")[1]
-            .replace(/"/g, "")
-        : `post-${id}.pdf`;
-      return { blob: response.data, filename };
-    } catch (error) {
-      throw new Error("Failed to download PDF");
-    }
-  },
 };
 
 export const likeApi = {
