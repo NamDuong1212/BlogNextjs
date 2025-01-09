@@ -4,6 +4,7 @@ import { Space, Input, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Post } from "../types/post";
 import { usePost } from "../hooks/usePost";
+import DraggablePostEditor from "./DraggablePostEditor";
 
 interface EditPostFormProps {
   post: Post;
@@ -20,6 +21,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
   const updateMutation = useUpdatePost();
   const uploadMutation = useUploadPostImage();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [layout, setLayout] = useState(post.layout || []);
 
   const [updateData, setUpdateData] = React.useState<Partial<Post>>({
     title: post.title,
@@ -40,7 +42,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
   const handleSave = async () => {
     try {
       await updateMutation.mutateAsync(
-        { ...updateData, id: post.id },
+        { ...updateData, id: post.id, layout },
         {
           onSuccess: async () => {
             if (selectedFile) {
@@ -105,6 +107,8 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
           {post.image ? "Change Image" : "Add Image"}
         </Button>
       </Upload>
+
+      <DraggablePostEditor initialLayout={layout} onChange={setLayout} />
 
       <Space>
         <Button

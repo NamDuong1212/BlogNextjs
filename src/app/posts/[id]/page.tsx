@@ -131,7 +131,12 @@ const PostDetail: React.FC = () => {
 
           {post.image ? (
             <div style={{ textAlign: "center" }}>
-              <ImageComponentPostImage src={post.image} alt="Post Image" />
+              <ImageComponentPostImage
+                src={post.image}
+                alt="Post Image"
+                width="100%"
+                height="100%"
+              />
             </div>
           ) : (
             <div style={{ textAlign: "center" }}>

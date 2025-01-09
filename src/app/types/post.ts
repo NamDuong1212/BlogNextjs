@@ -1,3 +1,12 @@
+export interface ContentLayout {
+  type: "text" | "image";
+  content: string;
+  position: {
+    x: number;
+    y: number;
+  };
+}
+
 export interface Post {
   user: any;
   id?: string;
@@ -9,4 +18,5 @@ export interface Post {
   updatedAt?: string;
   image?: string;
   viewCount?: number;
+  layout?: ContentLayout[];
 }

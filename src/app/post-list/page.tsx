@@ -17,6 +17,7 @@ import { Post } from "../types/post";
 import EditPostForm from "../components/EditPostForm";
 import { formatDateTime } from "../utils/formatDateTime";
 import useAuthStore from "../store/useAuthStore";
+import ImageComponentPostImage from "../components/ImageComponentPostImage";
 
 const { Text, Title } = Typography;
 
@@ -69,71 +70,20 @@ export const PostList = () => {
   };
 
   return (
-    <List
-      loading={isLoading}
-      dataSource={sortedPosts}
-      pagination={{
-        pageSize: 4,
-        total: sortedPosts?.length,
-        showSizeChanger: false,
-        showTotal: (total) => `Total ${total} posts`,
-        style: { textAlign: "center", marginTop: "20px" },
-      }}
-      renderItem={(post: Post) => (
-        <List.Item>
-          <Card
-            style={{ width: "100%" }}
-            extra={
-              <Space size="middle">
-                <Tag
-                  bordered={false}
-                  color={
-                    selectedCategory === post.category.id
-                      ? "success"
-                      : "processing"
-                  }
-                  style={{ cursor: "pointer" }}
-                  onClick={(e) => handleCategoryClick(e, post.category.id)}
-                >
-                  {post.category.name}
-                </Tag>
-                <Divider type="vertical" />
-                <Text type="secondary">
-                  Created: {formatDateTime(post.createdAt)}
-                </Text>
-                <Text type="secondary">
-                  Modified: {formatDateTime(post.updatedAt)}
-                </Text>
-                <Text type="success">Today Views: {post.viewCount || 0}</Text>
-                <Button
-                  type="link"
-                  onClick={() => router.push(`/posts/${post.id}`)}
-                >
-                  View
-                </Button>
-                <Button
-                  type="link"
-                  onClick={() =>
-                    updatePostId === post.id
-                      ? setUpdatePostId(null)
-                      : setUpdatePostId(post.id)
-                  }
-                >
-                  {updatePostId === post.id ? "Cancel" : "Update"}
-                </Button>
-                <Popconfirm
-                  title="Are you sure to delete this post?"
-                  onConfirm={() => deleteMutation.mutate(post.id!)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button type="link" danger>
-                    Delete
-                  </Button>
-                </Popconfirm>
-              </Space>
-            }
-          >
+    <div style={{ padding: '20px' }}>
+      <Title level={2} style={{ marginBottom: '24px' }}>Latest Posts</Title>
+      <List
+        loading={isLoading}
+        dataSource={sortedPosts}
+        pagination={{
+          pageSize: 4,
+          total: sortedPosts?.length,
+          showSizeChanger: false,
+          showTotal: (total) => `Total ${total} posts`,
+          style: { textAlign: "center", marginTop: "20px" },
+        }}
+        renderItem={(post: Post) => (
+          <List.Item>
             {updatePostId === post.id ? (
               <EditPostForm
                 post={post}
@@ -141,26 +91,88 @@ export const PostList = () => {
                 onCancel={() => setUpdatePostId(null)}
               />
             ) : (
-              <Space direction="vertical" style={{ width: "100%" }}>
-                <Title level={4} style={{ margin: 0 }}>
-                  {post.title}
-                </Title>
-                <div
-                  style={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    lineHeight: "1.5em",
-                    maxHeight: "3em",
-                  }}
-                >
-                  {post.content}
+              <div className="flex w-full gap-4 min-h-[200px]">
+                <div className="flex-shrink-0 w-[300px] h-[200px]">
+                  <ImageComponentPostImage
+                    src={post.image}
+                    alt="Post Image"
+                    width="300px"
+                    height="200px"
+                  />
                 </div>
-              </Space>
+                <Card
+                  style={{ flex: 1 }}
+                  extra={
+                    <Space size="middle">
+                      <Tag
+                        bordered={false}
+                        color={
+                          selectedCategory === post.category.id
+                            ? "success"
+                            : "processing"
+                        }
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => handleCategoryClick(e, post.category.id)}
+                      >
+                        {post.category.name}
+                      </Tag>
+                      <Divider type="vertical" />
+                      <Text type="secondary">
+                        Created: {formatDateTime(post.createdAt)}
+                      </Text>
+                      <Text type="secondary">
+                        Modified: {formatDateTime(post.updatedAt)}
+                      </Text>
+                      <Text type="success">
+                        Today Views: {post.viewCount || 0}
+                      </Text>
+                      <Button
+                        type="link"
+                        onClick={() => router.push(`/posts/${post.id}`)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        type="link"
+                        onClick={() => setUpdatePostId(post.id)}
+                      >
+                        Update
+                      </Button>
+                      <Popconfirm
+                        title="Are you sure to delete this post?"
+                        onConfirm={() => deleteMutation.mutate(post.id!)}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button type="link" danger>
+                          Delete
+                        </Button>
+                      </Popconfirm>
+                    </Space>
+                  }
+                >
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    <Title level={4} style={{ margin: 0 }}>
+                      {post.title}
+                    </Title>
+                    <div
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        lineHeight: "1.5em",
+                        maxHeight: "3em",
+                      }}
+                    >
+                      {post.content}
+                    </div>
+                  </Space>
+                </Card>
+              </div>
             )}
-          </Card>
-        </List.Item>
-      )}
-    />
+          </List.Item>
+        )}
+      />
+    </div>
   );
 };
 

@@ -49,6 +49,7 @@ export const ViewOnlyPostList: React.FC = () => {
   return (
     <div className="flex gap-6 px-10">
       <div className="flex-grow">
+        <Title level={2} style={{ marginBottom: '24px' }}>Latest Posts</Title>
         <List
           loading={isLoading}
           dataSource={sortedPosts}
@@ -65,8 +66,13 @@ export const ViewOnlyPostList: React.FC = () => {
           renderItem={(post: Post) => (
             <List.Item>
               <div className="flex w-full gap-4 min-h-[200px]">
-                <div className="flex-shrink-0 w-[200px] h-[200px] rounded-lg overflow-hidden relative">
-                  <ImageComponentPostImage src={post.image} alt="Post Image" />
+                <div className="flex-shrink-0 w-[300px] h-[200px]">
+                  <ImageComponentPostImage
+                    src={post.image}
+                    alt="Post Image"
+                    width="300px"
+                    height="200px"
+                  />
                 </div>
                 <Card
                   className="flex-1 cursor-pointer p-0"
