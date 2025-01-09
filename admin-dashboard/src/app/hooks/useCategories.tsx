@@ -8,7 +8,7 @@ export const useCategories = () => {
   const useGetCategories = () => {
     return useQuery({
       queryKey: ["categories"],
-      queryFn: () => categoryApi.getCategories(),
+      queryFn: () => categoryApi.getAllCategories(),
       staleTime: 0,
     });
   };

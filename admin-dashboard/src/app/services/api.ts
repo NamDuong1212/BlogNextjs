@@ -31,20 +31,20 @@ export const authApi = {
     return response.data;
   },
 };
-
+const BASE = '/cms/category';
 export const categoryApi = {
   createCategory: async (data: any): Promise<any> => {
-    const response = await api.post('/cms/category/create', data);
+    const response = await api.post(`${BASE}/create`, data);
     return response.data;
   },
   
   updateCategory: async (id: string, data: any): Promise<any> => {
-    const response = await api.patch(`/cms/category/${id}`, data);
+    const response = await api.patch(`${BASE}/${id}`, data);
     return response.data;
   },
   
-  getCategories: async (): Promise<any> => {
-    const response = await api.get('/cms/category/getAll');
+  getAllCategories: async (): Promise<any> => {
+    const response = await api.get(`${BASE}/getAll`);
     return response.data;
   },
 };

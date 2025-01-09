@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Form, Input, Button } from 'antd';
 import { CategoryFormData } from '../types/category';
 
 interface CategoryFormProps {
@@ -7,56 +8,95 @@ interface CategoryFormProps {
   isLoading?: boolean;
 }
 
-export const CategoryForm = ({ onSubmit, initialData, isLoading }: CategoryFormProps) => {
-  const [formData, setFormData] = useState<CategoryFormData>(
-    initialData || {
-      name: '',
-      description: '',
-    }
-  );
+export const CategoryForm: React.FC<CategoryFormProps> = ({
+  onSubmit,
+  initialData,
+  isLoading
+}) => {
+  const [form] = Form.useForm();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+  React.useEffect(() => {
+    if (initialData) {
+      form.setFieldsValue(initialData);
+    }
+  }, [initialData, form]);
+
+  const handleSubmit = (values: CategoryFormData) => {
+    onSubmit(values);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name
-        </label>
-        <input
-          type="text"
-          id="name"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          required
-        />
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description
-        </label>
-        <textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          required
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleSubmit}
+      initialValues={initialData}
+      className="max-w-lg"
+    >
+      <Form.Item
+        label="Name"
+        name="name"
+        rules={[
+          {
+            required: true,
+            message: 'Please input the category name!',
+          },
+        ]}
       >
-        {isLoading ? 'Saving...' : 'Save'}
-      </button>
-    </form>
+        <Input placeholder="Enter category name" />
+      </Form.Item>
+
+      <Form.Item
+        label="Description"
+        name="description"
+        rules={[
+          {
+            required: true,
+            message: 'Please input the category description!',
+          },
+        ]}
+      >
+        <Input.TextArea
+          placeholder="Enter category description"
+          rows={4}
+          showCount
+          maxLength={500}
+        />
+      </Form.Item>
+
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={isLoading}
+          className="w-full"
+        >
+          {isLoading ? 'Saving...' : 'Save'}
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
+
+
+const CategoryFormContainer: React.FC = () => {
+  const handleSubmit = (data: CategoryFormData) => {
+    console.log('Form submitted:', data);
+  };
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Create Category</h1>
+      <CategoryForm
+        onSubmit={handleSubmit}
+        isLoading={false}
+        initialData={{
+          name: '',
+          description: '',
+        }}
+      />
+    </div>
+  );
+};
+
+export default CategoryFormContainer;
