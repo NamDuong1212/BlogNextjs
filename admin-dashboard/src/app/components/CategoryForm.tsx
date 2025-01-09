@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Input, Button } from 'antd';
 import { CategoryFormData } from '../types/category';
 
@@ -78,25 +78,4 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
   );
 };
 
-
-const CategoryFormContainer: React.FC = () => {
-  const handleSubmit = (data: CategoryFormData) => {
-    console.log('Form submitted:', data);
-  };
-
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Create Category</h1>
-      <CategoryForm
-        onSubmit={handleSubmit}
-        isLoading={false}
-        initialData={{
-          name: '',
-          description: '',
-        }}
-      />
-    </div>
-  );
-};
-
-export default CategoryFormContainer;
+export default CategoryForm;
