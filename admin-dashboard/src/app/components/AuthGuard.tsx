@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import useAuthStore from '../store/useAuthStore'
 
@@ -9,16 +9,24 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
   const pathname = usePathname()
   const { userData } = useAuthStore()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    if (!userData && !publicPaths.includes(pathname)) {
+    const token = localStorage.getItem('token')
+    const isPublicPath = publicPaths.includes(pathname)
+
+    if (!token && !isPublicPath) {
       router.push('/login')
-    }
-    
-    if (userData && publicPaths.includes(pathname)) {
+    } else if (token && isPublicPath) {
       router.push('/')
+    } else {
+      setIsAuthenticated(true)
     }
   }, [userData, pathname, router])
+
+  if (!isAuthenticated && !publicPaths.includes(pathname)) {
+    return null
+  }
 
   return <>{children}</>
 }

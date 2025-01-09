@@ -31,3 +31,20 @@ export const authApi = {
     return response.data;
   },
 };
+
+export const categoryApi = {
+  createCategory: async (data: any): Promise<any> => {
+    const response = await api.post('/cms/category/create', data);
+    return response.data;
+  },
+  
+  updateCategory: async (id: string, data: any): Promise<any> => {
+    const response = await api.patch(`/cms/category/${id}`, data);
+    return response.data;
+  },
+  
+  getCategories: async (): Promise<any> => {
+    const response = await api.get('/cms/category/getAll');
+    return response.data;
+  },
+};
