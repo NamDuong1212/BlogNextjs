@@ -49,7 +49,9 @@ export const ViewOnlyPostList: React.FC = () => {
   return (
     <div className="flex gap-6 px-10">
       <div className="flex-grow">
-        <Title level={2} style={{ marginBottom: '24px' }}>Latest Posts</Title>
+        <Title level={2} style={{ marginBottom: "24px" }}>
+          Latest Posts
+        </Title>
         <List
           loading={isLoading}
           dataSource={sortedPosts}
@@ -76,15 +78,21 @@ export const ViewOnlyPostList: React.FC = () => {
                 </div>
                 <Card
                   className="flex-1 cursor-pointer p-0"
+                  style={{
+                    width: "800px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
                   onClick={() => router.push(`/posts/${post.id}`)}
                   extra={
                     <Space size="small">
                       <Tag bordered={false} color="processing">
-                        {post.category.name}
+                        {post.category?.name || "Uncategorized"}
                       </Tag>
                       <Divider type="vertical" />
                       <Text type="secondary">
-                        {formatDateTime(post.updatedAt)}
+                        {formatDateTime(post.updatedAt) || "No date"}
                       </Text>
                       <Divider type="vertical" />
                       <ImageComponentAvatar
@@ -94,7 +102,9 @@ export const ViewOnlyPostList: React.FC = () => {
                         }
                         alt="User Avatar"
                       />
-                      <Text type="success">{post.user.username}</Text>
+                      <Text type="success">
+                        {post.user?.username || "Unknown User"}
+                      </Text>
                     </Space>
                   }
                 >
@@ -102,10 +112,18 @@ export const ViewOnlyPostList: React.FC = () => {
                     level={5}
                     className="m-0 mb-1 overflow-hidden text-ellipsis whitespace-nowrap"
                   >
-                    {post.title}
+                    {post.title || "Untitled Post"}
                   </Title>
-                  <div className="overflow-hidden text-ellipsis leading-normal max-h-12">
-                    {post.content}
+                  <div
+                    className="overflow-hidden text-ellipsis leading-normal"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 3, // Hiển thị tối đa 3 dòng
+                      overflow: "hidden",
+                    }}
+                  >
+                    {post.content || "No content available for this post."}
                   </div>
                 </Card>
               </div>

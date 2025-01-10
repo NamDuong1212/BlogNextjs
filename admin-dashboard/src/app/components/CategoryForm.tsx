@@ -1,80 +1,52 @@
-import React from 'react';
-import { Form, Input, Button } from 'antd';
-import { CategoryFormData } from '../types/category';
+import React from "react";
+import { Form, Input, Button, Card } from "antd";
+import { useCategories } from "../hooks/useCategories";
+import { useRouter } from "next/navigation";
 
-interface CategoryFormProps {
-  onSubmit: (data: CategoryFormData) => void;
-  initialData?: CategoryFormData;
-  isLoading?: boolean;
-}
+const { TextArea } = Input;
 
-export const CategoryForm: React.FC<CategoryFormProps> = ({
-  onSubmit,
-  initialData,
-  isLoading
-}) => {
+export const CategoryForm: React.FC = () => {
+  const router = useRouter();
   const [form] = Form.useForm();
+  const { useCreateCategory } = useCategories();
+  const { mutateAsync, isPending } = useCreateCategory();
 
-  React.useEffect(() => {
-    if (initialData) {
-      form.setFieldsValue(initialData);
+  const onFinish = async (values: any) => {
+    try {
+      await mutateAsync(values);
+      form.resetFields();
+      router.push("/");
+    } catch (error) {
+      console.error("Error creating category:", error);
     }
-  }, [initialData, form]);
-
-  const handleSubmit = (values: CategoryFormData) => {
-    onSubmit(values);
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleSubmit}
-      initialValues={initialData}
-      className="max-w-lg"
-    >
-      <Form.Item
-        label="Name"
-        name="name"
-        rules={[
-          {
-            required: true,
-            message: 'Please input the category name!',
-          },
-        ]}
-      >
-        <Input placeholder="Enter category name" />
-      </Form.Item>
-
-      <Form.Item
-        label="Description"
-        name="description"
-        rules={[
-          {
-            required: true,
-            message: 'Please input the category description!',
-          },
-        ]}
-      >
-        <Input.TextArea
-          placeholder="Enter category description"
-          rows={4}
-          showCount
-          maxLength={500}
-        />
-      </Form.Item>
-
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={isLoading}
-          className="w-full"
+    <Card title="Create Category" style={{ maxWidth: 800, margin: "0 auto" }}>
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item
+          name="name"
+          label="Name"
+          rules={[{ required: true, message: "Please input category name" }]}
         >
-          {isLoading ? 'Saving...' : 'Save'}
-        </Button>
-      </Form.Item>
-    </Form>
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name="description"
+          label="Description"
+          rules={[{ required: true, message: "Please input category description" }]}
+        >
+          <TextArea rows={5} />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={isPending}>
+            Create Category
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
 

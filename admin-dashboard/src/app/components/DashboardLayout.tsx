@@ -25,7 +25,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <div
             style={{
               padding: 24,
-              minHeight: 360,
+              minHeight: 750,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
