@@ -1,28 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button, Card } from "antd";
 import { useCategories } from "../hooks/useCategories";
 import { useRouter } from "next/navigation";
 
 const { TextArea } = Input;
 
-export const CategoryForm: React.FC = () => {
+interface CategoryFormProps {
+  initialValues?: any;
+  onSuccess?: () => void;
+}
+
+export const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess }) => {
   const router = useRouter();
   const [form] = Form.useForm();
-  const { useCreateCategory } = useCategories();
-  const { mutateAsync, isPending } = useCreateCategory();
+  const { useCreateCategory, useUpdateCategory } = useCategories();
+  const { mutateAsync: createCategory, isPending: isCreating } = useCreateCategory(onSuccess);
+  const { mutateAsync: updateCategory, isPending: isUpdating } = useUpdateCategory(onSuccess);
+
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues, form]);
 
   const onFinish = async (values: any) => {
     try {
-      await mutateAsync(values);
+      if (initialValues?._id) {
+        await updateCategory({ id: initialValues._id, data: values });
+      } else {
+        await createCategory(values);
+      }
       form.resetFields();
-      router.push("/");
+      router.push("/category");
     } catch (error) {
-      console.error("Error creating category:", error);
+      console.error("Error:", error);
     }
   };
 
   return (
-    <Card title="Create Category" style={{ maxWidth: 800, margin: "0 auto" }}>
+    <Card title={initialValues ? "Edit Category" : "Create Category"} style={{ maxWidth: 800, margin: "0 auto" }}>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name="name"
@@ -41,8 +57,12 @@ export const CategoryForm: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isPending}>
-            Create Category
+          <Button 
+            type="primary" 
+            htmlType="submit" 
+            loading={isCreating || isUpdating}
+          >
+            {initialValues ? 'Update' : 'Create'} Category
           </Button>
         </Form.Item>
       </Form>
