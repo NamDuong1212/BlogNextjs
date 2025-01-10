@@ -1,34 +1,34 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import useAuthStore from '../store/useAuthStore'
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import useAuthStore from "../store/useAuthStore";
 
-const publicPaths = ['/login', '/signup']
+const publicPaths = ["/login", "/signup"];
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
-  const router = useRouter()
-  const pathname = usePathname()
-  const { userData } = useAuthStore()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const router = useRouter();
+  const pathname = usePathname();
+  const { userData } = useAuthStore();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const isPublicPath = publicPaths.includes(pathname)
+    const token = localStorage.getItem("token");
+    const isPublicPath = publicPaths.includes(pathname);
 
     if (!token && !isPublicPath) {
-      router.push('/login')
+      router.push("/login");
     } else if (token && isPublicPath) {
-      router.push('/')
+      router.push("/");
     } else {
-      setIsAuthenticated(true)
+      setIsAuthenticated(true);
     }
-  }, [userData, pathname, router])
+  }, [userData, pathname, router]);
 
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
-    return null
+    return null;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default AuthGuard
+export default AuthGuard;

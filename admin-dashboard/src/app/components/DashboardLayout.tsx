@@ -1,8 +1,8 @@
-"use client"
-import React from 'react';
-import { Layout, theme } from 'antd';
-import LeftBar from './LeftBar';
-import Navbar from './Navbar';
+"use client";
+import React from "react";
+import { Layout, theme } from "antd";
+import LeftBar from "./LeftBar";
+import Navbar from "./Navbar";
 
 const { Content, Footer } = Layout;
 
@@ -16,11 +16,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   } = theme.useToken();
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <LeftBar />
       <Layout>
         <Navbar />
-        <Content style={{ margin: '24px 16px' }}>
+        <Content style={{ margin: "24px 16px" }}>
           <div
             style={{
               padding: 24,
@@ -32,7 +32,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             {children}
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
+        <Footer style={{ textAlign: "center" }}>
           Ant Design ©{new Date().getFullYear()} Created by Ant UED
         </Footer>
       </Layout>

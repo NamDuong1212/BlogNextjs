@@ -53,3 +53,15 @@ export const categoryApi = {
     return response.data;
   },
 };
+
+const BASE$1 = '/cms/post';
+export const postApi = {
+  getAllPosts: async (): Promise<any> => {
+    const response = await api.get(`/post/getAll`);
+    return response.data;
+  },
+  getDeletePost: async (id: string): Promise<any> => {
+    const response = await api.delete(`${BASE$1}/${id}`);
+    return response.data;
+  }
+};

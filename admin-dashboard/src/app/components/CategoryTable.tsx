@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Table, Button, Modal, Space } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import type { TableColumnsType } from 'antd';
-import { useCategories } from '../hooks/useCategories';
-import CategoryForm from './CategoryForm';
+import React, { useState } from "react";
+import { Table, Button, Modal, Space } from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import type { TableColumnsType } from "antd";
+import { useCategories } from "../hooks/useCategories";
+import CategoryForm from "./CategoryForm";
 
 interface CategoryType {
   key: string;
@@ -14,16 +14,18 @@ interface CategoryType {
 
 const CategoryTable: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<CategoryType | null>(null);
+  const [editingCategory, setEditingCategory] = useState<CategoryType | null>(
+    null
+  );
   const { useGetCategories, useDeleteCategory } = useCategories();
   const { data: categoriesResponse, isLoading } = useGetCategories();
   const { mutate: deleteCategory } = useDeleteCategory();
 
   const columns: TableColumnsType<CategoryType> = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
+    { title: "Name", dataIndex: "name", key: "name" },
     {
-      title: 'Action',
-      key: 'action',
+      title: "Action",
+      key: "action",
       render: (_, record) => (
         <Space>
           <Button
@@ -56,17 +58,18 @@ const CategoryTable: React.FC = () => {
     setEditingCategory(null);
   };
 
-  const data = categoriesResponse?.data?.map((category: any) => ({
-    key: category.id,
-    _id: category.id,
-    name: category.name,
-    description: category.description,
-  })) || [];
+  const data =
+    categoriesResponse?.data?.map((category: any) => ({
+      key: category.id,
+      _id: category.id,
+      name: category.name,
+      description: category.description,
+    })) || [];
 
   return (
     <div>
-      <Button 
-        type="primary" 
+      <Button
+        type="primary"
         icon={<PlusOutlined />}
         onClick={() => setIsModalVisible(true)}
         style={{ marginBottom: 16 }}
@@ -79,8 +82,9 @@ const CategoryTable: React.FC = () => {
         dataSource={data}
         loading={isLoading}
         expandable={{
-          expandedRowRender: (record) => 
-            <p style={{ margin: 0 }}>{record.description}</p>,
+          expandedRowRender: (record) => (
+            <p style={{ margin: 0 }}>{record.description}</p>
+          ),
         }}
       />
 
