@@ -41,10 +41,24 @@ export const useCategories = () => {
     });
   };
 
+  const useDeleteCategory = (onSuccess?: () => void) => {
+    return useMutation({
+      mutationFn: (id: string) => categoryApi.getDeleteCategory(id),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["categories"] });
+        toast.success("Category deleted successfully");
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        toast.error(error.message || "Error deleting category");
+      },
+    });
+  }
 
   return {
     useGetCategories,
     useCreateCategory,
     useUpdateCategory,
+    useDeleteCategory
   };
 };

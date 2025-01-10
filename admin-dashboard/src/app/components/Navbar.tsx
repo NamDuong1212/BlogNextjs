@@ -31,7 +31,10 @@ const Navbar: React.FC = () => {
       background: colorBgContainer, 
       display: 'flex', 
       alignItems: 'center',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      height: '64px',
+      lineHeight: '64px',
+      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03)'
     }}>
       <div className="text-xl font-bold">
         <Link href="/">Dashboard</Link>
@@ -49,7 +52,7 @@ const Navbar: React.FC = () => {
               <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-100"
+                  className="block w-full text-left px-3 py-3 text-red-500 hover:bg-red-100 text-sm"
                 >
                   Logout
                 </button>

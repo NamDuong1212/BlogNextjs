@@ -4,7 +4,7 @@ import { Layout, theme } from 'antd';
 import LeftBar from './LeftBar';
 import Navbar from './Navbar';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -20,8 +20,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <LeftBar />
       <Layout>
         <Navbar />
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: '0 16px' }}>
+        <Content style={{ margin: '24px 16px' }}>
           <div
             style={{
               padding: 24,

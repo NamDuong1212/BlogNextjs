@@ -44,7 +44,12 @@ export const categoryApi = {
   },
   
   getAllCategories: async (): Promise<any> => {
-    const response = await api.get(`${BASE}/getAll`);
+    const response = await api.get(`${BASE}/get-all`);
+    return response.data;
+  },
+
+  getDeleteCategory: async (id: string): Promise<any> => {
+    const response = await api.delete(`${BASE}/${id}`);
     return response.data;
   },
 };
