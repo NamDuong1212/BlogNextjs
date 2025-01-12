@@ -1,4 +1,5 @@
 import axios from "axios";
+import { get } from "http";
 
 const getAuthToken = () => localStorage.getItem("token");
 const api = axios.create({
@@ -65,3 +66,14 @@ export const postApi = {
     return response.data;
   }
 };
+
+export const dailyApi = {
+  getViews: async (): Promise<any> => {
+    const response = await api.get(`/cms/views`);
+    return response.data;
+  },
+  getDailyWallet: async (): Promise<any> => {
+    const response = await api.post(`/cms/wallet/daily`);
+    return response.data;
+  }
+}

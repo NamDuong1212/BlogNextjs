@@ -1,9 +1,12 @@
-import React from 'react'
+"use client";
 
-const WalletDaily = () => {
+import WalletDailyTable from "@/app/components/WalletDailyTable";
+
+export default function WalletPage() {
   return (
-    <div>WalletDaily</div>
-  )
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6">Posts</h1>
+      <WalletDailyTable />
+    </div>
+  );
 }
-
-export default WalletDaily
