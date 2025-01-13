@@ -200,8 +200,8 @@ export const ratingApi = {
 };
 
 export const reportApi = {
-  createReport: async (data: any): Promise<any> => {
-    const response = await api.post("/report/create", data);
+  createReport: async (postId: any, data: any): Promise<any> => {
+    const response = await api.post(`/report/create/${postId}`, data);
     return response.data;
   },
 };

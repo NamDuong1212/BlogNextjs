@@ -1,4 +1,3 @@
-// hooks/useReport.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { reportApi } from "../services/api";
@@ -8,7 +7,8 @@ export const useReport = () => {
 
   const useCreateReport = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: (data: any) => reportApi.createReport(data),
+      mutationFn: ({ postId, data }: { postId: any; data: any }) => 
+        reportApi.createReport(postId, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
         toast.success("Report submitted successfully");

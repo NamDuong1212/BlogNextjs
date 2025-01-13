@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Space, Typography, Tag, Button } from "antd";
+import { Space, Typography, Tag, Button, Modal, Input, Form } from "antd";
 import {
   CalendarOutlined,
   EyeOutlined,
   DownloadOutlined,
+  FlagOutlined,
 } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
+import { useReport } from "@/app/hooks/useReport";
 import CommentSection from "@/app/components/CommentSection";
 import LikeSection from "@/app/components/LikeSection";
 import RatingSection from "@/app/components/RatingSection";
@@ -20,14 +22,31 @@ import Linkify from "react-linkify";
 import html2pdf from "html2pdf.js";
 
 const { Title, Paragraph } = Typography;
+const { TextArea } = Input;
 
 const PostDetail: React.FC = () => {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [form] = Form.useForm();
 
   const { useGetPostById } = usePost();
+  const { useCreateReport } = useReport();
   const { data: post, isLoading } = useGetPostById(id as string);
+  const createReportMutation = useCreateReport(() => {
+    setIsReportModalOpen(false);
+    form.resetFields();
+  });
+
+  const handleReportSubmit = async (values: { reason: string }) => {
+    if (!id) return;
+    
+    await createReportMutation.mutate({
+      postId: id,
+      data: { reason: values.reason }
+    });
+  };
 
   const handleDownload = async () => {
     setIsDownloading(true);
@@ -108,7 +127,7 @@ const PostDetail: React.FC = () => {
               <Space size="large">
                 <Tag
                   bordered={false}
-                  color={"processing"}
+                  color="processing"
                   style={{ cursor: "pointer" }}
                 >
                   {post.category.name}
@@ -149,7 +168,7 @@ const PostDetail: React.FC = () => {
           )}
 
           <Paragraph style={{ whiteSpace: "pre-wrap" }}>
-            <Linkify
+          <Linkify
               componentDecorator={(
                 href: string | undefined,
                 text:
@@ -206,7 +225,12 @@ const PostDetail: React.FC = () => {
       </div>
 
       <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "12px",
+          marginTop: "20px",
+        }}
       >
         <Button
           type="primary"
@@ -217,7 +241,59 @@ const PostDetail: React.FC = () => {
         >
           Download as PDF
         </Button>
+        <Button
+          type="default"
+          danger
+          icon={<FlagOutlined />}
+          onClick={() => setIsReportModalOpen(true)}
+          size="large"
+        >
+          Report Post
+        </Button>
       </div>
+
+      <Modal
+        title="Report Post"
+        open={isReportModalOpen}
+        onCancel={() => {
+          setIsReportModalOpen(false);
+          form.resetFields();
+        }}
+        footer={null}
+      >
+        <Form
+          form={form}
+          onFinish={handleReportSubmit}
+          layout="vertical"
+        >
+          <Form.Item
+            name="reason"
+            label="Reason for reporting"
+            rules={[
+              { required: true, message: "Please provide a reason for reporting" },
+              { min: 10, message: "Reason must be at least 10 characters long" }
+            ]}
+          >
+            <TextArea
+              rows={4}
+              placeholder="Please describe why you are reporting this post..."
+            />
+          </Form.Item>
+          <Form.Item>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+              <Button onClick={() => setIsReportModalOpen(false)}>Cancel</Button>
+              <Button 
+                type="primary" 
+                danger 
+                htmlType="submit"
+                loading={createReportMutation.isPending}
+              >
+                Submit Report
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
 
       {id && (
         <CommentSection
