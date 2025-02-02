@@ -108,8 +108,6 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         </Button>
       </Upload>
 
-      <DraggablePostEditor initialLayout={layout} onChange={setLayout} />
-
       <Space>
         <Button
           type="primary"

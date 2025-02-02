@@ -58,13 +58,35 @@ const PostDetail: React.FC = () => {
       if (originalContent) {
         const clone = originalContent.cloneNode(true) as HTMLElement;
 
+        // Remove interactive elements
         const viewsElement = clone.querySelector(".view-count");
-        viewsElement?.remove();
-
         const likesElement = clone.querySelector(".likes-section");
         const ratingsElement = clone.querySelector(".ratings-section");
+        viewsElement?.remove();
         likesElement?.remove();
         ratingsElement?.remove();
+
+        // Convert all images to base64 before PDF generation
+        const images = clone.getElementsByTagName('img');
+        await Promise.all(Array.from(images).map(async (img) => {
+          try {
+            const response = await fetch(img.src, {
+              mode: 'cors',
+              credentials: 'omit'
+            });
+            const blob = await response.blob();
+            const base64 = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+            img.src = base64 as string;
+          } catch (error) {
+            console.error('Error converting image:', error);
+            // If image conversion fails, remove it
+            img.remove();
+          }
+        }));
 
         content.innerHTML = clone.innerHTML;
       }
@@ -88,6 +110,7 @@ const PostDetail: React.FC = () => {
           useCORS: true,
           allowTaint: true,
           logging: true,
+          imageTimeout: 15000, // Increase timeout for image loading
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
