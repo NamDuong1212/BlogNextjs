@@ -106,16 +106,18 @@ export const PostList = () => {
                     <Space size="middle">
                       <Tag
                         bordered={false}
-                        color={
-                          selectedCategory === post.category.id
-                            ? "success"
-                            : "processing"
-                        }
+                        color={selectedCategory === post.category.id ? "success" : "processing"}
                         style={{ cursor: "pointer" }}
                         onClick={(e) => handleCategoryClick(e, post.category.id)}
                       >
                         {post.category.name}
                       </Tag>
+                      <Divider type="vertical" />
+                      {post.tags && post.tags.map((tag: { id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
+                        <Tag key={tag.id} color="default">
+                          {tag.name}
+                        </Tag>
+                      ))}
                       <Divider type="vertical" />
                       <Text type="secondary">
                         Created: {formatDateTime(post.createdAt)}

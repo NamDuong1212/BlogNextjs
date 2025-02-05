@@ -8,6 +8,7 @@ export interface ContentLayout {
 }
 
 export interface Post {
+  tags: any;
   user: any;
   id?: string;
   author: string;

@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useState } from "react";
 import { Space, Typography, Tag, Button, Modal, Input, Form } from "antd";
 import {
@@ -165,6 +164,14 @@ const PostDetail: React.FC = () => {
                 </span>
               </Space>
             </Paragraph>
+            {/* Add Tags here */}
+            <Space>
+              {post.tags?.map((tag: { id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
+                <Tag key={tag.id} color="default">
+                  {tag.name}
+                </Tag>
+              ))}
+            </Space>
           </div>
 
           <Title level={2} style={{ textAlign: "center" }}>
@@ -191,7 +198,7 @@ const PostDetail: React.FC = () => {
           )}
 
           <Paragraph style={{ whiteSpace: "pre-wrap" }}>
-          <Linkify
+            <Linkify
               componentDecorator={(
                 href: string | undefined,
                 text:
@@ -292,10 +299,7 @@ const PostDetail: React.FC = () => {
           <Form.Item
             name="reason"
             label="Reason for reporting"
-            rules={[
-              { required: true, message: "Please provide a reason for reporting" },
-              { min: 10, message: "Reason must be at least 10 characters long" }
-            ]}
+            rules={[{ required: true, message: "Please provide a reason for reporting" }]}
           >
             <TextArea
               rows={4}
