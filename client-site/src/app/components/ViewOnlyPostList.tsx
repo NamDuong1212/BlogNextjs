@@ -79,7 +79,6 @@ export const ViewOnlyPostList: React.FC = () => {
                 <Card
                   className="flex-1 cursor-pointer p-0"
                   style={{
-                    width: "800px",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",

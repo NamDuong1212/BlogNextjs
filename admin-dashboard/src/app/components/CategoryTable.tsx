@@ -10,6 +10,8 @@ interface CategoryType {
   _id: string;
   name: string;
   description: string;
+  parent?: CategoryType;
+  children?: CategoryType[];
 }
 
 const CategoryTable: React.FC = () => {
@@ -22,7 +24,19 @@ const CategoryTable: React.FC = () => {
   const { mutate: deleteCategory } = useDeleteCategory();
 
   const columns: TableColumnsType<CategoryType> = [
-    { title: "Name", dataIndex: "name", key: "name" },
+    { 
+      title: "Name", 
+      dataIndex: "name", 
+      key: "name",
+      render: (_, record) => (
+        <span>
+          {record.name}
+          {record.parent && (
+            <small style={{ color: '#999' }}> (Parent: {record.parent.name})</small>
+          )}
+        </span>
+      )
+    },
     {
       title: "Action",
       key: "action",
@@ -64,6 +78,8 @@ const CategoryTable: React.FC = () => {
       _id: category.id,
       name: category.name,
       description: category.description,
+      parent: category.parent,
+      children: category.children
     })) || [];
 
   return (

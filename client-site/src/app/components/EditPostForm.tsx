@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Space, Input, Button, Upload, message, Select } from "antd";
+import { Space, Input, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Post } from "../types/post";
 import { usePost } from "../hooks/usePost";
@@ -27,7 +27,6 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
     title: post.title,
     content: post.content,
     image: post.image,
-    tags: post.tags?.map((tag: { name: any; }) => tag.name) || [], // Convert Tag objects to strings for Select
   });
 
   const beforeUpload = (file: File) => {
@@ -42,12 +41,8 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
 
   const handleSave = async () => {
     try {
-      const tags = updateData.tags?.map((tagName: string) => ({
-        name: tagName
-      }));
-
       await updateMutation.mutateAsync(
-        { ...updateData, id: post.id, layout, tags },
+        { ...updateData, id: post.id, layout },
         {
           onSuccess: async () => {
             if (selectedFile) {
@@ -88,15 +83,6 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         placeholder="Edit content"
         rows={4}
         style={{ marginBottom: 10 }}
-      />
-
-      <Select
-        mode="tags"
-        style={{ width: '100%', marginBottom: 10 }}
-        placeholder="Edit tags"
-        value={updateData.tags}
-        onChange={(value) => setUpdateData((prev) => ({ ...prev, tags: value }))}
-        tokenSeparators={[',']}
       />
 
       <Upload

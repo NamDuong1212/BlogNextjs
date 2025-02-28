@@ -164,14 +164,6 @@ const PostDetail: React.FC = () => {
                 </span>
               </Space>
             </Paragraph>
-            {/* Add Tags here */}
-            <Space>
-              {post.tags?.map((tag: { id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => (
-                <Tag key={tag.id} color="default">
-                  {tag.name}
-                </Tag>
-              ))}
-            </Space>
           </div>
 
           <Title level={2} style={{ textAlign: "center" }}>

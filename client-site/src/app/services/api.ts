@@ -2,6 +2,7 @@ import axios from "axios";
 import { LoginState, RegisterState, VerifyOtpState } from "../types/auth";
 import { UpdateUser } from "../types/profile";
 import { CreateCategoryType } from "../types/category";
+import { get } from "http";
 
 const getAuthToken = () => localStorage.getItem("token");
 const api = axios.create({
@@ -67,6 +68,23 @@ export const categoryApi = {
     const response = await api.get("/category/getAll");
     return response.data.data;
   },
+
+  getCategoryById: async (id: string): Promise<any> => {
+    const response = await api.get(`/category/${id}`);
+    return response.data.data;
+  },
+};
+
+export const tagApi = {
+  createTag: async (data: any): Promise<any> => {
+    const response = await api.post("/tag/create", data);
+    return response.data;
+  },
+  getTags: async (): Promise<any> => {
+    const response = await api.get("/tag/getAll");
+    return response.data.data;
+  },
+  
 };
 
 export const postApi = {

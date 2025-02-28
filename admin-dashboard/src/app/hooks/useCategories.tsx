@@ -12,6 +12,7 @@ export const useCategories = () => {
       staleTime: 0,
     });
   };
+
   const useCreateCategory = (onSuccess?: () => void) => {
     return useMutation({
       mutationFn: (data: any) => categoryApi.createCategory(data),
@@ -20,40 +21,43 @@ export const useCategories = () => {
         toast.success("Category created successfully");
         onSuccess?.();
       },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error creating category");
+      onError: (error: any) => {
+        const message = error.response?.data?.message || "Error creating category";
+        toast.error(message);
       },
     });
   };
 
   const useUpdateCategory = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: ({ id, data }: { id: any; data: any }) =>
+      mutationFn: ({ id, data }: { id: string; data: any }) =>
         categoryApi.updateCategory(id, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
         toast.success("Category updated successfully");
         onSuccess?.();
       },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error updating category");
+      onError: (error: any) => {
+        const message = error.response?.data?.message || "Error updating category";
+        toast.error(message);
       },
     });
   };
 
   const useDeleteCategory = (onSuccess?: () => void) => {
     return useMutation({
-      mutationFn: (id: any) => categoryApi.getDeleteCategory(id),
+      mutationFn: (id: string) => categoryApi.getDeleteCategory(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
         toast.success("Category deleted successfully");
         onSuccess?.();
       },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error deleting category");
+      onError: (error: any) => {
+        const message = error.response?.data?.message || "Error deleting category";
+        toast.error(message);
       },
     });
-  }
+  };
 
   return {
     useGetCategories,

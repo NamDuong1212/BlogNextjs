@@ -37,7 +37,6 @@ export const CreatePostForm: React.FC = () => {
         title: values.title,
         content: values.content,
         categoryId: values.categoryId,
-        tags: values.tags || [], // Add tags to submission
       };
 
       const createdPost = await createMutation.mutateAsync(dataToSubmit);
@@ -105,19 +104,6 @@ export const CreatePostForm: React.FC = () => {
               ))}
             </Select>
           )}
-        </Form.Item>
-
-        <Form.Item
-          name="tags"
-          label="Tags"
-          help="Enter tags and press Enter to add"
-        >
-          <Select
-            mode="tags"
-            style={{ width: '100%' }}
-            placeholder="Add tags"
-            tokenSeparators={[',']}
-          />
         </Form.Item>
 
         <Form.Item label="Post Image" help="Upload an image for your post">

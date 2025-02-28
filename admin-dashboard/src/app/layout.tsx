@@ -4,7 +4,7 @@ import "./globals.css";
 import Providers from "./providers/Providers";
 import LayoutWrapper from "./components/LayoutWrapper";
 import AuthGuard from './components/AuthGuard'
-
+import HydrationErrorBoundary from "./components/HydrationErrorBoundary";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
