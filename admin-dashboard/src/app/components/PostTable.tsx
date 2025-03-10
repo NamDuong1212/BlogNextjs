@@ -55,17 +55,20 @@ const PostTable: React.FC = () => {
   };
 
   const data =
-    postsResponse?.data?.map((post: any) => ({
-      key: post.id,
-      _id: post.id,
-      title: post.title,
-      content: post.content,
-      viewCount: post.viewCount,
-      category: post.category.name,
-      user: post.user.username,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-    })) || [];
+  postsResponse?.data?.map((post: any) => ({
+    key: post.id,
+    _id: post.id,
+    title: post.title,
+    content: post.content,
+    viewCount: post.viewCount,
+    category: post.categoryHierarchy
+      .map((cat: any) => cat.name)
+      .join(" > "),
+    user: post.user.username,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+  })) || [];
+
 
   return (
     <div>
