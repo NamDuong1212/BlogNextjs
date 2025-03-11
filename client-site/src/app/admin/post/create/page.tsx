@@ -14,10 +14,19 @@ export const CreatePostForm: React.FC = () => {
   const [form] = Form.useForm();
   const { userData } = useAuthStore();
   const { useGetCategories, useCreatePost, useUploadPostImage } = usePost();
-  const { data: categories, isLoading: isCategoriesLoading } = useGetCategories();
+  const {
+    data: categoriesResponse,
+    isLoading: isCategoriesLoading,
+  } = useGetCategories();
   const createMutation = useCreatePost();
   const uploadMutation = useUploadPostImage();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Các state cho cascading dropdown (level 1 đến level 4)
+  const [selectedLevel1, setSelectedLevel1] = useState<any>(null);
+  const [selectedLevel2, setSelectedLevel2] = useState<any>(null);
+  const [selectedLevel3, setSelectedLevel3] = useState<any>(null);
+  const [selectedLevel4, setSelectedLevel4] = useState<any>(null);
 
   useEffect(() => {
     if (!userData?.isCreator) {
@@ -31,12 +40,17 @@ export const CreatePostForm: React.FC = () => {
         message.error("User ID is required");
         return;
       }
+      if (!selectedLevel4 || !selectedLevel4.id) {
+        message.error("Please select a category at level 4.");
+        return;
+      }
 
       const dataToSubmit = {
         userId: userData.id,
         title: values.title,
         content: values.content,
-        categoryId: values.categoryId,
+        // Chỉ khi đã có dữ liệu của level 4 mới truyền categoryId
+        categoryId: selectedLevel4.id,
       };
 
       const createdPost = await createMutation.mutateAsync(dataToSubmit);
@@ -48,7 +62,7 @@ export const CreatePostForm: React.FC = () => {
         });
       }
 
-      return router.push("/post-list");
+      router.push("/post-list");
     } catch (error) {
       console.error("Error creating post:", error);
       message.error("Failed to create post");
@@ -64,6 +78,9 @@ export const CreatePostForm: React.FC = () => {
     setSelectedFile(file);
     return false;
   };
+
+  // Giả sử API trả về danh sách categories theo dạng cây trong categoriesResponse.data
+  const categoryTree = categoriesResponse?.data || [];
 
   return (
     <Card title="Create Post" style={{ maxWidth: 800, margin: "0 auto" }}>
@@ -88,21 +105,109 @@ export const CreatePostForm: React.FC = () => {
           <TextArea rows={5} />
         </Form.Item>
 
-        <Form.Item
-          name="categoryId"
-          label="Category"
-          rules={[{ required: true, message: "Please select a category" }]}
-        >
+        {/* Cascading Dropdown cho Category */}
+        <Form.Item label="Category" required>
           {isCategoriesLoading ? (
             <Spin />
           ) : (
-            <Select placeholder="Select a category">
-              {categories?.map((category: { id: number | string; name: string }) => (
-                <Option key={category.id} value={category.id}>
-                  {category.name}
-                </Option>
-              ))}
-            </Select>
+            <>
+              {/* Dropdown Level 1 */}
+              <Select
+                placeholder="Select level 1 category"
+                style={{ marginBottom: 8 }}
+                onChange={(value) => {
+                  const selected = categoryTree.find((cat: any) => cat.id === value);
+                  setSelectedLevel1(selected);
+                  // Reset các cấp dưới
+                  setSelectedLevel2(null);
+                  setSelectedLevel3(null);
+                  setSelectedLevel4(null);
+                }}
+                value={selectedLevel1?.id || undefined}
+                allowClear
+              >
+                {categoryTree.map((cat: any) => (
+                  <Option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </Option>
+                ))}
+              </Select>
+
+              {/* Dropdown Level 2 */}
+              {selectedLevel1 &&
+                selectedLevel1.children &&
+                selectedLevel1.children.length > 0 && (
+                  <Select
+                    placeholder="Select level 2 category"
+                    style={{ marginBottom: 8 }}
+                    onChange={(value) => {
+                      const selected = selectedLevel1.children.find(
+                        (child: any) => child.id === value,
+                      );
+                      setSelectedLevel2(selected);
+                      setSelectedLevel3(null);
+                      setSelectedLevel4(null);
+                    }}
+                    value={selectedLevel2?.id || undefined}
+                    allowClear
+                  >
+                    {selectedLevel1.children.map((child: any) => (
+                      <Option key={child.id} value={child.id}>
+                        {child.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+
+              {/* Dropdown Level 3 */}
+              {selectedLevel2 &&
+                selectedLevel2.children &&
+                selectedLevel2.children.length > 0 && (
+                  <Select
+                    placeholder="Select level 3 category"
+                    style={{ marginBottom: 8 }}
+                    onChange={(value) => {
+                      const selected = selectedLevel2.children.find(
+                        (child: any) => child.id === value,
+                      );
+                      setSelectedLevel3(selected);
+                      setSelectedLevel4(null);
+                    }}
+                    value={selectedLevel3?.id || undefined}
+                    allowClear
+                  >
+                    {selectedLevel2.children.map((child: any) => (
+                      <Option key={child.id} value={child.id}>
+                        {child.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+
+              {/* Dropdown Level 4 */}
+              {selectedLevel3 &&
+                selectedLevel3.children &&
+                selectedLevel3.children.length > 0 && (
+                  <Select
+                    placeholder="Select level 4 category"
+                    style={{ marginBottom: 8 }}
+                    onChange={(value) => {
+                      const selected = selectedLevel3.children.find(
+                        (child: any) => child.id === value,
+                      );
+                      setSelectedLevel4(selected);
+                    }}
+                    value={selectedLevel4?.id || undefined}
+                    allowClear
+                  >
+                    {selectedLevel3.children.map((child: any) => (
+                      <Option key={child.id} value={child.id}>
+                        {child.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+            </>
           )}
         </Form.Item>
 

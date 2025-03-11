@@ -66,7 +66,7 @@ export const categoryApi = {
 
   getCategories: async (): Promise<any> => {
     const response = await api.get("/category/getAll");
-    return response.data.data;
+    return response.data;
   },
 
   getCategoryById: async (id: string): Promise<any> => {
