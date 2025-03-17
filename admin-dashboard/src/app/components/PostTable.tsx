@@ -11,6 +11,7 @@ const PostTable: React.FC = () => {
   const { mutate: deletePost } = useDeletePost();
 
   const columns: TableColumnsType = [
+    { title: "ID", dataIndex: "_id", key: "_id"},
     { title: "Title", dataIndex: "title", key: "title" },
     {
       title: "Views",

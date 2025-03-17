@@ -113,6 +113,11 @@ export const postApi = {
     return response.data;
   },
 
+  getRelatedPosts: async (postId: string): Promise<any> => {
+    const response = await api.get(`/post/related/${postId}`);
+    return response.data|| [];
+  },
+
   updatePost: async (data: any): Promise<any> => {
     const response = await api.patch(`/post/${data.id}`, data);
     return response.data.data;

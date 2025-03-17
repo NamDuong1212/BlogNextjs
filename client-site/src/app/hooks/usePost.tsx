@@ -38,6 +38,14 @@ export const usePost = () => {
     });
   };
 
+  const useGetRelatedPosts = (id: any) => {
+    return useQuery({
+      queryKey: ["related-posts", id],
+      queryFn: () => postApi.getRelatedPosts(id),
+      enabled: !!id,
+    });
+  };
+
   const useGetCategories = () => {
     return useQuery({
       queryKey: ["categories"],
@@ -111,5 +119,6 @@ export const usePost = () => {
     useDeletePost,
     useUploadPostImage,
     useGetPostByCreator,
+    useGetRelatedPosts,
   };
 };

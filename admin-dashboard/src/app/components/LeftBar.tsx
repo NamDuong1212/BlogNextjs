@@ -4,7 +4,7 @@ import {
   DesktopOutlined,
   FileOutlined,
   PieChartOutlined,
-  TeamOutlined,
+  SnippetsOutlined ,
   UserOutlined,
   AlibabaOutlined
 } from '@ant-design/icons';
@@ -33,12 +33,12 @@ const items: MenuItem[] = [
   getItem('Categories', '1', <PieChartOutlined />),
   getItem('Daily Wallet', '2', <DesktopOutlined />),
   getItem('Posts', '3', <AlibabaOutlined />),
+  getItem('Reports', '4', <SnippetsOutlined />),
   getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '4'),
-    getItem('Bill', '5'),
-    getItem('Alex', '6'),
+    getItem('Tom', '5'),
+    getItem('Bill', '6'),
+    getItem('Alex', '7'),
   ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '10'), getItem('Team 2', '8')]),
   getItem('Files', '9', <FileOutlined />),
 ];
 
@@ -58,7 +58,7 @@ const LeftBar: React.FC = () => {
         router.push('/post');
         break;
       case '4':
-        router.push('');
+        router.push('/report');
         break;
       case '5':
         router.push('');

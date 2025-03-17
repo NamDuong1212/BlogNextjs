@@ -76,4 +76,15 @@ export const dailyApi = {
     const response = await api.post(`/cms/wallet/daily`);
     return response.data;
   }
-}
+};
+
+export const reportApi = {
+  getReport: async (): Promise<any> => {
+    const response = await api.get(`/cms/report/get-all`);
+    return response.data;
+  },
+  deleteReport: async (id: string): Promise<any> => {
+    const response = await api.delete(`/cms/report/${id}`);
+    return response.data;
+  }
+};

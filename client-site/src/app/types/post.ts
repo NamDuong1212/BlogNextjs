@@ -8,6 +8,7 @@ export interface ContentLayout {
 }
 
 export interface Post {
+  categoryHierarchy: any;
   tags: any;
   user: any;
   id?: string;

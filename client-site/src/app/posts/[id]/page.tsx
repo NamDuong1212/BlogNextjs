@@ -1,13 +1,17 @@
-"use client"
-import React, { useState } from "react";
-import { Space, Typography, Tag, Button, Modal, Input, Form } from "antd";
+"use client";
+import React, { useState, useRef } from "react";
+import { Space, Typography, Tag, Button, Modal, Input, Form, Card, Avatar } from "antd";
 import {
   CalendarOutlined,
   EyeOutlined,
   DownloadOutlined,
   FlagOutlined,
+  LeftOutlined,
+  RightOutlined,
+  UserOutlined,
+  TagOutlined,
 } from "@ant-design/icons";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
 import { useReport } from "@/app/hooks/useReport";
 import CommentSection from "@/app/components/CommentSection";
@@ -20,19 +24,24 @@ import ImageComponentAvatar from "@/app/components/ImageComponentAvatar";
 import Linkify from "react-linkify";
 import html2pdf from "html2pdf.js";
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
+const { Meta } = Card;
 
 const PostDetail: React.FC = () => {
   const params = useParams();
+  const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [isDownloading, setIsDownloading] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const relatedPostsRef = useRef<HTMLDivElement>(null);
 
-  const { useGetPostById } = usePost();
+  const { useGetPostById, useGetRelatedPosts } = usePost();
   const { useCreateReport } = useReport();
   const { data: post, isLoading } = useGetPostById(id as string);
+  const { data: relatedPosts = [], isLoading: isLoadingRelated } = useGetRelatedPosts(id as string);
+  
   const createReportMutation = useCreateReport(() => {
     setIsReportModalOpen(false);
     form.resetFields();
@@ -40,10 +49,10 @@ const PostDetail: React.FC = () => {
 
   const handleReportSubmit = async (values: { reason: string }) => {
     if (!id) return;
-    
+
     await createReportMutation.mutate({
       postId: id,
-      data: { reason: values.reason }
+      data: { reason: values.reason },
     });
   };
 
@@ -66,26 +75,28 @@ const PostDetail: React.FC = () => {
         ratingsElement?.remove();
 
         // Convert all images to base64 before PDF generation
-        const images = clone.getElementsByTagName('img');
-        await Promise.all(Array.from(images).map(async (img) => {
-          try {
-            const response = await fetch(img.src, {
-              mode: 'cors',
-              credentials: 'omit'
-            });
-            const blob = await response.blob();
-            const base64 = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onloadend = () => resolve(reader.result);
-              reader.readAsDataURL(blob);
-            });
-            img.src = base64 as string;
-          } catch (error) {
-            console.error('Error converting image:', error);
-            // If image conversion fails, remove it
-            img.remove();
-          }
-        }));
+        const images = clone.getElementsByTagName("img");
+        await Promise.all(
+          Array.from(images).map(async (img) => {
+            try {
+              const response = await fetch(img.src, {
+                mode: "cors",
+                credentials: "omit",
+              });
+              const blob = await response.blob();
+              const base64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+              });
+              img.src = base64 as string;
+            } catch (error) {
+              console.error("Error converting image:", error);
+              // If image conversion fails, remove it
+              img.remove();
+            }
+          }),
+        );
 
         content.innerHTML = clone.innerHTML;
       }
@@ -122,6 +133,20 @@ const PostDetail: React.FC = () => {
     }
   };
 
+  const scrollRelatedPosts = (direction: 'left' | 'right') => {
+    if (relatedPostsRef.current) {
+      const scrollAmount = direction === 'left' ? -300 : 300;
+      relatedPostsRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const navigateToPost = (postId: string) => {
+    router.push(`/posts/${postId}`);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -147,13 +172,17 @@ const PostDetail: React.FC = () => {
             <Title level={4}>{post.user?.username || "Testing"}</Title>
             <Paragraph>
               <Space size="large">
-                <Tag
-                  bordered={false}
-                  color="processing"
-                  style={{ cursor: "pointer" }}
-                >
-                  {post.category.name}
-                </Tag>
+                {post.categoryHierarchy?.length > 0 && (
+                  <Space size="small">
+                  {post.categoryHierarchy?.map((cat: { id: string; name: string }) => (
+                    <Tag key={cat.id} bordered={false} color="processing" style={{ cursor: "pointer" }}>
+                      {cat.name}
+                    </Tag>
+                  ))}
+                </Space>
+                
+                )}
+
                 <span>
                   <CalendarOutlined style={{ marginRight: 4 }} />
                   {formatDateTime(post.createdAt)}
@@ -283,15 +312,16 @@ const PostDetail: React.FC = () => {
         }}
         footer={null}
       >
-        <Form
-          form={form}
-          onFinish={handleReportSubmit}
-          layout="vertical"
-        >
+        <Form form={form} onFinish={handleReportSubmit} layout="vertical">
           <Form.Item
             name="reason"
             label="Reason for reporting"
-            rules={[{ required: true, message: "Please provide a reason for reporting" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please provide a reason for reporting",
+              },
+            ]}
           >
             <TextArea
               rows={4}
@@ -299,11 +329,19 @@ const PostDetail: React.FC = () => {
             />
           </Form.Item>
           <Form.Item>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-              <Button onClick={() => setIsReportModalOpen(false)}>Cancel</Button>
-              <Button 
-                type="primary" 
-                danger 
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "8px",
+              }}
+            >
+              <Button onClick={() => setIsReportModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                danger
                 htmlType="submit"
                 loading={createReportMutation.isPending}
               >
@@ -330,6 +368,162 @@ const PostDetail: React.FC = () => {
           }}
         />
       )}
+
+      {/* Related Posts Section */}
+      <div style={{ marginTop: "40px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+          <Title level={4} style={{ margin: 0 }}>Related Posts</Title>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Button 
+              type="default" 
+              icon={<LeftOutlined />} 
+              onClick={() => scrollRelatedPosts('left')}
+              disabled={isLoadingRelated || relatedPosts.length === 0}
+            />
+            <Button 
+              type="default" 
+              icon={<RightOutlined />} 
+              onClick={() => scrollRelatedPosts('right')}
+              disabled={isLoadingRelated || relatedPosts.length === 0}
+            />
+          </div>
+        </div>
+
+        <div 
+          ref={relatedPostsRef}
+          style={{ 
+            display: "flex",
+            overflowX: "auto",
+            gap: "16px",
+            padding: "4px",
+            scrollbarWidth: "thin",
+            msOverflowStyle: "none",
+            scrollSnapType: "x mandatory"
+          }}
+          className="hide-scrollbar"
+        >
+          {isLoadingRelated ? (
+            <div style={{ padding: "20px", textAlign: "center", width: "100%" }}>Loading related posts...</div>
+          ) : relatedPosts.length === 0 ? (
+            <div style={{ padding: "20px", textAlign: "center", width: "100%" }}>No related posts found</div>
+          ) : (
+            relatedPosts.map((relatedPost: any) => (
+              <Card
+                key={relatedPost.id}
+                hoverable
+                style={{ 
+                  width: 280, 
+                  minWidth: 280,
+                  scrollSnapAlign: "start"
+                }}
+                cover={
+                  <div style={{ height: 160, overflow: "hidden", position: "relative" }}>
+                    <ImageComponentPostImage
+                      alt={relatedPost.title}
+                      src={relatedPost.image ? `${relatedPost.image}` : "https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"}
+                    />
+                  </div>
+                }
+                onClick={() => navigateToPost(relatedPost.id)}
+              >
+                <Meta
+                  avatar={
+                    <ImageComponentAvatar
+                      size={35}
+                      src={relatedPost.user?.avatar || relatedPost.avatar || "https://i.imgur.com/CzXTtJV.jpg"} alt={""}                    />
+                  }
+                  title={
+                    <div style={{ 
+                      whiteSpace: "nowrap", 
+                      overflow: "hidden", 
+                      textOverflow: "ellipsis" 
+                    }}>
+                      {relatedPost.title}
+                    </div>
+                  }
+                  description={
+                    <div>
+                      <div style={{ 
+                        fontSize: "13px", 
+                        marginBottom: "6px",
+                        display: "flex",
+                        alignItems: "center"
+                      }}>
+                        <UserOutlined style={{ marginRight: 4, fontSize: "12px" }} />
+                        <span style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis"
+                        }}>
+                          {relatedPost.user?.username || relatedPost.author || "Unknown"}
+                        </span>
+                      </div>
+                      
+                      {relatedPost.categoryHierarchy?.length > 0 && (
+                        <div style={{ 
+                          fontSize: "12px", 
+                          color: "#8c8c8c",
+                          marginBottom: "4px",
+                          display: "flex",
+                          alignItems: "flex-start"
+                        }}>
+                          <TagOutlined style={{ marginRight: 4, marginTop: "3px" }} />
+                          <div style={{
+                            flex: 1,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: "vertical"
+                          }}>
+                            {relatedPost.categoryHierarchy.map((cat: any, index: number) => (
+                              <React.Fragment key={cat.id}>
+                                <span>{cat.name}</span>
+                                {index < relatedPost.categoryHierarchy.length - 1 && " > "}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div style={{ 
+                        fontSize: "12px", 
+                        color: "#8c8c8c",
+                        marginTop: "4px"
+                      }}>
+                        <CalendarOutlined style={{ marginRight: 4 }} />
+                        {formatDateTime(relatedPost.createdAt).split(' ')[0]}
+                      </div>
+                    </div>
+                  }
+                />
+              </Card>
+            ))
+          )}
+        </div>
+        
+        {/* CSS for hiding scrollbar but keeping functionality */}
+        <style jsx global>{`
+          .hide-scrollbar::-webkit-scrollbar {
+            height: 6px;
+          }
+          
+          .hide-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+          }
+          
+          .hide-scrollbar::-webkit-scrollbar-track {
+            background-color: transparent;
+          }
+          
+          @media (hover: none) {
+            .hide-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+          }
+        `}</style>
+      </div>
     </div>
   );
 };

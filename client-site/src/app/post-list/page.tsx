@@ -64,14 +64,19 @@ export const PostList = () => {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
 
-  const handleCategoryClick = (e: React.MouseEvent, categoryId: string) => {
+  const handleCategoryClick = (
+    e: React.MouseEvent,
+    categoryId: string | null | undefined,
+  ) => {
     e.stopPropagation();
     setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <Title level={2} style={{ marginBottom: '24px' }}>Latest Posts</Title>
+    <div style={{ padding: "20px" }}>
+      <Title level={2} style={{ marginBottom: "24px" }}>
+        Latest Posts
+      </Title>
       <List
         loading={isLoading}
         dataSource={sortedPosts}
@@ -103,46 +108,107 @@ export const PostList = () => {
                 <Card
                   style={{ flex: 1 }}
                   extra={
-                    <Space size="middle">
-                      <Tag
-                        bordered={false}
-                        color={selectedCategory === post.category.id ? "success" : "processing"}
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => handleCategoryClick(e, post.category.id)}
+                    <Space
+                      size="small"
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div style={{ display: "flex", gap: 8 }}>
+                        {post.categoryHierarchy?.map(
+                          (cat: {
+                            id: React.Key | null | undefined;
+                            name:
+                              | string
+                              | number
+                              | bigint
+                              | boolean
+                              | React.ReactElement<
+                                  unknown,
+                                  string | React.JSXElementConstructor<any>
+                                >
+                              | Iterable<React.ReactNode>
+                              | React.ReactPortal
+                              | Promise<
+                                  | string
+                                  | number
+                                  | bigint
+                                  | boolean
+                                  | React.ReactPortal
+                                  | React.ReactElement<
+                                      unknown,
+                                      string | React.JSXElementConstructor<any>
+                                    >
+                                  | Iterable<React.ReactNode>
+                                  | null
+                                  | undefined
+                                >
+                              | null
+                              | undefined;
+                          }) => (
+                            <Tag
+                              key={cat.id}
+                              bordered={false}
+                              color={
+                                selectedCategory === cat.id
+                                  ? "success"
+                                  : "processing"
+                              }
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) =>
+                                cat.id &&
+                                handleCategoryClick(e, cat.id.toString())
+                              }
+                            >
+                              {cat.name}
+                            </Tag>
+                          ),
+                        )}
+                      </div>
+
+                      {/* Các phần còn lại nằm bên phải */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
                       >
-                        {post.category.name}
-                      </Tag>
-                      <Text type="secondary">
-                        Created: {formatDateTime(post.createdAt)}
-                      </Text>
-                      <Text type="secondary">
-                        Modified: {formatDateTime(post.updatedAt)}
-                      </Text>
-                      <Text type="success">
-                        Today Views: {post.viewCount || 0}
-                      </Text>
-                      <Button
-                        type="link"
-                        onClick={() => router.push(`/posts/${post.id}`)}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        type="link"
-                        onClick={() => setUpdatePostId(post.id)}
-                      >
-                        Update
-                      </Button>
-                      <Popconfirm
-                        title="Are you sure to delete this post?"
-                        onConfirm={() => deleteMutation.mutate(post.id!)}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        <Button type="link" danger>
-                          Delete
+                        <Text type="secondary">
+                          Created: {formatDateTime(post.createdAt)}
+                        </Text>
+                        <Text type="secondary">
+                          Modified: {formatDateTime(post.updatedAt)}
+                        </Text>
+                        <Text type="success">
+                          Today Views: {post.viewCount || 0}
+                        </Text>
+                        <Button
+                          type="link"
+                          onClick={() => router.push(`/posts/${post.id}`)}
+                        >
+                          View
                         </Button>
-                      </Popconfirm>
+                        <Button
+                          type="link"
+                          onClick={() => setUpdatePostId(post.id)}
+                        >
+                          Update
+                        </Button>
+                        <Popconfirm
+                          title="Are you sure to delete this post?"
+                          onConfirm={() => deleteMutation.mutate(post.id!)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <Button type="link" danger>
+                            Delete
+                          </Button>
+                        </Popconfirm>
+                      </div>
                     </Space>
                   }
                 >

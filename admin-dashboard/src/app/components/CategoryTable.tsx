@@ -23,7 +23,6 @@ const CategoryTable: React.FC = () => {
   const { data: categoriesResponse, isLoading } = useGetCategories();
   const { mutate: deleteCategory } = useDeleteCategory();
 
-  // Mở modal để chỉnh sửa category
   const handleEdit = (category: CategoryType) => {
     setEditingCategory(category);
     setIsModalVisible(true);

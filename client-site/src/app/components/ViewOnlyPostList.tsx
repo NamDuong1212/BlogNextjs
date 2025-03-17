@@ -1,7 +1,19 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { List, Card, Typography, Space, Divider, Tag, Button, Select } from "antd";
+import {
+  List,
+  Card,
+  Typography,
+  Space,
+  Divider,
+  Tag,
+  Button,
+  Select,
+  Dropdown,
+  MenuProps
+} from "antd";
+import { DownOutlined, SortAscendingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { usePost } from "../hooks/usePost";
 import { Post } from "../types/post";
@@ -15,21 +27,25 @@ export const ViewOnlyPostList: React.FC = () => {
   const router = useRouter();
   const { useGetPosts, useGetPostsByCategory, useGetCategories } = usePost();
 
-  // selectedCategory sẽ được cập nhật khi ấn nút Search
+  // Các state phục vụ chọn danh mục
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  // State cho từng dropdown level
   const [selectedLevel1, setSelectedLevel1] = useState<any>(null);
   const [selectedLevel2, setSelectedLevel2] = useState<any>(null);
   const [selectedLevel3, setSelectedLevel3] = useState<any>(null);
   const [selectedLevel4, setSelectedLevel4] = useState<any>(null);
-
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Lấy danh mục dạng cây
+  // State cho sắp xếp
+  // viewAsc / viewDesc / dateAsc / dateDesc / null
+  const [sortOption, setSortOption] = useState<
+    "viewAsc" | "viewDesc" | "dateAsc" | "dateDesc" | null
+  >(null);
+
+  // Lấy dữ liệu danh mục
   const { data: categoriesResponse } = useGetCategories();
   const categories = categoriesResponse?.data || [];
 
+  // Các hàm chọn danh mục
   const handleLevel1Change = (value: string) => {
     const selected = categories.find((cat: any) => cat.id === value);
     setSelectedLevel1(selected);
@@ -62,7 +78,11 @@ export const ViewOnlyPostList: React.FC = () => {
   // Khi nhấn Search, chọn danh mục cuối cùng được chọn làm filter
   const handleSearch = () => {
     const categoryId =
-      selectedLevel4?.id || selectedLevel3?.id || selectedLevel2?.id || selectedLevel1?.id || null;
+      selectedLevel4?.id ||
+      selectedLevel3?.id ||
+      selectedLevel2?.id ||
+      selectedLevel1?.id ||
+      null;
     setSelectedCategory(categoryId);
   };
 
@@ -75,6 +95,7 @@ export const ViewOnlyPostList: React.FC = () => {
     setSelectedLevel4(null);
   };
 
+  // Lấy posts
   const { data: postsByCategory, isLoading: isCategoryLoading } =
     useGetPostsByCategory(selectedCategory || "");
   const { data: allPosts, isLoading: isAllPostsLoading } = useGetPosts();
@@ -82,29 +103,86 @@ export const ViewOnlyPostList: React.FC = () => {
   const posts = selectedCategory ? postsByCategory : allPosts;
   const isLoading = selectedCategory ? isCategoryLoading : isAllPostsLoading;
 
+  // Lấy param ?search= trên URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setSearchQuery(params.get("search") || "");
   }, [window.location.search]);
 
+  // Lọc bài viết theo search
   const filteredPosts = useMemo(() => {
-    return posts?.filter((post: Post) =>
-      searchQuery ? post.title.toLowerCase().includes(searchQuery.toLowerCase()) : true,
+    if (!posts) return [];
+    return posts.filter((post: Post) =>
+      searchQuery
+        ? post.title.toLowerCase().includes(searchQuery.toLowerCase())
+        : true
     );
   }, [posts, searchQuery]);
 
-  const sortedPosts = filteredPosts
-    ?.slice()
-    .sort(
-      (a: any, b: any) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+  // Sắp xếp bài viết theo sortOption
+  const sortedPosts = useMemo(() => {
+    const sorted = [...filteredPosts];
+
+    switch (sortOption) {
+      case "viewAsc":
+        sorted.sort((a, b) => (a.viewCount || 0) - (b.viewCount || 0));
+        break;
+      case "viewDesc":
+        sorted.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+        break;
+      case "dateAsc":
+        sorted.sort(
+          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+        break;
+      case "dateDesc":
+        sorted.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        break;
+      default:
+        break;
+    }
+
+    return sorted;
+  }, [filteredPosts, sortOption]);
+
+  // Menu sort cho Dropdown
+  const items: MenuProps["items"] = [
+    {
+      key: "viewAsc",
+      label: "View Count (Thấp -> Cao)",
+    },
+    {
+      key: "viewDesc",
+      label: "View Count (Cao -> Thấp)",
+    },
+    {
+      key: "dateAsc",
+      label: "Ngày Tạo (Cũ -> Mới)",
+    },
+    {
+      key: "dateDesc",
+      label: "Ngày Tạo (Mới -> Cũ)",
+    },
+  ];
+
+  // Xử lý khi chọn 1 item trong dropdown
+  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+    if (
+      key === "viewAsc" ||
+      key === "viewDesc" ||
+      key === "dateAsc" ||
+      key === "dateDesc"
+    ) {
+      setSortOption(key);
+    }
+  };
 
   return (
-    <div className="px-10">
-      {/* Các dropdown hiển thị theo chiều ngang */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        {/* Dropdown cấp 1 */}
+    <div className="max-w-screen-lg mx-auto">
+      {/* Khu vực chọn danh mục & nút search/reset */}
+      <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
         <Select
           placeholder="Chọn danh mục cấp 1"
           style={{ width: 200 }}
@@ -119,7 +197,6 @@ export const ViewOnlyPostList: React.FC = () => {
           ))}
         </Select>
 
-        {/* Dropdown cấp 2 */}
         <Select
           placeholder="Chọn danh mục cấp 2"
           style={{ width: 200 }}
@@ -135,7 +212,6 @@ export const ViewOnlyPostList: React.FC = () => {
           ))}
         </Select>
 
-        {/* Dropdown cấp 3 */}
         <Select
           placeholder="Chọn danh mục cấp 3"
           style={{ width: 200 }}
@@ -151,7 +227,6 @@ export const ViewOnlyPostList: React.FC = () => {
           ))}
         </Select>
 
-        {/* Dropdown cấp 4 */}
         <Select
           placeholder="Chọn danh mục cấp 4"
           style={{ width: 200 }}
@@ -170,21 +245,25 @@ export const ViewOnlyPostList: React.FC = () => {
         <Button type="primary" onClick={handleSearch}>
           Search
         </Button>
+        <Button onClick={handleReset}>All Posts</Button>
+      </div>
 
-        <Button onClick={handleReset}>
-          All Posts
-        </Button>
+      {/* Header cho danh sách bài viết: "Bài viết" bên trái & sort bên phải */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Bài viết</h2>
+        <Dropdown menu={{ items, onClick: handleMenuClick }} trigger={["click"]}>
+          <Button>
+            <SortAscendingOutlined style={{ fontSize: "16px" }} /> <DownOutlined />
+          </Button>
+        </Dropdown>
       </div>
 
       {/* Danh sách bài viết */}
-      <Title level={2} style={{ marginBottom: "24px" }}>
-        Latest Posts
-      </Title>
       <List
         loading={isLoading}
         dataSource={sortedPosts}
         pagination={{
-          pageSize: 4,
+          pageSize: 10,
           total: sortedPosts?.length,
           showSizeChanger: false,
           showTotal: (total) => `Total ${total} posts`,
@@ -195,8 +274,9 @@ export const ViewOnlyPostList: React.FC = () => {
         }}
         renderItem={(post: Post) => (
           <List.Item>
-            <div className="flex w-full gap-4 min-h-[200px]">
-              <div className="flex-shrink-0 w-[300px] h-[200px]">
+            <div className="flex w-full gap-4 min-h-[200px] p-4 bg-white shadow-md hover:shadow-lg transition-shadow duration-300">
+              {/* Ảnh bài viết */}
+              <div className="flex-shrink-0 w-[300px] h-[200px] overflow-hidden">
                 <ImageComponentPostImage
                   src={post.image}
                   alt="Post Image"
@@ -204,24 +284,35 @@ export const ViewOnlyPostList: React.FC = () => {
                   height="200px"
                 />
               </div>
+
+              {/* Card hiển thị tiêu đề, nội dung, etc. */}
               <Card
-                className="flex-1 cursor-pointer p-0"
+                className="flex-1 cursor-pointer p-4"
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
+                  border: "none",
+                  boxShadow: "none",
                 }}
                 onClick={() => router.push(`/posts/${post.id}`)}
                 extra={
                   <Space size="small">
-                    <Tag bordered={false} color="processing">
-                      {post.category?.name || "Uncategorized"}
-                    </Tag>
+                    {/* Danh mục */}
+                    <div>
+                      {post.categoryHierarchy?.map((cat: any) => (
+                        <Tag key={cat.id} bordered={false} color="processing">
+                          {cat.name}
+                        </Tag>
+                      ))}
+                    </div>
                     <Divider type="vertical" />
+                    {/* Ngày cập nhật */}
                     <Text type="secondary">
                       {formatDateTime(post.updatedAt) || "No date"}
                     </Text>
                     <Divider type="vertical" />
+                    {/* Avatar và tên người viết */}
                     <ImageComponentAvatar
                       size={35}
                       src={post.user?.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
@@ -235,12 +326,13 @@ export const ViewOnlyPostList: React.FC = () => {
               >
                 <Title
                   level={5}
-                  className="m-0 mb-1 overflow-hidden text-ellipsis whitespace-nowrap"
+                  className="m-0 mb-2 overflow-hidden text-ellipsis whitespace-nowrap"
                 >
                   {post.title || "Untitled Post"}
                 </Title>
+                {/* Đoạn mô tả ngắn (giới hạn 3 dòng) */}
                 <div
-                  className="overflow-hidden text-ellipsis leading-normal"
+                  className="text-gray-600"
                   style={{
                     display: "-webkit-box",
                     WebkitBoxOrient: "vertical",
