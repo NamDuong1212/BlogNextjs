@@ -9,7 +9,6 @@ export default function Home() {
     <div className="flex flex-col items-center justify-start min-h-screen py-12 px-10 md:px-32">
       <div className="w-full max-w-7xl p-5 bg-white">
 
-        {/* Hero / Banner giới thiệu (đẩy từ ViewOnlyPostList sang đây) */}
         <div className="text-center py-8 border-b mb-8">
           <Title level={2} style={{ marginBottom: 0 }}>
             CHIA SẺ HÀNH TRÌNH DU LỊCH &amp; KẾT NỐI CỘNG ĐỒNG
@@ -20,7 +19,6 @@ export default function Home() {
           </Text>
         </div>
 
-        {/* Gọi ViewOnlyPostList */}
         <ViewOnlyPostList />
       </div>
     </div>

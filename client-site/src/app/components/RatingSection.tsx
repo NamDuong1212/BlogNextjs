@@ -8,13 +8,14 @@ interface RatingSectionProps {
 }
 
 const RatingSection: React.FC<RatingSectionProps> = ({ postId, ratingId }) => {
-  const [userRating, setUserRating] = useState<number>(0);
+  const [userRating, setUserRating] = useState<number | null>(null);
   const { useGetAverageRating, useGetRatingById, useCreateRating } = useRating(postId);
   const { data: averageRating, isLoading: isLoadingAverage } = useGetAverageRating();
   const { data: ratingData, isLoading: isLoadingRating } = useGetRatingById(ratingId || '');
   const { mutate: createRating } = useCreateRating();
 
   useEffect(() => {
+
     if (ratingData) {
       setUserRating(ratingData.stars);
     }
@@ -26,31 +27,32 @@ const RatingSection: React.FC<RatingSectionProps> = ({ postId, ratingId }) => {
   };
 
   const isLoading = isLoadingAverage || isLoadingRating;
+  
+
+  const displayValue = userRating !== null ? userRating : (averageRating || 0);
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">Average Rating:</span>
+    <div className="flex flex-col items-center space-y-2">
+      <div className="flex items-center">
         {isLoading ? (
           <Spin size="small" />
         ) : (
-          <span className="text-lg font-bold">
-            {averageRating?.toFixed(1) || 'No ratings'}
-          </span>
+          <>
+            <Rate 
+              value={displayValue} 
+              onChange={handleRating} 
+              allowHalf={false}
+            />
+            <span className="ml-2 text-sm text-gray-500">
+              {userRating !== null 
+                ? `Đánh giá của bạn: ${userRating} sao` 
+                : averageRating 
+                  ? `${averageRating.toFixed(1)}` 
+                  : 'Chưa có đánh giá nào'}
+            </span>
+          </>
         )}
       </div>
-
-      <Rate
-        allowHalf={false}
-        value={userRating}
-        onChange={handleRating}
-        className="text-2xl"
-      />
-      {userRating > 0 && (
-        <span className="text-sm text-gray-600">
-          Your rating: {userRating} stars
-        </span>
-      )}
     </div>
   );
 };

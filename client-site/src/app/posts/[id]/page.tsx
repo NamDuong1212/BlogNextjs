@@ -1,6 +1,16 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { Space, Typography, Tag, Button, Modal, Input, Form, Card, Avatar } from "antd";
+import {
+  Space,
+  Typography,
+  Tag,
+  Button,
+  Modal,
+  Input,
+  Form,
+  Card,
+  Avatar,
+} from "antd";
 import {
   CalendarOutlined,
   EyeOutlined,
@@ -40,8 +50,9 @@ const PostDetail: React.FC = () => {
   const { useGetPostById, useGetRelatedPosts } = usePost();
   const { useCreateReport } = useReport();
   const { data: post, isLoading } = useGetPostById(id as string);
-  const { data: relatedPosts = [], isLoading: isLoadingRelated } = useGetRelatedPosts(id as string);
-  
+  const { data: relatedPosts = [], isLoading: isLoadingRelated } =
+    useGetRelatedPosts(id as string);
+
   const createReportMutation = useCreateReport(() => {
     setIsReportModalOpen(false);
     form.resetFields();
@@ -133,12 +144,12 @@ const PostDetail: React.FC = () => {
     }
   };
 
-  const scrollRelatedPosts = (direction: 'left' | 'right') => {
+  const scrollRelatedPosts = (direction: "left" | "right") => {
     if (relatedPostsRef.current) {
-      const scrollAmount = direction === 'left' ? -300 : 300;
+      const scrollAmount = direction === "left" ? -300 : 300;
       relatedPostsRef.current.scrollBy({
         left: scrollAmount,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -174,13 +185,19 @@ const PostDetail: React.FC = () => {
               <Space size="large">
                 {post.categoryHierarchy?.length > 0 && (
                   <Space size="small">
-                  {post.categoryHierarchy?.map((cat: { id: string; name: string }) => (
-                    <Tag key={cat.id} bordered={false} color="processing" style={{ cursor: "pointer" }}>
-                      {cat.name}
-                    </Tag>
-                  ))}
-                </Space>
-                
+                    {post.categoryHierarchy?.map(
+                      (cat: { id: string; name: string }) => (
+                        <Tag
+                          key={cat.id}
+                          bordered={false}
+                          color="processing"
+                          style={{ cursor: "pointer" }}
+                        >
+                          {cat.name}
+                        </Tag>
+                      ),
+                    )}
+                  </Space>
                 )}
 
                 <span>
@@ -189,7 +206,7 @@ const PostDetail: React.FC = () => {
                 </span>
                 <span className="view-count">
                   <EyeOutlined style={{ marginRight: 4 }} />
-                  {post.viewCount} views
+                  {post.viewCount} lượt xem
                 </span>
               </Space>
             </Paragraph>
@@ -290,7 +307,7 @@ const PostDetail: React.FC = () => {
           loading={isDownloading}
           size="large"
         >
-          Download as PDF
+          Tải PDF
         </Button>
         <Button
           type="default"
@@ -299,12 +316,12 @@ const PostDetail: React.FC = () => {
           onClick={() => setIsReportModalOpen(true)}
           size="large"
         >
-          Report Post
+          Báo cáo
         </Button>
       </div>
 
       <Modal
-        title="Report Post"
+        title="Báo cáo bài viết"
         open={isReportModalOpen}
         onCancel={() => {
           setIsReportModalOpen(false);
@@ -319,14 +336,11 @@ const PostDetail: React.FC = () => {
             rules={[
               {
                 required: true,
-                message: "Please provide a reason for reporting",
+                message: "Hãy nhập lý do báo cáo",
               },
             ]}
           >
-            <TextArea
-              rows={4}
-              placeholder="Please describe why you are reporting this post..."
-            />
+            <TextArea rows={4} placeholder="Nhập lý do báo cáo tại đây..." />
           </Form.Item>
           <Form.Item>
             <div
@@ -336,16 +350,14 @@ const PostDetail: React.FC = () => {
                 gap: "8px",
               }}
             >
-              <Button onClick={() => setIsReportModalOpen(false)}>
-                Cancel
-              </Button>
+              <Button onClick={() => setIsReportModalOpen(false)}>Huỷ</Button>
               <Button
                 type="primary"
                 danger
                 htmlType="submit"
                 loading={createReportMutation.isPending}
               >
-                Submit Report
+                Gửi báo cáo
               </Button>
             </div>
           </Form.Item>
@@ -369,58 +381,84 @@ const PostDetail: React.FC = () => {
         />
       )}
 
-      {/* Related Posts Section */}
       <div style={{ marginTop: "40px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-          <Title level={4} style={{ margin: 0 }}>Related Posts</Title>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "15px",
+          }}
+        >
+          <Title level={4} style={{ margin: 0 }}>
+            Có thể bạn sẽ thích
+          </Title>
           <div style={{ display: "flex", gap: "8px" }}>
-            <Button 
-              type="default" 
-              icon={<LeftOutlined />} 
-              onClick={() => scrollRelatedPosts('left')}
+            <Button
+              type="default"
+              icon={<LeftOutlined />}
+              onClick={() => scrollRelatedPosts("left")}
               disabled={isLoadingRelated || relatedPosts.length === 0}
             />
-            <Button 
-              type="default" 
-              icon={<RightOutlined />} 
-              onClick={() => scrollRelatedPosts('right')}
+            <Button
+              type="default"
+              icon={<RightOutlined />}
+              onClick={() => scrollRelatedPosts("right")}
               disabled={isLoadingRelated || relatedPosts.length === 0}
             />
           </div>
         </div>
 
-        <div 
+        <div
           ref={relatedPostsRef}
-          style={{ 
+          style={{
             display: "flex",
             overflowX: "auto",
             gap: "16px",
             padding: "4px",
             scrollbarWidth: "thin",
             msOverflowStyle: "none",
-            scrollSnapType: "x mandatory"
+            scrollSnapType: "x mandatory",
           }}
           className="hide-scrollbar"
         >
           {isLoadingRelated ? (
-            <div style={{ padding: "20px", textAlign: "center", width: "100%" }}>Loading related posts...</div>
+            <div
+              style={{ padding: "20px", textAlign: "center", width: "100%" }}
+            >
+              Đang lấy dữ liệu bài viết liên quan...
+            </div>
           ) : relatedPosts.length === 0 ? (
-            <div style={{ padding: "20px", textAlign: "center", width: "100%" }}>No related posts found</div>
+            <div
+              style={{ padding: "20px", textAlign: "center", width: "100%" }}
+            >
+              Không có bài viết liên quan nào
+            </div>
           ) : (
             relatedPosts.map((relatedPost: any) => (
               <Card
                 key={relatedPost.id}
                 hoverable
-                style={{ 
-                  width: 280, 
+                style={{
+                  width: 280,
                   minWidth: 280,
-                  scrollSnapAlign: "start"
+                  scrollSnapAlign: "start",
                 }}
                 cover={
-                  <div style={{ height: 160, overflow: "hidden", position: "relative" }}>
+                  <div
+                    style={{
+                      height: 160,
+                      overflow: "hidden",
+                      position: "relative",
+                    }}
+                  >
                     <ImageComponentPostImage
                       alt={relatedPost.title}
-                      src={relatedPost.image ? `${relatedPost.image}` : "https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"}
+                      src={
+                        relatedPost.image
+                          ? `${relatedPost.image}`
+                          : "https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"
+                      }
                     />
                   </div>
                 }
@@ -430,69 +468,97 @@ const PostDetail: React.FC = () => {
                   avatar={
                     <ImageComponentAvatar
                       size={35}
-                      src={relatedPost.user?.avatar || relatedPost.avatar || "https://i.imgur.com/CzXTtJV.jpg"} alt={""}                    />
+                      src={
+                        relatedPost.user?.avatar ||
+                        relatedPost.avatar ||
+                        "https://i.imgur.com/CzXTtJV.jpg"
+                      }
+                      alt={""}
+                    />
                   }
                   title={
-                    <div style={{ 
-                      whiteSpace: "nowrap", 
-                      overflow: "hidden", 
-                      textOverflow: "ellipsis" 
-                    }}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {relatedPost.title}
                     </div>
                   }
                   description={
                     <div>
-                      <div style={{ 
-                        fontSize: "13px", 
-                        marginBottom: "6px",
-                        display: "flex",
-                        alignItems: "center"
-                      }}>
-                        <UserOutlined style={{ marginRight: 4, fontSize: "12px" }} />
-                        <span style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis"
-                        }}>
-                          {relatedPost.user?.username || relatedPost.author || "Unknown"}
-                        </span>
-                      </div>
-                      
-                      {relatedPost.categoryHierarchy?.length > 0 && (
-                        <div style={{ 
-                          fontSize: "12px", 
-                          color: "#8c8c8c",
-                          marginBottom: "4px",
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          marginBottom: "6px",
                           display: "flex",
-                          alignItems: "flex-start"
-                        }}>
-                          <TagOutlined style={{ marginRight: 4, marginTop: "3px" }} />
-                          <div style={{
-                            flex: 1,
+                          alignItems: "center",
+                        }}
+                      >
+                        <UserOutlined
+                          style={{ marginRight: 4, fontSize: "12px" }}
+                        />
+                        <span
+                          style={{
+                            whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 1,
-                            WebkitBoxOrient: "vertical"
-                          }}>
-                            {relatedPost.categoryHierarchy.map((cat: any, index: number) => (
-                              <React.Fragment key={cat.id}>
-                                <span>{cat.name}</span>
-                                {index < relatedPost.categoryHierarchy.length - 1 && " > "}
-                              </React.Fragment>
-                            ))}
+                          }}
+                        >
+                          {relatedPost.user?.username ||
+                            relatedPost.author ||
+                            "Unknown"}
+                        </span>
+                      </div>
+
+                      {relatedPost.categoryHierarchy?.length > 0 && (
+                        <div
+                          style={{
+                            fontSize: "12px",
+                            color: "#8c8c8c",
+                            marginBottom: "4px",
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <TagOutlined
+                            style={{ marginRight: 4, marginTop: "3px" }}
+                          />
+                          <div
+                            style={{
+                              flex: 1,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 1,
+                              WebkitBoxOrient: "vertical",
+                            }}
+                          >
+                            {relatedPost.categoryHierarchy.map(
+                              (cat: any, index: number) => (
+                                <React.Fragment key={cat.id}>
+                                  <span>{cat.name}</span>
+                                  {index <
+                                    relatedPost.categoryHierarchy.length - 1 &&
+                                    " > "}
+                                </React.Fragment>
+                              ),
+                            )}
                           </div>
                         </div>
                       )}
-                      
-                      <div style={{ 
-                        fontSize: "12px", 
-                        color: "#8c8c8c",
-                        marginTop: "4px"
-                      }}>
+
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "#8c8c8c",
+                          marginTop: "4px",
+                        }}
+                      >
                         <CalendarOutlined style={{ marginRight: 4 }} />
-                        {formatDateTime(relatedPost.createdAt).split(' ')[0]}
+                        {formatDateTime(relatedPost.createdAt)}
                       </div>
                     </div>
                   }
@@ -501,22 +567,21 @@ const PostDetail: React.FC = () => {
             ))
           )}
         </div>
-        
-        {/* CSS for hiding scrollbar but keeping functionality */}
+
         <style jsx global>{`
           .hide-scrollbar::-webkit-scrollbar {
             height: 6px;
           }
-          
+
           .hide-scrollbar::-webkit-scrollbar-thumb {
             background-color: rgba(0, 0, 0, 0.2);
             border-radius: 3px;
           }
-          
+
           .hide-scrollbar::-webkit-scrollbar-track {
             background-color: transparent;
           }
-          
+
           @media (hover: none) {
             .hide-scrollbar::-webkit-scrollbar {
               display: none;

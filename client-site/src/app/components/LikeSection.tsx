@@ -1,86 +1,86 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
-import { Space, Button, Tooltip, message } from "antd";
+import React, { useState } from "react";
+import { Space, Typography, Spin } from "antd";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { useLike } from "@/app/hooks/useLike";
-import { LikeSectionState } from "../types/like";
 
-const LikeSection: React.FC<LikeSectionState> = ({ postId }) => {
-  const { useGetLikeCount, useLikePost, useUnlikePost } = useLike();
+const { Text } = Typography;
 
-  const { data } = useGetLikeCount(postId);
+interface LikeSectionProps {
+  postId: string;
+}
 
-  const [likeCount, setLikeCount] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+const LikeSection: React.FC<LikeSectionProps> = ({ postId }) => {
+  const { useGetLikeCount, useCheckLikeStatus, useLikePost, useUnlikePost } =
+    useLike();
 
-  const { mutate: likePost, isPending: isLiking } = useLikePost();
-  const { mutate: unlikePost, isPending: isUnliking } = useUnlikePost();
+  const { data: likeCountData, isLoading: isCountLoading } =
+    useGetLikeCount(postId);
+  const { data: likeStatusData, isLoading: isStatusLoading } =
+    useCheckLikeStatus(postId);
 
-  useEffect(() => {
-    if (data?.likes !== undefined) {
-      setLikeCount(data.likes);
-    }
-  }, [data]);
+  const [optimisticLiked, setOptimisticLiked] = useState<boolean | null>(null);
+  const [optimisticCount, setOptimisticCount] = useState<number | null>(null);
+
+  const { mutate: likePost } = useLikePost();
+  const { mutate: unlikePost } = useUnlikePost();
+
+  const isLiked =
+    optimisticLiked !== null ? optimisticLiked : likeStatusData?.status === 1;
+  const likeCount =
+    optimisticCount !== null ? optimisticCount : likeCountData?.likes || 0;
 
   const handleLikeToggle = () => {
     if (isLiked) {
+      setOptimisticLiked(false);
+      setOptimisticCount(Math.max(0, likeCount - 1));
+
       unlikePost(postId, {
-        onSuccess: () => {
-          setIsLiked(false);
-          setLikeCount((prev: number) => Math.max(prev - 1, 0));
-          message.success("You unliked this post.");
-        },
         onError: () => {
-          message.error("Failed to unlike the post.");
+          setOptimisticLiked(true);
+          setOptimisticCount(likeCount);
         },
       });
     } else {
+      setOptimisticLiked(true);
+      setOptimisticCount(likeCount + 1);
+
       likePost(postId, {
-        onSuccess: () => {
-          setIsLiked(true);
-          setLikeCount((prev: number) => prev + 1);
-          message.success("You liked this post.");
-        },
         onError: () => {
-          message.error("Failed to like the post.");
+          setOptimisticLiked(false);
+          setOptimisticCount(Math.max(0, likeCount - 1));
         },
       });
     }
   };
 
+  if (isCountLoading || isStatusLoading) {
+    return (
+      <Space>
+        <Spin size="small" />
+        <Text>Loading likes...</Text>
+      </Space>
+    );
+  }
+
   return (
-    <Space direction="vertical" align="center" style={{ width: "100%" }}>
-      <Tooltip title={isLiked ? "Unlike" : "Like"}>
-        <Button
-          type="text"
-          icon={
-            isLiked ? (
-              <HeartFilled style={{ color: "#ff4d4f" }} />
-            ) : (
-              <HeartOutlined />
-            )
-          }
-          onClick={handleLikeToggle}
-          loading={isLiking || isUnliking}
-          size="large"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-          }}
-        >
-          <span
-            style={{
-              marginLeft: "4px",
-              color: isLiked ? "#ff4d4f" : "inherit",
-            }}
-          >
-            {likeCount} {likeCount === 1 ? "Like" : "Likes"}
-          </span>
-        </Button>
-      </Tooltip>
-    </Space>
+    <div
+      style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}
+    >
+      <Space
+        align="center"
+        size="small"
+        style={{ cursor: "pointer" }}
+        onClick={handleLikeToggle}
+      >
+        {isLiked ? (
+          <HeartFilled style={{ fontSize: "20px", color: "#f5222d" }} />
+        ) : (
+          <HeartOutlined style={{ fontSize: "20px", color: "#f5222d" }} />
+        )}
+        <Text>{likeCount} lượt thích</Text>
+      </Space>
+    </div>
   );
 };
 

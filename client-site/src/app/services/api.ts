@@ -155,6 +155,16 @@ export const likeApi = {
     const response = await api.get(`/like/${postId}/count`);
     return response.data;
   },
+
+  checkLikeStatus: async (postId: string): Promise<any> => {
+    const response = await api.get(`/like/${postId}/status`);
+    return response.data;
+  },
+  
+  getUserLikedPosts: async (): Promise<any> => {
+    const response = await api.get('/like/user/posts');
+    return response.data.posts || [];
+  },
 };
 
 export const commentApi = {

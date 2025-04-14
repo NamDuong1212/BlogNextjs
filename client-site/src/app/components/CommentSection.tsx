@@ -84,7 +84,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
         }
         icon={<CommentOutlined />}
       >
-        Reply
+        Trả lời
       </Button>,
       isOwner && (
         <EditOutlined key="edit" onClick={() => startEditing(comment)} />
@@ -192,16 +192,14 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
 
   return (
     <div style={{ marginTop: "40px" }}>
-      <Title level={4}>Comments</Title>
+      <Title level={4}>Bình luận</Title>
       <List
         loading={isLoading}
         dataSource={comments}
         header={
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <CommentOutlined style={{ fontSize: "20px" }} />
-            {`${countTotalComments(comments)} ${
-              countTotalComments(comments) > 1 ? "comments" : "comment"
-            }`}
+            {`${countTotalComments(comments)} bình luận`}
           </div>
         }
         itemLayout="horizontal"
@@ -220,7 +218,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                   <TextArea
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
-                    placeholder={`Reply to ${replyingTo?.username || ""}...`}
+                    placeholder={`Trả lời ${replyingTo?.username || ""}...`}
                     rows={2}
                     style={{ flex: 1 }}
                   />
@@ -231,9 +229,9 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                   style={{ marginRight: 8 }}
                   loading={replyCommentMutation.isPending}
                 >
-                  Reply
+                  Trả lời
                 </Button>
-                <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
+                <Button onClick={() => setReplyingTo(null)}>Huỷ</Button>
               </div>
             )}
             {renderReplies(comment.replies)}
@@ -251,7 +249,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
               rows={3}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write a comment..."
+              placeholder="Hãy viết bình luận ..."
               style={{ flex: 1 }}
             />
           </div>
@@ -261,12 +259,12 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
             style={{ marginTop: "10px" }}
             loading={createCommentMutation.isPending}
           >
-            Post Comment
+            Gửi bình luận
           </Button>
         </div>
       ) : (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
-          Please log in to post comments.
+          Hãy đăng nhập để bình luận
         </div>
       )}
     </div>

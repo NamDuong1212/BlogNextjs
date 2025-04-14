@@ -12,16 +12,29 @@ export const useLike = () => {
       enabled: !!postId,
     });
   };
+  
+  const useCheckLikeStatus = (postId: string) => {
+    return useQuery({
+      queryKey: ["likes", "status", postId],
+      queryFn: () => likeApi.checkLikeStatus(postId),
+      enabled: !!postId,
+    });
+  };
+  
+  const useGetUserLikedPosts = () => {
+    return useQuery({
+      queryKey: ["likes", "user", "posts"],
+      queryFn: () => likeApi.getUserLikedPosts(),
+    });
+  };
 
   const useLikePost = () => {
     return useMutation({
       mutationFn: (postId: string) => likeApi.likePost(postId),
       onSuccess: (_, postId) => {
         queryClient.invalidateQueries({ queryKey: ["likes", "count", postId] });
-        toast.success("Post liked successfully");
-      },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error liking post");
+        queryClient.invalidateQueries({ queryKey: ["likes", "status", postId] });
+        queryClient.invalidateQueries({ queryKey: ["likes", "user", "posts"] });
       },
     });
   };
@@ -31,16 +44,16 @@ export const useLike = () => {
       mutationFn: (postId: string) => likeApi.unlikePost(postId),
       onSuccess: (_, postId) => {
         queryClient.invalidateQueries({ queryKey: ["likes", "count", postId] });
-        toast.success("Post unliked successfully");
-      },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error unliking post");
+        queryClient.invalidateQueries({ queryKey: ["likes", "status", postId] });
+        queryClient.invalidateQueries({ queryKey: ["likes", "user", "posts"] });
       },
     });
   };
 
   return {
     useGetLikeCount,
+    useCheckLikeStatus,
+    useGetUserLikedPosts,
     useLikePost,
     useUnlikePost,
   };
