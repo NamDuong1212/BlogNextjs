@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
 
           <div className="flex-1 max-w-md mx-4 flex gap-2">
             <Input
-              placeholder="Search posts..."
+              placeholder="Tìm kiếm bài viết..."
               size="middle"
               value={searchValue}
               onChange={(e) => {
@@ -116,13 +116,13 @@ const Navbar: React.FC = () => {
                   href="/login"
                   className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-300"
                 >
-                  Login
+                  Đăng nhập
                 </Link>
                 <Link
                   href="/register"
                   className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:from-green-600 hover:to-teal-600 transition-all duration-300"
                 >
-                  Register
+                  Đăng ký
                 </Link>
               </>
             )}

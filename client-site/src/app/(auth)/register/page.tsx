@@ -53,13 +53,13 @@ const Register: React.FC = () => {
 
   if (showOtpForm) {
     return (
-      <div className="x-auto px-4 py-8">
+      <div className="x-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <Card
-          title={<h2 className="text-center text-2xl font-bold">Verify OTP</h2>}
+          title={<h2 className="text-center text-2xl font-bold">Xác thực OTP</h2>}
           className="max-w-md mx-auto"
         >
           <p className="text-center mb-4">
-            An OTP has been sent to {registeredEmail}
+            Mã OTP đã được gửi đến {registeredEmail}
           </p>
           <Form
             form={form}
@@ -71,13 +71,13 @@ const Register: React.FC = () => {
             <Form.Item
               name="otp"
               rules={[
-                { required: true, message: "Please input your OTP!" },
-                { len: 6, message: "OTP must be exactly 6 digits!" },
+                { required: true, message: "Hãy nhập mã OTP!" },
+                { len: 6, message: "Mã OTP phải có chính xác 6 ký tự!" },
               ]}
             >
               <Input
                 prefix={<NumberOutlined />}
-                placeholder="Enter 6-digit OTP"
+                placeholder="Nhập mã OTP gồm 6 chữ số"
                 maxLength={6}
               />
             </Form.Item>
@@ -90,7 +90,7 @@ const Register: React.FC = () => {
                 className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:from-green-600 hover:to-teal-600 transition-all duration-300"
                 loading={verifyOtpMutation.isPending}
               >
-                {verifyOtpMutation.isPending ? "Verifying..." : "Verify OTP"}
+                {verifyOtpMutation.isPending ? "Đang xác thực ..." : "Xác thực mã OTP"}
               </Button>
             </Form.Item>
           </Form>
@@ -100,10 +100,10 @@ const Register: React.FC = () => {
   }
 
   return (
-    <div className="x-auto px-4 py-8">
+    <div className="x-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <Card
-        title={<h2 className="text-center text-2xl font-bold">Sign Up</h2>}
-        className="max-w-md mx-auto"
+        title={<h2 className="text-center text-2xl font-bold">Đăng Ký</h2>}
+        className="w-full sm:max-w-md mx-auto"
       >
         <Form
           form={form}
@@ -114,16 +114,16 @@ const Register: React.FC = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Please input your name!" }]}
+            rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Username" />
+            <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
           </Form.Item>
 
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: "Please input your email!" },
-              { type: "email", message: "Please enter a valid email!" },
+              { required: true, message: "Hãy nhập email!" },
+              { type: "email", message: "Hãy nhập đúng định dạng email!" },
             ]}
           >
             <Input prefix={<MailOutlined />} placeholder="Email" />
@@ -132,11 +132,11 @@ const Register: React.FC = () => {
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: "Please input your password!" },
-              { min: 6, message: "Password must be at least 6 characters!" },
+              { required: true, message: "Hãy nhập mật khẩu!" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
             ]}
           >
-            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+            <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
           </Form.Item>
 
           <Form.Item>
@@ -147,15 +147,15 @@ const Register: React.FC = () => {
               className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:from-green-600 hover:to-teal-600 transition-all duration-300"
               loading={registerMutation.isPending}
             >
-              {registerMutation.isPending ? "Signing up..." : "Sign Up"}
+              {registerMutation.isPending ? "Đang đăng ký" : "Đăng ký"}
             </Button>
           </Form.Item>
 
           <div className="text-center">
             <Space>
-              <span>Already a user?</span>
+              <span>Đã có tài khoản?</span>
               <Link href="/login" className="text-blue-500 hover:text-blue-700">
-                Login
+                Đăng nhập
               </Link>
             </Space>
           </div>
