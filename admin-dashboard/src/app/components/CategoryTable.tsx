@@ -64,7 +64,7 @@ const CategoryTable: React.FC = () => {
 
   const columns: TableColumnsType<CategoryType> = [
     {
-      title: "Category Name",
+      title: "Tên danh mục",
       dataIndex: "name",
       key: "name",
       render: (_, record) => (
@@ -80,13 +80,13 @@ const CategoryTable: React.FC = () => {
       ),
     },
     {
-      title: "Description",
+      title: "Mô tả",
       dataIndex: "description",
       key: "description",
       render: (text: string) => <div style={{ whiteSpace: "pre-wrap" }}>{text}</div>,
     },
     {
-      title: "Level",
+      title: "Cấp độ",
       dataIndex: "level",
       key: "level",
       render: (level: number) => (
@@ -94,7 +94,7 @@ const CategoryTable: React.FC = () => {
       ),
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "action",
       width: 160,
       render: (_, record) => (
@@ -117,10 +117,10 @@ const CategoryTable: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Card title="Category Management" bordered={false}>
+      <Card bordered={false}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
           <Input.Search
-            placeholder="Search categories..."
+            placeholder="Tìm danh mục"
             allowClear
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: 300 }}
@@ -133,7 +133,7 @@ const CategoryTable: React.FC = () => {
               setIsModalVisible(true);
             }}
           >
-            Add Category
+            Thêm danh mục mới
           </Button>
         </div>
         <Table<CategoryType>

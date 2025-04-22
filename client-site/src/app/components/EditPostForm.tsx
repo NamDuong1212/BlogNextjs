@@ -4,7 +4,7 @@ import { Space, Input, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Post } from "../types/post";
 import { usePost } from "../hooks/usePost";
-import DraggablePostEditor from "./DraggablePostEditor";
+import toast from "react-hot-toast";
 
 interface EditPostFormProps {
   post: Post;
@@ -59,8 +59,8 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         },
       );
     } catch (error) {
-      console.error("Error updating post:", error);
-      message.error("Failed to update post");
+      console.error("Lỗi sửa bài viết", error);
+      toast.error("Sửa bài viết không thành công");
     }
   };
 
@@ -71,7 +71,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         onChange={(e) =>
           setUpdateData((prev) => ({ ...prev, title: e.target.value }))
         }
-        placeholder="Edit title"
+        placeholder="Sửa tiểu đề"
         style={{ marginBottom: 10 }}
       />
 
@@ -80,7 +80,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         onChange={(e) =>
           setUpdateData((prev) => ({ ...prev, content: e.target.value }))
         }
-        placeholder="Edit content"
+        placeholder="Sửa nội dung"
         rows={4}
         style={{ marginBottom: 10 }}
       />
@@ -104,7 +104,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({
         onRemove={() => setSelectedFile(null)}
       >
         <Button icon={<UploadOutlined />} style={{ marginBottom: 10 }}>
-          {post.image ? "Change Image" : "Add Image"}
+          {post.image ? "Đổi ảnh" : "Thêm ảnh"}
         </Button>
       </Upload>
 

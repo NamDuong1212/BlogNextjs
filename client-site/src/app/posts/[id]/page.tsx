@@ -114,11 +114,37 @@ const PostDetail: React.FC = () => {
 
       const styleElement = document.createElement("style");
       styleElement.textContent = `
-        .pdf-content { padding: 20px; }
-        img { max-width: 100%; height: auto; }
-        .ant-space { display: block !important; }
-        .ant-space-item { margin-bottom: 20px !important; }
-      `;
+  .pdf-content {
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: auto;
+  }
+  h1, h2, h3 {
+    color: #222;
+    margin-top: 24px;
+    margin-bottom: 16px;
+  }
+  p {
+    margin-bottom: 12px;
+    text-align: justify;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    margin: 16px 0;
+    border-radius: 4px;
+  }
+  .ant-space {
+    display: block !important;
+  }
+  .ant-space-item {
+    margin-bottom: 20px !important;
+  }
+`;
+
       pdfContent.appendChild(styleElement);
       pdfContent.appendChild(content);
 
@@ -332,7 +358,7 @@ const PostDetail: React.FC = () => {
         <Form form={form} onFinish={handleReportSubmit} layout="vertical">
           <Form.Item
             name="reason"
-            label="Reason for reporting"
+            label="Lý do báo cáo"
             rules={[
               {
                 required: true,

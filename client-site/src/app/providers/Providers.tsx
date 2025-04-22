@@ -21,10 +21,10 @@ const toastOptions: ToastOptions = {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <QueryProvider>
-      <AntProvider>
+        <AntProvider>
         {children}
         <Toaster toastOptions={toastOptions} />
-      </AntProvider>
+        </AntProvider>
     </QueryProvider>
   );
 }

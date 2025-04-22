@@ -5,10 +5,10 @@ import { toast } from "react-hot-toast";
 export const usePost = () => {
   const queryClient = useQueryClient();
 
-  const useGetPosts = () => {
+  const useGetPosts = (page = 1, limit = 10) => {
     return useQuery({
-      queryKey: ["posts"],
-      queryFn: () => postApi.getPosts(),
+      queryKey: ["posts", page, limit],
+      queryFn: () => postApi.getPosts(page, limit),
       staleTime: 0,
     });
   };
@@ -21,10 +21,11 @@ export const usePost = () => {
     });
   };
 
-  const useGetPostsByCategory = (categoryId: string) => {
+  const useGetPostsByCategory = (categoryId: string, page = 1, limit = 10) => {
     return useQuery({
-      queryKey: ["posts", "category", categoryId],
-      queryFn: () => postApi.getPostsByCategory(categoryId),
+      queryKey: ["postsByCategory", categoryId, page, limit],
+      queryFn: () => postApi.getPostsByCategory(categoryId, page, limit),
+      staleTime: 0,
       enabled: !!categoryId,
     });
   };
@@ -58,11 +59,10 @@ export const usePost = () => {
       mutationFn: (data: any) => postApi.createPost(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Post created successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error creating post");
+        toast.error(error.message || "Lỗi tạo bài viết");
       },
     });
   };
@@ -72,11 +72,11 @@ export const usePost = () => {
       mutationFn: (data: any) => postApi.updatePost(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Post updated successfully");
+        toast.success("Cập nhật bài viết thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error updating post");
+        toast.error(error.message || "Cập nhật bài viết thất bại");
       },
     });
   };
@@ -86,10 +86,10 @@ export const usePost = () => {
       mutationFn: (id: any) => postApi.deletePost(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Post deleted successfully");
+        toast.success("Đã xóa bài viết thành công");
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error deleting post");
+        toast.error(error.message || "Xóa bài viết thất bại");
       },
     });
   };
@@ -100,11 +100,11 @@ export const usePost = () => {
         postApi.uploadPostImage(id, file),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["post"] });
-        toast.success("Image uploaded successfully");
+        toast.success("Tải ảnh lên thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error uploading image");
+        toast.error(error.message || "Tải ảnh lên thất bại");
       },
     });
   };

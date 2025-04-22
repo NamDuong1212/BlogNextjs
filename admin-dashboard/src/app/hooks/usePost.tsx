@@ -18,11 +18,11 @@ export const usePosts = () => {
       mutationFn: (id: any) => postApi.getDeletePost(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Post deleted successfully");
+        toast.success("Bài viết đã được xóa thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error deleting post");
+        toast.error(error.message || "Lỗi xóa bài viết");
       },
     });
   }

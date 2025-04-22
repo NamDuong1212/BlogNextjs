@@ -12,31 +12,31 @@ const PostTable: React.FC = () => {
 
   const columns: TableColumnsType = [
     { title: "ID", dataIndex: "_id", key: "_id"},
-    { title: "Title", dataIndex: "title", key: "title" },
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
     {
-      title: "Views",
+      title: "Lượt xem",
       dataIndex: "viewCount",
       sorter: (a, b) => a.viewCount - b.viewCount,
       key: "viewCount",
     },
-    { title: "Category", dataIndex: "category", key: "category" },
-    { title: "Author", dataIndex: "user", key: "user" },
+    { title: "Danh mục", dataIndex: "category", key: "category" },
+    { title: "Tác giả", dataIndex: "user", key: "user" },
     {
-      title: "Created",
+      title: "Ngày tạo",
       dataIndex: "createdAt",
       sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
       key: "createdAt",
       render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
     },
     {
-      title: "Updated",
+      title: "Ngày sửa dổi",
       dataIndex: "updatedAt",
       sorter: (a, b) => dayjs(a.updatedAt).unix() - dayjs(b.updatedAt).unix(),
       key: "updatedAt",
       render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, record) => (
         <Space>

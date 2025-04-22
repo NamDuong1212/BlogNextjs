@@ -23,18 +23,16 @@ const ReportTable: React.FC = () => {
   const [processedReports, setProcessedReports] = useState<number[]>([]);
   const { useGetReport, useDeleteReport } = useReport();
   const { data: reportsResponse, isLoading } = useGetReport();
-  // We are reusing the delete mutation to simulate processing the report.
-  // You can replace this with a dedicated processReport hook if available.
   const { mutate: processReport } = useDeleteReport();
 
   const handleProcess = (id: number) => {
     processReport(id, {
       onSuccess: () => {
         setProcessedReports((prev) => [...prev, id]);
-        toast.success("Report processed successfully");
+        toast.success("Báo cáo đã được xử lý thành công");
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error processing report");
+        toast.error(error.message || "Lỗi xử lý báo cáo");
       },
     });
   };
@@ -59,28 +57,28 @@ const ReportTable: React.FC = () => {
 
   const columns: TableColumnsType<ReportType> = [
     {
-      title: "Report ID",
+      title: "ID báo cáo",
       dataIndex: "id",
       key: "id",
     },
     {
-      title: "Reason",
+      title: "Lý do",
       dataIndex: "reason",
       key: "reason",
     },
     {
-      title: "Post ID",
+      title: "ID bài viết",
       dataIndex: "postId",
       key: "postId",
     },
     {
-      title: "Reported At",
+      title: "Ngày báo cáo",
       dataIndex: "reportedAt",
       key: "reportedAt",
       render: (date: string) => new Date(date).toLocaleString(),
     },
     {
-      title: "Reported By",
+      title: "Người báo cáo",
       dataIndex: "reportedBy",
       key: "reportedBy",
       render: (reportedBy: ReportType["reportedBy"]) => (
@@ -90,7 +88,7 @@ const ReportTable: React.FC = () => {
       ),
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "action",
       render: (_, record) => (
         <Space>
@@ -112,10 +110,10 @@ const ReportTable: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Card title="Report Management" bordered={false}>
+      <Card bordered={false}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
           <Input.Search
-            placeholder="Search reports by reason..."
+            placeholder="Tìm báo cáo theo lý do ..."
             allowClear
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: 300 }}

@@ -20,11 +20,11 @@ export const useComment = (postId: any) => {
       mutationFn: (data: any) => commentApi.createComment(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Comment added successfully");
+        toast.success("Thêm bình luận thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error adding comment");
+        toast.error(error.message || "Lỗi thêm bình luận");
       },
     });
   };
@@ -35,11 +35,11 @@ export const useComment = (postId: any) => {
         commentApi.updateComment(id, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Comment updated successfully");
+        toast.success("Sửa bình luận thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error updating comment");
+        toast.error(error.message || "Lỗi sửa bình luận");
       },
     });
   };
@@ -49,10 +49,10 @@ export const useComment = (postId: any) => {
       mutationFn: (id: any) => commentApi.deleteComment(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Comment deleted successfully");
+        toast.success("Xóa bình luận thành công");
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error deleting comment");
+        toast.error(error.message || "Lỗi xóa bình luận");
       },
     });
   };
@@ -65,11 +65,11 @@ export const useComment = (postId: any) => {
         }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Reply added successfully");
+        toast.success("Thêm phản hồi thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Error adding reply");
+        toast.error(error.message || "Lỗi thêm phản hồi");
       },
     });
   };

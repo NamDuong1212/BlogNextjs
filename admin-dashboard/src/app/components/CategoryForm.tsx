@@ -22,7 +22,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess })
     if (initialValues) {
       form.setFieldsValue({
         ...initialValues,
-        // Nếu có parent, tự động điền parentId (lưu ý parent có thể chứa _id hoặc id)
         parentId: initialValues.parent?.id || initialValues.parent?._id,
       });
     }
@@ -68,22 +67,22 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess })
 
   return (
     <Card
-      title={initialValues && initialValues._id ? "Edit Category" : "Create Category"}
+      title={initialValues && initialValues._id ? "Sửa danh mục" : "Tạo danh mục"}
       style={{ maxWidth: 800, margin: "0 auto" }}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name="name"
-          label="Name"
-          rules={[{ required: true, message: "Please input category name" }]}
+          label="Tên danh mục"
+          rules={[{ required: true, message: "Hãy điền tên danh mục" }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item name="parentId" label="Parent Category">
+        <Form.Item name="parentId" label="Danh mục cha">
           <Select
             allowClear
-            placeholder="Select parent category"
+            placeholder="Hãy chọn danh mục cha"
             disabled
             options={availableParentCategories.map((cat) => ({
               value: cat.id,
@@ -94,15 +93,15 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess })
 
         <Form.Item
           name="description"
-          label="Description"
-          rules={[{ required: true, message: "Please input category description" }]}
+          label="Mô tả"
+          rules={[{ required: true, message: "Hãy điền mô tả cho danh mục" }]}
         >
           <TextArea rows={5} />
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={isCreating || isUpdating}>
-            {initialValues && initialValues._id ? "Update" : "Create"} Category
+            {initialValues && initialValues._id ? "Sửa đổi" : "Tạo"} danh mục
           </Button>
         </Form.Item>
       </Form>

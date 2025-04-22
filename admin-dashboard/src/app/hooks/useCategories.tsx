@@ -18,11 +18,11 @@ export const useCategories = () => {
       mutationFn: (data: any) => categoryApi.createCategory(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
-        toast.success("Category created successfully");
+        toast.success("Danh mục đã được tạo thành công");
         onSuccess?.();
       },
       onError: (error: any) => {
-        const message = error.response?.data?.message || "Error creating category";
+        const message = error.response?.data?.message || "Lỗi tạo danh mục";
         toast.error(message);
       },
     });
@@ -34,11 +34,11 @@ export const useCategories = () => {
         categoryApi.updateCategory(id, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
-        toast.success("Category updated successfully");
+        toast.success("Danh mục đã được cập nhật thành công");
         onSuccess?.();
       },
       onError: (error: any) => {
-        const message = error.response?.data?.message || "Error updating category";
+        const message = error.response?.data?.message || "Lỗi cập nhật danh mục";
         toast.error(message);
       },
     });
@@ -49,11 +49,11 @@ export const useCategories = () => {
       mutationFn: (id: string) => categoryApi.getDeleteCategory(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["categories"] });
-        toast.success("Category deleted successfully");
+        toast.success("Danh mục đã được xóa thành công");
         onSuccess?.();
       },
       onError: (error: any) => {
-        const message = error.response?.data?.message || "Error deleting category";
+        const message = error.response?.data?.message || "Lỗi xóa danh mục";
         toast.error(message);
       },
     });

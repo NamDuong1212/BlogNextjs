@@ -31,6 +31,8 @@ import type { RcFile } from "antd/es/upload/interface";
 import ImageComponentAvatar from "../components/ImageComponentAvatar";
 import { useWallet } from "../hooks/useWallet";
 import { toast } from "react-hot-toast";
+import Link from "next/link"; // Import Link từ Next.js
+
 const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
@@ -43,11 +45,13 @@ const Profile = () => {
     useGetWalletByUserId();
   const createWalletMutation = useCreateWallet();
   const [form] = Form.useForm();
-
+  const isCreator = userData?.isCreator || false;
   if (!userData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">User data not available. Please log in.</p>
+        <p className="text-lg">
+          Dữ liệu người dùng không hợp lệ, vui lòng đăng nhập
+        </p>
       </div>
     );
   }
@@ -75,7 +79,7 @@ const Profile = () => {
   const handleAvatarChange = async (file: RcFile) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error("You can only upload image files!");
+      message.error("Chỉ có thể tải lên tệp hình ảnh!");
       return false;
     }
 
@@ -99,7 +103,7 @@ const Profile = () => {
       setWithdrawAmount(0);
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Error requesting withdrawal",
+        error?.response?.data?.message || "Lỗi rút tiền, vui lòng thử lại sau",
       );
     }
   };
@@ -150,7 +154,7 @@ const Profile = () => {
               label={
                 <span className="flex items-center gap-2">
                   <UserOutlined className="text-blue-500" />
-                  <span className="font-medium">Username</span>
+                  <span className="font-medium">Tên đăng nhập</span>
                 </span>
               }
             >
@@ -170,31 +174,31 @@ const Profile = () => {
               label={
                 <span className="flex items-center gap-2">
                   <CalendarOutlined className="text-blue-500" />
-                  <span className="font-medium">Birthday</span>
+                  <span className="font-medium">Ngày sinh</span>
                 </span>
               }
             >
               {userData.birthday
-                ? moment(userData.birthday).format("YYYY-MM-DD")
+                ? moment(userData.birthday).format("DD-MM-YYYY")
                 : "N/A"}
             </Descriptions.Item>
             <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
                   <InfoCircleOutlined className="text-blue-500" />
-                  <span className="font-medium">Bio</span>
+                  <span className="font-medium">Mô tả</span>
                 </span>
               }
             >
               <div className="prose max-w-none">
-                {userData.bio || "Nothing here"}
+                {userData.bio || "Không có mô tả"}
               </div>
             </Descriptions.Item>
             <Descriptions.Item
               label={
                 <span className="flex items-center gap-2">
                   <WalletOutlined className="text-blue-500" />
-                  <span className="font-medium">Wallet</span>
+                  <span className="font-medium">Ví</span>
                 </span>
               }
             >
@@ -202,7 +206,7 @@ const Profile = () => {
                 <Spin />
               ) : walletData?.balance !== undefined ? (
                 <div className="flex flex-col gap-4">
-                  <span>Balance: {walletData.balance} $</span>
+                  <span>Số dư: {walletData.balance} $</span>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
@@ -225,10 +229,10 @@ const Profile = () => {
                     }
                     icon={<WalletOutlined />}
                   >
-                    Withdraw
+                    Rút tiền
                   </Button>
                 </div>
-              ) : userData.isCreator ? (
+              ) : isCreator ? (
                 <Button
                   color="primary"
                   variant="outlined"
@@ -237,12 +241,32 @@ const Profile = () => {
                   loading={createWalletMutation.isPending}
                   icon={<WalletOutlined />}
                 >
-                  Create Wallet
+                  Tạo ví
                 </Button>
               ) : (
-                <span>You do not have access to Wallet</span>
+                <span>Bạn không có quyền truy cập ví</span>
               )}
             </Descriptions.Item>
+            {isCreator && (
+            <Descriptions.Item
+              label={
+                <span className="flex items-center gap-2">
+                  <EditOutlined className="text-blue-500" />
+                  <span className="font-medium">Quản lý bài viết</span>
+                </span>
+              }
+            >
+              <Link href="/post-list">
+                <Button
+                  type="default"
+                  size="large"
+                  icon={<EditOutlined />}
+                  className="w-full"
+                >
+                </Button>
+              </Link>
+            </Descriptions.Item>
+            )}
           </Descriptions>
 
           <div className="mt-8 flex justify-center">
@@ -253,14 +277,15 @@ const Profile = () => {
               onClick={handleEditProfile}
               className="px-8 h-12 flex items-center"
             >
-              Edit Profile
+              Sửa hồ sơ
             </Button>
           </div>
         </Card>
       </div>
 
+      {/* Modal */}
       <Modal
-        title="Edit Profile"
+        title="Sửa hồ sơ"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
@@ -276,24 +301,24 @@ const Profile = () => {
           }}
         >
           <Form.Item
-            label="Username"
+            label="Tên đăng nhập"
             name="username"
-            rules={[{ required: true, message: "Please enter your username" }]}
+            rules={[{ required: true, message: "Hãy nhập tên đăng nhập" }]}
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Bio" name="bio">
+          <Form.Item label="Mô tả" name="bio">
             <Input.TextArea rows={4} />
           </Form.Item>
-          <Form.Item label="Birthday" name="birthday">
+          <Form.Item label="Ngày sinh" name="birthday">
             <DatePicker
-              format="YYYY-MM-DD"
+              format="DD-MM-YYYY"
               className="w-full"
-              placeholder="Select your birthday"
+              placeholder="Chọn ngày sinh"
             />
           </Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
-            Save Changes
+            Lưu
           </Button>
         </Form>
       </Modal>

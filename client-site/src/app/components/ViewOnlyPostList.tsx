@@ -43,6 +43,11 @@ export const ViewOnlyPostList: React.FC = () => {
   const [selectedLevel3, setSelectedLevel3] = useState<any>(null);
   const [selectedLevel4, setSelectedLevel4] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPosts, setTotalPosts] = useState(0);
 
   const [sortOption, setSortOption] = useState<
     "viewAsc" | "viewDesc" | "dateAsc" | "dateDesc" | null
@@ -88,26 +93,39 @@ export const ViewOnlyPostList: React.FC = () => {
       selectedLevel1?.id ||
       null;
     setSelectedCategory(categoryId);
+    setCurrentPage(1); // Reset to first page when searching
   };
+  
   const handleReset = () => {
     setSelectedCategory(null);
     setSelectedLevel1(null);
     setSelectedLevel2(null);
     setSelectedLevel3(null);
     setSelectedLevel4(null);
+    setCurrentPage(1); // Reset to first page when clearing filters
   };
 
-  const { data: postsByCategory, isLoading: isCategoryLoading } =
-    useGetPostsByCategory(selectedCategory || "");
-  const { data: allPosts, isLoading: isAllPostsLoading } = useGetPosts();
+  // Modified to include pagination parameters
+  const { data: postResponse, isLoading: isCategoryLoading } =
+    useGetPostsByCategory(selectedCategory || "", currentPage, pageSize);
+  const { data: allPostsResponse, isLoading: isAllPostsLoading } = useGetPosts(currentPage, pageSize);
 
-  const posts = selectedCategory ? postsByCategory : allPosts;
+  // Extract posts and pagination data
+  const posts = selectedCategory ? postResponse?.data : allPostsResponse?.data;
+  const pagination = selectedCategory ? postResponse?.pagination : allPostsResponse?.pagination;
   const isLoading = selectedCategory ? isCategoryLoading : isAllPostsLoading;
+
+  // Update total posts when pagination data changes
+  useEffect(() => {
+    if (pagination) {
+      setTotalPosts(pagination.total);
+    }
+  }, [pagination]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setSearchQuery(params.get("search") || "");
-  }, [window.location.search]);
+  }, []);
 
   const filteredPosts = useMemo(() => {
     if (!posts) return [];
@@ -119,6 +137,7 @@ export const ViewOnlyPostList: React.FC = () => {
   }, [posts, searchQuery]);
 
   const sortedPosts = useMemo(() => {
+    if (!filteredPosts) return [];
     const sorted = [...filteredPosts];
 
     switch (sortOption) {
@@ -141,25 +160,21 @@ export const ViewOnlyPostList: React.FC = () => {
         );
         break;
       default:
-        sorted.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
+        // Use server-side sorting by default
         break;
     }
 
     return sorted;
   }, [filteredPosts, sortOption]);
 
-  const newestPosts = useMemo(() => {
-    if (!posts) return [];
-    return [...posts]
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .slice(0, 5);
-  }, [posts]);
+  // Get featured posts (newest 5)
+  const { data: featuredPostsResponse } = useGetPosts(1, 5);
+  const newestPosts = featuredPostsResponse?.data || [];
+
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setCurrentPage(page);
+    if (pageSize) setPageSize(pageSize);
+  };
 
   const items: MenuProps["items"] = [
     {
@@ -314,16 +329,16 @@ export const ViewOnlyPostList: React.FC = () => {
             onClick={handleSearch}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            Search
+            Tìm kiếm
           </Button>
-          <Button onClick={handleReset}>All Posts</Button>
+          <Button onClick={handleReset}>Toàn bộ bài viết</Button>
         </div>
       </Card>
 
       {/* Posts List Header */}
       <div className="flex justify-between items-center mb-4">
         <Title level={3} className="m-0">
-          <span className="text-blue-600">Post</span>
+          <span className="text-blue-600">Bài viết</span>
         </Title>
         <Dropdown
           menu={{ items, onClick: handleMenuClick }}
@@ -341,10 +356,12 @@ export const ViewOnlyPostList: React.FC = () => {
         loading={isLoading}
         dataSource={sortedPosts}
         pagination={{
-          pageSize: 10,
-          total: sortedPosts?.length,
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalPosts,
+          onChange: handlePageChange,
           showSizeChanger: false,
-          showTotal: (total) => `Total ${total} posts`,
+          showTotal: (total) => `Tổng ${total} bài viết`,
           style: {
             textAlign: "right",
             marginBottom: "20px",
@@ -388,14 +405,14 @@ export const ViewOnlyPostList: React.FC = () => {
                     </div>
 
                     <Title level={4} className="mb-2 text-blue-800">
-                      {post.title || "Untitled Post"}
+                      {post.title || "Bài viết không có tiêu đề"}
                     </Title>
 
                     <Paragraph
                       className="text-gray-600 mb-4"
                       ellipsis={{ rows: 3 }}
                     >
-                      {post.content || "No content available for this post."}
+                      {post.content || "Bài viết không có nội dung"}
                     </Paragraph>
 
                     <div className="flex justify-between items-center">
@@ -409,7 +426,7 @@ export const ViewOnlyPostList: React.FC = () => {
                           alt="User Avatar"
                         />
                         <Text strong className="text-green-700">
-                          {post.user?.username || "Unknown User"}
+                          {post.user?.username || "Người dùng không xác định"}
                         </Text>
                       </Space>
 
@@ -426,7 +443,7 @@ export const ViewOnlyPostList: React.FC = () => {
           </List.Item>
         )}
       />
-      {!selectedCategory && sortedPosts.length > 0 && (
+      {!selectedCategory && sortedPosts?.length > 0 && (
         <div className="my-8">
           <Title level={3} className="text-center mb-6">
             <span className="text-green-600">ĐIỂM ĐẾN</span> NỔI BẬT
@@ -507,31 +524,6 @@ export const ViewOnlyPostList: React.FC = () => {
           </Row>
         </div>
       )}
-
-      {/* Newsletter Section */}
-      <div className="my-12 bg-gradient-to-r from-blue-500 to-green-500 p-8 rounded-lg shadow-lg text-white">
-        <Row gutter={24} align="middle">
-          <Col xs={24} md={16}>
-            <Title level={3} className="text-white mb-2">
-              ĐĂNG KÝ ĐỂ NHẬN TIN
-            </Title>
-            <Paragraph className="text-white opacity-80">
-              Nhận thông tin về những điểm đến mới nhất và những trải nghiệm du
-              lịch tuyệt vời!
-            </Paragraph>
-          </Col>
-          <Col xs={24} md={8} className="text-center">
-            <Button
-              size="large"
-              type="primary"
-              ghost
-              className="border-white text-white hover:bg-white hover:text-blue-600"
-            >
-              Đăng Ký Ngay
-            </Button>
-          </Col>
-        </Row>
-      </div>
     </div>
   );
 };

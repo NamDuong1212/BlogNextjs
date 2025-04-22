@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
       boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03)'
     }}>
       <div className="text-xl font-bold">
-        <Link href="/">Dashboard</Link>
+        <Link href="/">Bảng quản trị</Link>
       </div>
       <div className="flex items-center gap-4">
         {userData && (
@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
                   onClick={handleLogout}
                   className="block w-full text-left px-3 py-3 text-red-500 hover:bg-red-100 text-sm"
                 >
-                  Logout
+                  Đăng xuất
                 </button>
               </div>
             )}

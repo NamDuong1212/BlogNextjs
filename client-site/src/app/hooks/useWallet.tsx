@@ -19,7 +19,7 @@ export const useWallet = (userId: string) => {
       mutationFn: () => walletApi.createWallet(),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["wallet", userId] });
-        toast.success("Wallet created successfully");
+        toast.success("Tạo ví thành công");
         onSuccess?.();
       },
       onError: (error: Error) => {
@@ -34,12 +34,12 @@ export const useWallet = (userId: string) => {
         walletApi.requestWithdrawal(data),
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries({ queryKey: ["wallet"] });
-        toast.success(`Successfully requested withdrawal of ${variables.amount} $`);
+        toast.success(`Rút ${variables.amount} $ thành công`);
         onSuccess?.();
       },
       onError: (error: any) => {
         toast.error(
-          error?.response?.data?.message || "Error requesting withdrawal",
+          error?.response?.data?.message || "Lỗi rút tiền",
         );
       },
     });

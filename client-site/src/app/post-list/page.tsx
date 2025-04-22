@@ -75,7 +75,7 @@ export const PostList = () => {
   return (
     <div style={{ padding: "20px" }}>
       <Title level={2} style={{ marginBottom: "24px" }}>
-        Latest Posts
+        Bài viết 
       </Title>
       <List
         loading={isLoading}
@@ -84,7 +84,7 @@ export const PostList = () => {
           pageSize: 4,
           total: sortedPosts?.length,
           showSizeChanger: false,
-          showTotal: (total) => `Total ${total} posts`,
+          showTotal: (total) => `Tổng ${total} bài viết`,
           style: { textAlign: "center", marginTop: "20px" },
         }}
         renderItem={(post: Post) => (
@@ -178,34 +178,42 @@ export const PostList = () => {
                         }}
                       >
                         <Text type="secondary">
-                          Created: {formatDateTime(post.createdAt)}
+                          Ngày tạo: {formatDateTime(post.createdAt)}
+                        </Text>
+                        <Text type="secondary" className="mx-2">
+                          |
                         </Text>
                         <Text type="secondary">
-                          Modified: {formatDateTime(post.updatedAt)}
+                          Ngày sửa đổi: {formatDateTime(post.updatedAt)}
                         </Text>
+
+                        <Text type="secondary" className="mx-2">
+                          |
+                        </Text>
+
                         <Text type="success">
-                          Today Views: {post.viewCount || 0}
+                          Lượt xem hôm nay: {post.viewCount || 0}
                         </Text>
                         <Button
                           type="link"
                           onClick={() => router.push(`/posts/${post.id}`)}
                         >
-                          View
+                          Xem
                         </Button>
                         <Button
                           type="link"
                           onClick={() => setUpdatePostId(post.id)}
                         >
-                          Update
+                          Sửa đổi
                         </Button>
                         <Popconfirm
-                          title="Are you sure to delete this post?"
+                          title="Bạn có chắc muốn xoá bài viết này không"
                           onConfirm={() => deleteMutation.mutate(post.id!)}
-                          okText="Yes"
-                          cancelText="No"
+                          okText="Có"
+                          cancelText="Không"
                         >
                           <Button type="link" danger>
-                            Delete
+                            Xoá
                           </Button>
                         </Popconfirm>
                       </div>

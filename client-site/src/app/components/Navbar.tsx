@@ -63,22 +63,6 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            {isCreator && (
-              <>
-                <Link
-                  href="/admin/post/create"
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  Post
-                </Link>
-                <Link
-                  href="/post-list"
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  List
-                </Link>
-              </>
-            )}
 
             {userData ? (
               <div className="relative">
@@ -99,13 +83,13 @@ const Navbar: React.FC = () => {
                       href="/profile"
                       className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
                     >
-                      Profile
+                      Hồ sơ cá nhân
                     </Link>
                     <button
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-red-500 hover:bg-red-100"
                     >
-                      Logout
+                      Đăng xuất
                     </button>
                   </div>
                 )}

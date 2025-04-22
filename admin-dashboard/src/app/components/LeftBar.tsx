@@ -30,16 +30,11 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('Categories', '1', <PieChartOutlined />),
-  getItem('Daily Wallet', '2', <DesktopOutlined />),
-  getItem('Posts', '3', <AlibabaOutlined />),
-  getItem('Reports', '4', <SnippetsOutlined />),
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '5'),
-    getItem('Bill', '6'),
-    getItem('Alex', '7'),
-  ]),
-  getItem('Files', '9', <FileOutlined />),
+  getItem('Danh mục', '1', <PieChartOutlined />),
+  getItem('Thu nhập hàng ngày', '2', <DesktopOutlined />),
+  getItem('Bài viết', '3', <AlibabaOutlined />),
+  getItem('Báo cáo', '4', <SnippetsOutlined />),
+  getItem('Người dùng', 'sub1', <UserOutlined />), 
 ];
 
 const LeftBar: React.FC = () => {

@@ -11,12 +11,12 @@ const WalletDailyTable: React.FC = () => {
   const { mutate: calculateEarnings } = useCalculateDailyEarnings();
 
   const columns: TableColumnsType = [
-    { title: "Author", dataIndex: "author", key: "author" },
-    { title: "Post ID", dataIndex: "postId", key: "postId" },
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Views", dataIndex: "viewCount", key: "viewCount" },
+    { title: "Tác giả", dataIndex: "author", key: "author" },
+    { title: "ID bài viết", dataIndex: "postId", key: "postId" },
+    { title: "Tiêu đề", dataIndex: "title", key: "title" },
+    { title: "Lượt xem", dataIndex: "viewCount", key: "viewCount" },
     { 
-      title: "Paid Amount", 
+      title: "Số tiền cần trả", 
       dataIndex: "Paid", 
       key: "Paid",
       render: (value) => (
@@ -47,7 +47,7 @@ const WalletDailyTable: React.FC = () => {
           onClick={() => calculateEarnings()}
           size="large"
         >
-          Calculate All Earnings
+          Tính toán số tiền cần trả
         </Button>
       </div>
       <Table

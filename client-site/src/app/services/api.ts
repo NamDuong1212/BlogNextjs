@@ -93,9 +93,9 @@ export const postApi = {
     return response.data;
   },
 
-  getPosts: async (): Promise<any> => {
-    const response = await api.get("/post/getAll");
-    return response.data.data || [];
+  getPosts: async (page = 1, limit = 10): Promise<any> => {
+    const response = await api.get(`/post/getAll?page=${page}&limit=${limit}`);
+    return response.data;
   },
 
   getPostByCreator: async (userId: string): Promise<any> => {
@@ -103,9 +103,9 @@ export const postApi = {
     return response.data.data || [];
   },
 
-  getPostsByCategory: async (id: any): Promise<any> => {
-    const response = await api.get(`/post/GetByCategory/${id}`);
-    return response.data.data || [];
+  getPostsByCategory: async (categoryId: string, page = 1, limit = 10): Promise<any> => {
+    const response = await api.get(`/post/getByCategory/${categoryId}?page=${page}&limit=${limit}`);
+    return response.data;
   },
 
   getPostById: async (id: any): Promise<any> => {
