@@ -14,7 +14,9 @@ const ImageComponentAvatar: React.FC<ImageComponentProps> = ({
 }) => {
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const defaultAvatar = "https://i.imgur.com/CzXTtJV.jpg";
-  const imageUrl = src ? `${baseURL}${src}` : defaultAvatar;
+  const imageUrl = src 
+    ? (src.startsWith('http') ? src : `${baseURL}${src}`) 
+    : defaultAvatar;
 
   return (
     <Avatar

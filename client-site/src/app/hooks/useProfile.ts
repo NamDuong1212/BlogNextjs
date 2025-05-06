@@ -14,10 +14,10 @@ export const useProfile = () => {
         token: accessToken!,
         user: response.data,
       });
-      toast.success(response.message);
+      toast.success(response.message || "Profile updated successfully");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi cập nhật thông tin cá nhân");
+      toast.error(error.message || "Failed to update profile");
     },
   });
 
@@ -28,10 +28,10 @@ export const useProfile = () => {
         token: accessToken!,
         user: response.data,
       });
-      toast.success(response.message || "Cập nhật ảnh đại diện thành công");
+      toast.success(response.message || "Avatar updated successfully");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi cập nhật ảnh đại diện");
+      toast.error(error.message || "Failed to update avatar");
     },
   });
 

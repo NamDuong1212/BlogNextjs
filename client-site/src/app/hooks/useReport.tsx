@@ -11,11 +11,11 @@ export const useReport = () => {
         reportApi.createReport(postId, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Báo cáo thành công");
+        toast.success("Report successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi báo cáo bài viết");
+        toast.error(error.message || "Failed to report post");
       },
     });
   };

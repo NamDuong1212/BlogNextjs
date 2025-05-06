@@ -11,7 +11,7 @@ export const useComment = (postId: any) => {
       queryFn: () => commentApi.getCommentsByPostId(postId),
       enabled: !!postId,
       staleTime: 0,
-      select: (response) => response.data // Extract the inner data array
+      select: (response) => response.data,
     });
   };
 
@@ -20,11 +20,11 @@ export const useComment = (postId: any) => {
       mutationFn: (data: any) => commentApi.createComment(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Thêm bình luận thành công");
+        toast.success("Comment added successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi thêm bình luận");
+        toast.error(error.message || "Failed to add comment");
       },
     });
   };
@@ -35,11 +35,11 @@ export const useComment = (postId: any) => {
         commentApi.updateComment(id, data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Sửa bình luận thành công");
+        toast.success("Comment updated successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi sửa bình luận");
+        toast.error(error.message || "Failed to update comment");
       },
     });
   };
@@ -49,10 +49,10 @@ export const useComment = (postId: any) => {
       mutationFn: (id: any) => commentApi.deleteComment(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Xóa bình luận thành công");
+        toast.success("Comment deleted successfully");
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi xóa bình luận");
+        toast.error(error.message || "Failed to delete comment");
       },
     });
   };
@@ -65,11 +65,11 @@ export const useComment = (postId: any) => {
         }),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        toast.success("Thêm phản hồi thành công");
+        toast.success("Reply added successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi thêm phản hồi");
+        toast.error(error.message || "Failed to add reply");
       },
     });
   };

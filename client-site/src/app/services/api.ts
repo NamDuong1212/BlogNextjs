@@ -98,9 +98,9 @@ export const postApi = {
     return response.data;
   },
 
-  getPostByCreator: async (userId: string): Promise<any> => {
-    const response = await api.get(`/post/by-user/${userId}`);
-    return response.data.data || [];
+  getPostByCreator: async (userId: string, page = 1, limit = 10): Promise<any> => {
+    const response = await api.get(`/post/by-user/${userId}?page=${page}&limit=${limit}`);
+    return response.data || { data: [], pagination: { total: 0, totalPages: 0, page, limit } };
   },
 
   getPostsByCategory: async (categoryId: string, page = 1, limit = 10): Promise<any> => {

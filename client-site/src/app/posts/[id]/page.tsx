@@ -157,7 +157,7 @@ const PostDetail: React.FC = () => {
           useCORS: true,
           allowTaint: true,
           logging: true,
-          imageTimeout: 15000, // Increase timeout for image loading
+          imageTimeout: 15000,
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
@@ -206,7 +206,7 @@ const PostDetail: React.FC = () => {
               src={post.user?.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
               alt="User Avatar"
             />
-            <Title level={4}>{post.user?.username || "Testing"}</Title>
+            <Title level={4}>{post.user?.username || "User"}</Title>
             <Paragraph>
               <Space size="large">
                 {post.categoryHierarchy?.length > 0 && (
@@ -232,7 +232,7 @@ const PostDetail: React.FC = () => {
                 </span>
                 <span className="view-count">
                   <EyeOutlined style={{ marginRight: 4 }} />
-                  {post.viewCount} lượt xem
+                  {post.viewCount} views
                 </span>
               </Space>
             </Paragraph>
@@ -263,37 +263,7 @@ const PostDetail: React.FC = () => {
 
           <Paragraph style={{ whiteSpace: "pre-wrap" }}>
             <Linkify
-              componentDecorator={(
-                href: string | undefined,
-                text:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | React.ReactElement<
-                      unknown,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | Promise<
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | React.ReactPortal
-                      | React.ReactElement<
-                          unknown,
-                          string | React.JSXElementConstructor<any>
-                        >
-                      | Iterable<React.ReactNode>
-                      | null
-                      | undefined
-                    >
-                  | null
-                  | undefined,
-                key: React.Key | null | undefined,
-              ) => (
+              componentDecorator={(href, text, key) => (
                 <a
                   href={href}
                   key={key}
@@ -333,7 +303,7 @@ const PostDetail: React.FC = () => {
           loading={isDownloading}
           size="large"
         >
-          Tải PDF
+          Download PDF
         </Button>
         <Button
           type="default"
@@ -342,12 +312,12 @@ const PostDetail: React.FC = () => {
           onClick={() => setIsReportModalOpen(true)}
           size="large"
         >
-          Báo cáo
+          Report
         </Button>
       </div>
 
       <Modal
-        title="Báo cáo bài viết"
+        title="Report Post"
         open={isReportModalOpen}
         onCancel={() => {
           setIsReportModalOpen(false);
@@ -358,15 +328,15 @@ const PostDetail: React.FC = () => {
         <Form form={form} onFinish={handleReportSubmit} layout="vertical">
           <Form.Item
             name="reason"
-            label="Lý do báo cáo"
+            label="Reason for report"
             rules={[
               {
                 required: true,
-                message: "Hãy nhập lý do báo cáo",
+                message: "Please enter a reason for reporting",
               },
             ]}
           >
-            <TextArea rows={4} placeholder="Nhập lý do báo cáo tại đây..." />
+            <TextArea rows={4} placeholder="Enter report reason here..." />
           </Form.Item>
           <Form.Item>
             <div
@@ -376,14 +346,14 @@ const PostDetail: React.FC = () => {
                 gap: "8px",
               }}
             >
-              <Button onClick={() => setIsReportModalOpen(false)}>Huỷ</Button>
+              <Button onClick={() => setIsReportModalOpen(false)}>Cancel</Button>
               <Button
                 type="primary"
                 danger
                 htmlType="submit"
                 loading={createReportMutation.isPending}
               >
-                Gửi báo cáo
+                Submit Report
               </Button>
             </div>
           </Form.Item>
@@ -393,10 +363,10 @@ const PostDetail: React.FC = () => {
       {id && (
         <CommentSection
           postId={id}
-          id={""}
-          content={""}
-          createdAt={""}
-          updatedAt={""}
+          id=""
+          content=""
+          createdAt=""
+          updatedAt=""
           user={{
             id: "",
             name: "",
@@ -417,7 +387,7 @@ const PostDetail: React.FC = () => {
           }}
         >
           <Title level={4} style={{ margin: 0 }}>
-            Có thể bạn sẽ thích
+            You Might Also Like
           </Title>
           <div style={{ display: "flex", gap: "8px" }}>
             <Button
@@ -452,13 +422,13 @@ const PostDetail: React.FC = () => {
             <div
               style={{ padding: "20px", textAlign: "center", width: "100%" }}
             >
-              Đang lấy dữ liệu bài viết liên quan...
+              Loading related posts...
             </div>
           ) : relatedPosts.length === 0 ? (
             <div
               style={{ padding: "20px", textAlign: "center", width: "100%" }}
             >
-              Không có bài viết liên quan nào
+              No related posts available
             </div>
           ) : (
             relatedPosts.map((relatedPost: any) => (
@@ -499,7 +469,7 @@ const PostDetail: React.FC = () => {
                         relatedPost.avatar ||
                         "https://i.imgur.com/CzXTtJV.jpg"
                       }
-                      alt={""}
+                      alt=""
                     />
                   }
                   title={
@@ -594,8 +564,8 @@ const PostDetail: React.FC = () => {
           )}
         </div>
 
-        <style jsx global>{`
-          .hide-scrollbar::-webkit-scrollbar {
+        <style jsx global>{
+          `.hide-scrollbar::-webkit-scrollbar {
             height: 6px;
           }
 
@@ -612,8 +582,8 @@ const PostDetail: React.FC = () => {
             .hide-scrollbar::-webkit-scrollbar {
               display: none;
             }
-          }
-        `}</style>
+          }`
+        }</style>
       </div>
     </div>
   );

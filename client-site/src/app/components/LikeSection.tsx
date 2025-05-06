@@ -78,7 +78,7 @@ const LikeSection: React.FC<LikeSectionProps> = ({ postId }) => {
         ) : (
           <HeartOutlined style={{ fontSize: "20px", color: "#f5222d" }} />
         )}
-        <Text>{likeCount} lượt thích</Text>
+        <Text>{likeCount} likes</Text>
       </Space>
     </div>
   );

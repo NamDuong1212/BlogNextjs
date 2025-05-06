@@ -15,7 +15,6 @@ const RatingSection: React.FC<RatingSectionProps> = ({ postId, ratingId }) => {
   const { mutate: createRating } = useCreateRating();
 
   useEffect(() => {
-
     if (ratingData) {
       setUserRating(ratingData.stars);
     }
@@ -27,8 +26,6 @@ const RatingSection: React.FC<RatingSectionProps> = ({ postId, ratingId }) => {
   };
 
   const isLoading = isLoadingAverage || isLoadingRating;
-  
-
   const displayValue = userRating !== null ? userRating : (averageRating || 0);
 
   return (
@@ -45,10 +42,10 @@ const RatingSection: React.FC<RatingSectionProps> = ({ postId, ratingId }) => {
             />
             <span className="ml-2 text-sm text-gray-500">
               {userRating !== null 
-                ? `Đánh giá của bạn: ${userRating} sao` 
+                ? `Your rating: ${userRating} star${userRating > 1 ? 's' : ''}` 
                 : averageRating 
-                  ? `${averageRating.toFixed(1)}` 
-                  : 'Chưa có đánh giá nào'}
+                  ? `Average: ${averageRating.toFixed(1)}`
+                  : 'No ratings yet'}
             </span>
           </>
         )}

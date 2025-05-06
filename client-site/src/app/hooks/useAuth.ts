@@ -20,7 +20,7 @@ export const useAuth = () => {
       localStorage.setItem("token", data.token);
 
       const toastPromise = new Promise<void>((resolve) => {
-        toast.success("Đăng nhập thành công", {
+        toast.success("Login successful", {
           duration: 2000,
         });
         setTimeout(resolve, 2000);
@@ -31,21 +31,21 @@ export const useAuth = () => {
       });
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi đăng nhập");
+      toast.error(error.message || "Login failed");
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: (userData: RegisterState) => authApi.register(userData),
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi đăng ký");
+      toast.error(error.message || "Registration failed");
     },
   });
 
   const verifyOtpMutation = useMutation({
     mutationFn: (data: VerifyOtpState) => authApi.verifyOtp(data),
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi xác thực OTP");
+      toast.error(error.message || "OTP verification failed");
     },
   });
 
@@ -54,4 +54,4 @@ export const useAuth = () => {
     registerMutation,
     verifyOtpMutation,
   };
-};  
+};

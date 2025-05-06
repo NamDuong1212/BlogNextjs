@@ -28,11 +28,11 @@ export const useRating = (postId: string) => {
       mutationFn: (stars: number) => ratingApi.createRating(postId, stars),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["rating", postId] });
-        toast.success("Đánh giá thành công");
+        toast.success("Rate successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi đánh giá bài viết");
+        toast.error(error.message || "Failed to rate post");
       },
     });
   };

@@ -13,10 +13,13 @@ export const usePost = () => {
     });
   };
 
-  const useGetPostByCreator = (userId: string) => {
+  const useGetPostByCreator = (userId: string | undefined, page = 1, limit = 10) => {
     return useQuery({
-      queryKey: ["posts", "creator", userId],
-      queryFn: () => postApi.getPostByCreator(userId),
+      queryKey: ["posts", "creator", userId, page, limit],
+      queryFn: () => {
+        if (!userId) return { data: [], pagination: { total: 0, totalPages: 0, page, limit } };
+        return postApi.getPostByCreator(userId, page, limit);
+      },
       enabled: !!userId,
     });
   };
@@ -62,7 +65,7 @@ export const usePost = () => {
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi tạo bài viết");
+        toast.error(error.message || "Failed to create post");
       },
     });
   };
@@ -72,11 +75,11 @@ export const usePost = () => {
       mutationFn: (data: any) => postApi.updatePost(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Cập nhật bài viết thành công");
+        toast.success("Post updated successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Cập nhật bài viết thất bại");
+        toast.error(error.message || "Failed to update post");
       },
     });
   };
@@ -86,10 +89,10 @@ export const usePost = () => {
       mutationFn: (id: any) => postApi.deletePost(id),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
-        toast.success("Đã xóa bài viết thành công");
+        toast.success("Post deleted successfully");
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Xóa bài viết thất bại");
+        toast.error(error.message || "Failed to delete post");
       },
     });
   };
@@ -100,11 +103,11 @@ export const usePost = () => {
         postApi.uploadPostImage(id, file),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["post"] });
-        toast.success("Tải ảnh lên thành công");
+        toast.success("Image uploaded successfully");
         onSuccess?.();
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Tải ảnh lên thất bại");
+        toast.error(error.message || "Failed to upload image");
       },
     });
   };

@@ -58,7 +58,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
     setMounted(true);
 
     if (!userData?.isCreator) {
-      message.error("Bạn không có quyền để tạo bài viết");
+      message.error("You do not have permission to create a post");
       router.replace("/");
     }
   }, [userData, router]);
@@ -73,11 +73,11 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
   const onFinish = async (values: any) => {
     if (!userData?.id) {
-      toast.error("Người dùng cần xác thực để tạo bài viết");
+      toast.error("User must be authenticated to create a post");
       return;
     }
     if (!selectedLevel4 || !selectedLevel4.id) {
-      toast.error("Hãy chọn đường dẫn danh mục hoàn chỉnh ( 4 cấp độ )");
+      toast.error("Please select a complete category path (4 levels)");
       return;
     }
 
@@ -99,11 +99,11 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
         });
       }
 
-      toast.success("Tạo bài viết thành công");
+      toast.success("Post created successfully");
       onClose();
     } catch (error) {
-      console.error("Lỗi tạo bài viết:", error);
-      toast.error("Không thể tạo bài viết, hãy thử lại sau!");
+      console.error("Error creating post:", error);
+      toast.error("Failed to create post. Please try again later.");
     } finally {
       setFormSubmitting(false);
     }
@@ -112,7 +112,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
   const beforeUpload = (file: File) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      toast.error("Chỉ có thể tải lên tệp hình ảnh!");
+      toast.error("Only image files are allowed!");
       return false;
     }
 
@@ -135,41 +135,38 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
   return (
     <div
-  style={{
-    position: "fixed",
-    top: "50%",  // Đặt vị trí theo chiều dọc
-    left: "50%", // Đặt vị trí theo chiều ngang
-    transform: "translate(-50%, -50%)", // Dịch chuyển form lại để căn giữa chính xác
-    zIndex: 1000,
-    width: "900px",
-    maxHeight: "80vh",
-    resize: "horizontal",
-    overflowY: "auto",
-    overflowX: "hidden",
-  }}
->
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 1000,
+        width: "900px",
+        maxHeight: "80vh",
+        resize: "horizontal",
+        overflowY: "auto",
+        overflowX: "hidden",
+      }}
+    >
       <Card
         bordered={false}
         style={{
-          width: "100%", 
+          width: "100%",
           boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
           borderRadius: "8px",
         }}
       >
-
         <div style={{ marginBottom: "24px" }}>
           <Title level={2} style={{ margin: 0 }}>
-            <FileTextOutlined /> Tạo bài viết mới
+            <FileTextOutlined /> Create New Post
           </Title>
-          <Text type="secondary">
-            Chia sẻ chuyến hành trình của bạn đến với cộng đồng
-          </Text>
+          <Text type="secondary">Share your journey with the community</Text>
         </div>
 
         {!userData?.isCreator && (
           <Alert
-            message="Yêu cầu cấp quyền"
-            description="Bạn cần có quyền Creator để tạo bài viết."
+            message="Permission Required"
+            description="You need Creator permissions to create a post."
             type="warning"
             showIcon
             style={{ marginBottom: "16px" }}
@@ -182,7 +179,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
           onFinish={onFinish}
           disabled={!userData?.isCreator || formSubmitting}
         >
-          <Form.Item label="Tác giả">
+          <Form.Item label="Author">
             <Input
               value={userData?.username || ""}
               prefix={<Text type="secondary">@</Text>}
@@ -191,41 +188,35 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
             />
           </Form.Item>
 
-          <Divider orientation="left"> <Space><SnippetsOutlined /> Bài viết chi tiết </Space></Divider>
+          <Divider orientation="left">
+            <Space>
+              <SnippetsOutlined /> Post Details
+            </Space>
+          </Divider>
 
           <Form.Item
             name="title"
-            label="Tiêu đề"
+            label="Title"
             rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập tiêu đề cho bài viết của bạn",
-              },
-              { min: 5, message: "Tiêu đề phải có ít nhất 5 ký tự" },
-              { max: 100, message: "Tiêu đề không được dài quá 100 ký tự" },
+              { required: true, message: "Please enter a title for your post" },
+              { min: 5, message: "Title must be at least 5 characters" },
+              { max: 100, message: "Title cannot exceed 100 characters" },
             ]}
           >
-            <Input
-              placeholder="Tiêu đề bài viết của bạn"
-              maxLength={100}
-              showCount
-            />
+            <Input placeholder="Your post title" maxLength={100} showCount />
           </Form.Item>
 
           <Form.Item
             name="content"
-            label="Nội dung"
+            label="Content"
             rules={[
-              {
-                required: true,
-                message: "Vui lòng nhập nội dung cho bài viết của bạn",
-              },
-              { min: 50, message: "Nội dung phải có ít nhất 50 ký tự" },
+              { required: true, message: "Please enter content for your post" },
+              { min: 50, message: "Content must be at least 50 characters" },
             ]}
           >
             <TextArea
               rows={8}
-              placeholder="Chia sẻ cảm nhận của bạn về điểm đến thú vị"
+              placeholder="Share your impressions of the exciting destination"
               showCount
               maxLength={10000}
             />
@@ -233,28 +224,25 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
           <Divider orientation="left">
             <Space>
-              <AppstoreOutlined />
-              <span>Chọn danh mục</span>
+              <AppstoreOutlined /> Select Category
             </Space>
           </Divider>
 
           <Form.Item
-            label="Đường dẫn danh mục"
+            label="Category Path"
             required
-            help="Chọn đường dẫn danh mục hoàn chỉnh ( 4 cấp độ )"
+            help="Please select a complete category path (4 levels)"
           >
             {isCategoriesLoading ? (
               <div style={{ textAlign: "center", padding: "16px" }}>
                 <Spin size="large" />
-                <div style={{ marginTop: "8px" }}>
-                  Đang lấy dữ liệu danh mục...
-                </div>
+                <div style={{ marginTop: "8px" }}>Loading categories...</div>
               </div>
             ) : (
               <Space direction="vertical" style={{ width: "100%" }}>
                 {/* Level 1 */}
                 <Select
-                  placeholder="Chọn danh mục chính"
+                  placeholder="Select main category"
                   style={{ width: "100%" }}
                   onChange={(value) => {
                     const selected = categoryTree.find(
@@ -283,95 +271,89 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
                 </Select>
 
                 {/* Level 2 */}
-                {selectedLevel1 &&
-                  selectedLevel1.children &&
-                  selectedLevel1.children.length > 0 && (
-                    <Select
-                      placeholder="Chọn danh mục con (Cấp 2)"
-                      style={{ width: "100%", marginTop: "8px" }}
-                      onChange={(value) => {
-                        const selected = selectedLevel1.children.find(
-                          (child: any) => child.id === value,
-                        );
-                        setSelectedLevel2(selected);
-                        setSelectedLevel3(null);
-                        setSelectedLevel4(null);
-                        form.setFieldsValue({
-                          level3: undefined,
-                          level4: undefined,
-                        });
-                      }}
-                      value={selectedLevel2?.id || undefined}
-                      allowClear
-                      showSearch
-                      optionFilterProp="children"
-                    >
-                      {selectedLevel1.children.map((child: any) => (
-                        <Option key={child.id} value={child.id}>
-                          {child.name}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
+                {selectedLevel1?.children?.length > 0 && (
+                  <Select
+                    placeholder="Select subcategory (Level 2)"
+                    style={{ width: "100%", marginTop: "8px" }}
+                    onChange={(value) => {
+                      const selected = selectedLevel1.children.find(
+                        (child: any) => child.id === value,
+                      );
+                      setSelectedLevel2(selected);
+                      setSelectedLevel3(null);
+                      setSelectedLevel4(null);
+                      form.setFieldsValue({
+                        level3: undefined,
+                        level4: undefined,
+                      });
+                    }}
+                    value={selectedLevel2?.id || undefined}
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                  >
+                    {selectedLevel1.children.map((child: any) => (
+                      <Option key={child.id} value={child.id}>
+                        {child.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
 
                 {/* Level 3 */}
-                {selectedLevel2 &&
-                  selectedLevel2.children &&
-                  selectedLevel2.children.length > 0 && (
-                    <Select
-                      placeholder="Chọn danh mục con (Cấp 3)"
-                      style={{ width: "100%", marginTop: "8px" }}
-                      onChange={(value) => {
-                        const selected = selectedLevel2.children.find(
-                          (child: any) => child.id === value,
-                        );
-                        setSelectedLevel3(selected);
-                        setSelectedLevel4(null);
-                        form.setFieldsValue({ level4: undefined });
-                      }}
-                      value={selectedLevel3?.id || undefined}
-                      allowClear
-                      showSearch
-                      optionFilterProp="children"
-                    >
-                      {selectedLevel2.children.map((child: any) => (
-                        <Option key={child.id} value={child.id}>
-                          {child.name}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
+                {selectedLevel2?.children?.length > 0 && (
+                  <Select
+                    placeholder="Select subcategory (Level 3)"
+                    style={{ width: "100%", marginTop: "8px" }}
+                    onChange={(value) => {
+                      const selected = selectedLevel2.children.find(
+                        (child: any) => child.id === value,
+                      );
+                      setSelectedLevel3(selected);
+                      setSelectedLevel4(null);
+                      form.setFieldsValue({ level4: undefined });
+                    }}
+                    value={selectedLevel3?.id || undefined}
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                  >
+                    {selectedLevel2.children.map((child: any) => (
+                      <Option key={child.id} value={child.id}>
+                        {child.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
 
                 {/* Level 4 */}
-                {selectedLevel3 &&
-                  selectedLevel3.children &&
-                  selectedLevel3.children.length > 0 && (
-                    <Select
-                      placeholder="Chọn danh mục con (Cấp 4)"
-                      style={{ width: "100%", marginTop: "8px" }}
-                      onChange={(value) => {
-                        const selected = selectedLevel3.children.find(
-                          (child: any) => child.id === value,
-                        );
-                        setSelectedLevel4(selected);
-                      }}
-                      value={selectedLevel4?.id || undefined}
-                      allowClear
-                      showSearch
-                      optionFilterProp="children"
-                    >
-                      {selectedLevel3.children.map((child: any) => (
-                        <Option key={child.id} value={child.id}>
-                          {child.name}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
+                {selectedLevel3?.children?.length > 0 && (
+                  <Select
+                    placeholder="Select subcategory (Level 4)"
+                    style={{ width: "100%", marginTop: "8px" }}
+                    onChange={(value) => {
+                      const selected = selectedLevel3.children.find(
+                        (child: any) => child.id === value,
+                      );
+                      setSelectedLevel4(selected);
+                    }}
+                    value={selectedLevel4?.id || undefined}
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                  >
+                    {selectedLevel3.children.map((child: any) => (
+                      <Option key={child.id} value={child.id}>
+                        {child.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
 
-                {/* Selected category path display */}
+                {/* Display selected path */}
                 {selectedLevel1 && (
                   <div style={{ marginTop: "8px" }}>
-                    <Text type="secondary">Đường dẫn đã chọn: </Text>
+                    <Text type="secondary">Selected path: </Text>
                     <Text strong>{selectedLevel1.name}</Text>
                     {selectedLevel2 && (
                       <>
@@ -399,14 +381,13 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
           <Divider orientation="left">
             <Space>
-              <PictureOutlined />
-              <span>Ảnh bìa bài viết</span>
+              <PictureOutlined /> Post Cover Image
             </Space>
           </Divider>
 
           <Form.Item
-            label="Ảnh bìa bài viết"
-            help="Tải lên ảnh bìa cho bài viết của bạn"
+            label="Cover Image"
+            help="Upload a cover image for your post"
           >
             <Space direction="vertical" style={{ width: "100%" }}>
               <Upload
@@ -444,13 +425,13 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
                         fontSize: "12px",
                       }}
                     >
-                      Thay đổi
+                      Change
                     </div>
                   </div>
                 ) : (
                   <div>
                     <PictureOutlined style={{ fontSize: 24 }} />
-                    <div style={{ marginTop: "8px" }}>Tải lên</div>
+                    <div style={{ marginTop: "8px" }}>Upload</div>
                   </div>
                 )}
               </Upload>
@@ -467,7 +448,7 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
                       setPreviewUrl(null);
                     }}
                   >
-                    Xoá
+                    Remove
                   </Button>
                 </div>
               )}
@@ -485,13 +466,10 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
                 loading={formSubmitting}
                 size="large"
               >
-                Đăng bài viết
+                Publish Post
               </Button>
-              <Button
-                onClick={onClose}
-                disabled={formSubmitting}
-              >
-                Huỷ
+              <Button onClick={onClose} disabled={formSubmitting}>
+                Cancel
               </Button>
             </Space>
           </Form.Item>

@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { likeApi } from "../services/api";
-import { toast } from "react-hot-toast";
 
 export const useLike = () => {
   const queryClient = useQueryClient();
@@ -12,7 +11,7 @@ export const useLike = () => {
       enabled: !!postId,
     });
   };
-  
+
   const useCheckLikeStatus = (postId: string) => {
     return useQuery({
       queryKey: ["likes", "status", postId],
@@ -20,7 +19,7 @@ export const useLike = () => {
       enabled: !!postId,
     });
   };
-  
+
   const useGetUserLikedPosts = () => {
     return useQuery({
       queryKey: ["likes", "user", "posts"],
