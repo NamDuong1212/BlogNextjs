@@ -39,6 +39,8 @@ import {
   HeartFilled,
   ThunderboltFilled,
   LikeFilled,
+  FileTextOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { usePost } from "../hooks/usePost";
@@ -72,6 +74,59 @@ export const ViewOnlyPostList: React.FC = () => {
 
   const { data: categoriesResponse } = useGetCategories();
   const categories = categoriesResponse?.data || [];
+
+  // Function to find category by ID in the categories hierarchy
+  const findCategoryById = (
+    categoryId: string,
+    categoryList = categories
+  ): { category: any; path: any[] } | null => {
+    for (const category of categoryList) {
+      if (category.id === categoryId) {
+        return {
+          category,
+          path: [category]
+        };
+      }
+      if (category.children && category.children.length) {
+        const result: { category: any; path: any[] } | null = findCategoryById(categoryId, category.children);
+        if (result) {
+          return {
+            category: result.category,
+            path: [category, ...result.path]
+          };
+        }
+      }
+    }
+    return null;
+  };
+
+  // Handle tag click - set category filters based on the clicked category
+  const handleCategoryTagClick = (e:any, categoryId:any) => {
+    e.stopPropagation(); // Prevent the post card click event
+    
+    const result = findCategoryById(categoryId);
+    if (result) {
+      const { path } = result;
+      
+      // Reset all category selections
+      setSelectedLevel1(null);
+      setSelectedLevel2(null);
+      setSelectedLevel3(null);
+      setSelectedLevel4(null);
+      
+      // Set selected categories based on path depth
+      if (path.length >= 1) setSelectedLevel1(path[0]);
+      if (path.length >= 2) setSelectedLevel2(path[1]);
+      if (path.length >= 3) setSelectedLevel3(path[2]);
+      if (path.length >= 4) setSelectedLevel4(path[3]);
+      
+      // Set the selectedCategory to the clicked category
+      setSelectedCategory(categoryId);
+      
+      // Reset to first page
+      setCurrentPage(1);
+    }
+  };
 
   const handleLevel1Change = (value: string) => {
     const selected = categories.find((cat: any) => cat.id === value);
@@ -307,7 +362,11 @@ export const ViewOnlyPostList: React.FC = () => {
                       {post.categoryHierarchy?.[0] && (
                         <Tag
                           color="#4F46E5"
-                          className="border-0 px-3 py-1 rounded-full font-medium"
+                          className="border-0 px-3 py-1 rounded-full font-medium cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCategoryTagClick(e, post.categoryHierarchy[0].id);
+                          }}
                         >
                           {post.categoryHierarchy[0].name}
                         </Tag>
@@ -535,7 +594,7 @@ export const ViewOnlyPostList: React.FC = () => {
             emptyText: (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="Không có bài viết nào"
+                description="No posts found"
                 className="py-12"
               />
             ),
@@ -626,7 +685,8 @@ export const ViewOnlyPostList: React.FC = () => {
                             <Tag
                               key={cat.id}
                               color={getTagColor(idx)}
-                              className="m-0 px-3 py-1 rounded-full font-medium"
+                              className="m-0 px-3 py-1 rounded-full font-medium cursor-pointer hover:opacity-80"
+                              onClick={(e) => handleCategoryTagClick(e, cat.id)}
                             >
                               {cat.name}
                             </Tag>
@@ -638,14 +698,14 @@ export const ViewOnlyPostList: React.FC = () => {
                         level={4}
                         className="mb-3 text-indigo-800 font-bold hover:text-purple-700 transition-colors"
                       >
-                        {post.title || "Bài viết không có tiêu đề"}
+                        {post.title || "This post has no title"}
                       </Title>
 
                       <Paragraph
                         className="text-gray-600 mb-4 text-base"
                         ellipsis={{ rows: 3 }}
                       >
-                        {post.content || "Bài viết không có nội dung"}
+                        {post.content || "This post has no content"}
                       </Paragraph>
 
                       <div className="mt-auto pt-3 border-t border-gray-100">
@@ -706,8 +766,5 @@ export const ViewOnlyPostList: React.FC = () => {
     </div>
   );
 };
-
-// Need to import these icons that were missing in the original imports
-import { FileTextOutlined, AppstoreOutlined } from "@ant-design/icons";
 
 export default ViewOnlyPostList;

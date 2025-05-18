@@ -27,10 +27,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess })
     }
   }, [initialValues, form]);
 
-  // Hàm đệ quy để flatten danh mục cho Select
+  // Recursive function to flatten categories for the Select dropdown
   const flattenCategories = (categories: any[], parentId?: string): any[] => {
     return categories.reduce((acc: any[], category: any) => {
-      // Bỏ qua category đang chỉnh sửa và các con của nó
+      // Skip the category being edited and its descendants
       if (category.id === initialValues?._id) {
         return acc;
       }
@@ -67,22 +67,22 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess })
 
   return (
     <Card
-      title={initialValues && initialValues._id ? "Sửa danh mục" : "Tạo danh mục"}
+      title={initialValues && initialValues._id ? "Edit Category" : "Create Category"}
       style={{ maxWidth: 800, margin: "0 auto" }}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name="name"
-          label="Tên danh mục"
-          rules={[{ required: true, message: "Hãy điền tên danh mục" }]}
+          label="Category Name"
+          rules={[{ required: true, message: "Please enter the category name" }]}
         >
-          <Input />
+          <Input placeholder="Enter category name" />
         </Form.Item>
 
-        <Form.Item name="parentId" label="Danh mục cha">
+        <Form.Item name="parentId" label="Parent Category">
           <Select
             allowClear
-            placeholder="Hãy chọn danh mục cha"
+            placeholder="Select a parent category"
             disabled
             options={availableParentCategories.map((cat) => ({
               value: cat.id,
@@ -93,15 +93,15 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialValues, onSuccess })
 
         <Form.Item
           name="description"
-          label="Mô tả"
-          rules={[{ required: true, message: "Hãy điền mô tả cho danh mục" }]}
+          label="Description"
+          rules={[{ required: true, message: "Please enter a description for the category" }]}
         >
-          <TextArea rows={5} />
+          <TextArea rows={5} placeholder="Enter category description" />
         </Form.Item>
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={isCreating || isUpdating}>
-            {initialValues && initialValues._id ? "Sửa đổi" : "Tạo"} danh mục
+            {initialValues && initialValues._id ? "Update Category" : "Create Category"}
           </Button>
         </Form.Item>
       </Form>

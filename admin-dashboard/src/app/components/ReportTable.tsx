@@ -29,10 +29,10 @@ const ReportTable: React.FC = () => {
     processReport(id, {
       onSuccess: () => {
         setProcessedReports((prev) => [...prev, id]);
-        toast.success("Báo cáo đã được xử lý thành công");
+        toast.success("Report processed successfully");
       },
       onError: (error: Error) => {
-        toast.error(error.message || "Lỗi xử lý báo cáo");
+        toast.error(error.message || "Error processing report");
       },
     });
   };
@@ -57,28 +57,28 @@ const ReportTable: React.FC = () => {
 
   const columns: TableColumnsType<ReportType> = [
     {
-      title: "ID báo cáo",
+      title: "Report ID",
       dataIndex: "id",
       key: "id",
     },
     {
-      title: "Lý do",
+      title: "Reason",
       dataIndex: "reason",
       key: "reason",
     },
     {
-      title: "ID bài viết",
+      title: "Post ID",
       dataIndex: "postId",
       key: "postId",
     },
     {
-      title: "Ngày báo cáo",
+      title: "Reported At",
       dataIndex: "reportedAt",
       key: "reportedAt",
       render: (date: string) => new Date(date).toLocaleString(),
     },
     {
-      title: "Người báo cáo",
+      title: "Reported By",
       dataIndex: "reportedBy",
       key: "reportedBy",
       render: (reportedBy: ReportType["reportedBy"]) => (
@@ -88,15 +88,15 @@ const ReportTable: React.FC = () => {
       ),
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "action",
       render: (_, record) => (
         <Space>
           {processedReports.includes(record.id) ? (
-            // Show a green check mark if the report is processed
+            // Show a green check mark if the report has been processed
             <CheckCircleOutlined style={{ color: "green", fontSize: 20 }} />
           ) : (
-            // Otherwise, display a button to process the report
+            // Otherwise, display a button to mark the report as processed
             <Button
               type="link"
               icon={<CheckCircleOutlined />}
@@ -113,7 +113,7 @@ const ReportTable: React.FC = () => {
       <Card bordered={false}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
           <Input.Search
-            placeholder="Tìm báo cáo theo lý do ..."
+            placeholder="Search reports by reason..."
             allowClear
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: 300 }}

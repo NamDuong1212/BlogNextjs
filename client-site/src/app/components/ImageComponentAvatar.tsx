@@ -23,7 +23,7 @@ const ImageComponentAvatar: React.FC<ImageComponentProps> = ({
       src={imageUrl}
       alt={alt}
       size={size}
-      crossOrigin="anonymous"
+      {...(!src?.startsWith('http') && { crossOrigin: "anonymous" })}
       shape="circle"
       style={{ border: "2px solid #ccc" }}
     />

@@ -127,17 +127,28 @@ export const postApi = {
     const response = await api.delete(`/post/${id}`);
     return response.data.data;
   },
-  uploadPostImage: async (id: any, file: File): Promise<any> => {
-    const formData = new FormData();
-    formData.append("image", file);
+  uploadPostImages: async (id: any, files: File[]): Promise<any> => {
+  const formData = new FormData();
+  
+  // Append each file with the key "images" to match backend FilesInterceptor('images', 10, ...)
+  files.forEach(file => {
+    formData.append("images", file);
+  });
+  
+  const response = await api.patch(`/post/${id}/upload-images`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+},
 
-    const response = await api.patch(`/post/${id}/upload-image`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  },
+deletePostImage: async (postId: string, imageUrl: string): Promise<any> => {
+  const response = await api.delete(`/post/${postId}/images`, {
+    data: { imageUrl }
+  });
+  return response.data;
+},
 };
 
 export const likeApi = {
@@ -235,6 +246,54 @@ export const ratingApi = {
 export const reportApi = {
   createReport: async (postId: any, data: any): Promise<any> => {
     const response = await api.post(`/report/create/${postId}`, data);
+    return response.data;
+  },
+};
+
+export const itineraryApi = {
+  createItinerary: async (data: any): Promise<any> => {
+    const response = await api.post("/itinerary/create", data);
+    return response.data;
+  },
+
+  getItineraryById: async (id: string): Promise<any> => {
+    const response = await api.get(`/itinerary/${id}`);
+    return response.data;
+  },
+
+  getItineraryByPostId: async (postId: string): Promise<any> => {
+    const response = await api.get(`/itinerary/by-post/${postId}`);
+    return response.data;
+  },
+
+  updateItinerary: async (id: string, data: any): Promise<any> => {
+    const response = await api.patch(`/itinerary/${id}`, data);
+    return response.data;
+  },
+
+  deleteItinerary: async (id: string): Promise<any> => {
+    const response = await api.delete(`/itinerary/${id}`);
+    return response.data;
+  },
+
+  uploadDayImage: async (itineraryId: string, dayNumber: number, file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await api.patch(
+      `/itinerary/${itineraryId}/days/${dayNumber}/upload-image`, 
+      formData, 
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  },
+
+  deleteItineraryDay: async (itineraryId: string, dayId: string): Promise<any> => {
+    const response = await api.delete(`/itinerary/${itineraryId}/days/${dayId}`);
     return response.data;
   },
 };

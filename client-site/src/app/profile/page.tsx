@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import moment from "moment";
 import {
   Modal,
@@ -43,6 +43,7 @@ import ImageComponentAvatar from "../components/ImageComponentAvatar";
 import { useWallet } from "../hooks/useWallet";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import dayjs from "dayjs"; // Import dayjs for better date handling
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -59,6 +60,17 @@ const Profile = () => {
   const createWalletMutation = useCreateWallet();
   const [form] = Form.useForm();
   const isCreator = userData?.isCreator || false;
+
+  // Set form values when userData changes or modal opens
+  useEffect(() => {
+    if (userData && isModalOpen) {
+      form.setFieldsValue({
+        username: userData.username,
+        bio: userData.bio,
+        birthday: userData.birthday ? dayjs(userData.birthday) : undefined,
+      });
+    }
+  }, [userData, form, isModalOpen]);
 
   // Loading state
   if (!userData) {
@@ -78,14 +90,21 @@ const Profile = () => {
   }
 
   const handleEditProfile = () => {
+    // Reset form with current userData before opening modal
+    form.setFieldsValue({
+      username: userData.username,
+      bio: userData.bio,
+      birthday: userData.birthday ? dayjs(userData.birthday) : undefined,
+    });
     setIsModalOpen(true);
   };
 
   const handleSaveChanges = (values: any) => {
+    // Format birthday properly before submitting
     const formattedValues = {
       ...values,
-      birthday: values.birthday
-        ? moment(values.birthday).toISOString()
+      birthday: values.birthday 
+        ? values.birthday.format('YYYY-MM-DD') // Format as ISO date string
         : undefined,
     };
 
@@ -95,6 +114,9 @@ const Profile = () => {
         form.resetFields();
         toast.success("Profile updated successfully!");
       },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "Failed to update profile");
+      }
     });
   };
 
@@ -134,6 +156,11 @@ const Profile = () => {
       );
     }
   };
+
+  // Format birthday for display
+  const formattedBirthday = userData.birthday
+    ? dayjs(userData.birthday).format("DD-MM-YYYY")
+    : "Not updated";
 
   // Calculate percentage for wallet balance visual
   const maxBalance = walletData?.balance ? Math.max(walletData.balance * 1.5, 100) : 100;
@@ -254,9 +281,7 @@ const Profile = () => {
                         Birthday
                       </Text>
                       <Text strong className="text-lg">
-                        {userData.birthday
-                          ? moment(userData.birthday).format("DD-MM-YYYY")
-                          : "Not updated"}
+                        {formattedBirthday}
                       </Text>
                     </div>
                     
@@ -387,7 +412,7 @@ const Profile = () => {
                             block
                             className="hover:bg-blue-50 transition-colors"
                           >
-                            
+                            View My Posts
                           </Button>
                         </Link>
                       </Card>
@@ -414,16 +439,12 @@ const Profile = () => {
         width={560}
         centered
         className="rounded-xl overflow-hidden"
+        destroyOnClose={true} // Important to prevent form state issues
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSaveChanges}
-          initialValues={{
-            username: userData.username,
-            bio: userData.bio,
-            birthday: userData.birthday ? moment(userData.birthday) : undefined,
-          }}
           className="pt-4"
         >
           <Form.Item
@@ -460,7 +481,7 @@ const Profile = () => {
               placeholder="Select your birthday"
               size="large"
               showToday={false}
-              disabledDate={current => current && current > moment().endOf('day')}
+              disabledDate={current => current && current > dayjs().endOf('day')}
             />
           </Form.Item>
           

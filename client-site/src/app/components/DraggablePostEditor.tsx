@@ -13,6 +13,7 @@ import {
   Divider,
   Space,
   Alert,
+  Modal,
 } from "antd";
 import {
   SnippetsOutlined,
@@ -20,6 +21,9 @@ import {
   FileTextOutlined,
   AppstoreOutlined,
   PictureOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import useAuthStore from "@/app/store/useAuthStore";
 import { usePost } from "@/app/hooks/usePost";
@@ -45,8 +49,10 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
   const uploadMutation = useUploadPostImage();
 
   const [mounted, setMounted] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string>("");
   const [formSubmitting, setFormSubmitting] = useState(false);
 
   const [selectedLevel1, setSelectedLevel1] = useState<any>(null);
@@ -65,11 +71,12 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      // Clean up object URLs when component unmounts
+      previewUrls.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
     };
-  }, [previewUrl]);
+  }, [previewUrls]);
 
   const onFinish = async (values: any) => {
     if (!userData?.id) {
@@ -92,10 +99,10 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
       const createdPost = await createMutation.mutateAsync(dataToSubmit);
 
-      if (selectedFile && createdPost?.id) {
+      if (selectedFiles.length > 0 && createdPost?.id) {
         await uploadMutation.mutateAsync({
           id: createdPost.id,
-          file: selectedFile,
+          files: selectedFiles,
         });
       }
 
@@ -116,9 +123,36 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
       return false;
     }
 
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    if (selectedFiles.length >= 10) {
+      toast.error("Maximum 10 images are allowed per post!");
+      return false;
+    }
+
+    setSelectedFiles((prevFiles) => [...prevFiles, file]);
+    setPreviewUrls((prevUrls) => [...prevUrls, URL.createObjectURL(file)]);
     return false;
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles((prevFiles) => {
+      const newFiles = [...prevFiles];
+      newFiles.splice(index, 1);
+      return newFiles;
+    });
+
+    setPreviewUrls((prevUrls) => {
+      // Revoke the object URL to free memory
+      URL.revokeObjectURL(prevUrls[index]);
+      
+      const newUrls = [...prevUrls];
+      newUrls.splice(index, 1);
+      return newUrls;
+    });
+  };
+
+  const handlePreview = (url: string) => {
+    setPreviewImage(url);
+    setPreviewVisible(true);
   };
 
   const categoryTree = categoriesResponse?.data || [];
@@ -381,79 +415,116 @@ export const CreatePostForm: React.FC<CreatePostFormProps> = ({ onClose }) => {
 
           <Divider orientation="left">
             <Space>
-              <PictureOutlined /> Post Cover Image
+              <PictureOutlined /> Post Images (Max 10)
             </Space>
           </Divider>
 
           <Form.Item
-            label="Cover Image"
-            help="Upload a cover image for your post"
+            label="Images"
+            help={`Upload up to 10 images for your post (${selectedFiles.length}/10 uploaded)`}
           >
-            <Space direction="vertical" style={{ width: "100%" }}>
+            <div className="clearfix">
               <Upload
                 listType="picture-card"
                 showUploadList={false}
                 beforeUpload={beforeUpload}
                 accept="image/*"
+                multiple
               >
-                {previewUrl ? (
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  >
-                    <img
-                      src={previewUrl}
-                      alt="Post preview"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        background: "rgba(0,0,0,0.65)",
-                        color: "white",
-                        padding: "4px 8px",
-                        fontSize: "12px",
-                      }}
-                    >
-                      Change
-                    </div>
-                  </div>
-                ) : (
+                {selectedFiles.length >= 10 ? null : (
                   <div>
-                    <PictureOutlined style={{ fontSize: 24 }} />
-                    <div style={{ marginTop: "8px" }}>Upload</div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
                   </div>
                 )}
               </Upload>
-
-              {selectedFile && (
-                <div>
-                  <Text>{selectedFile.name}</Text>
-                  <Button
-                    type="text"
-                    danger
-                    size="small"
-                    onClick={() => {
-                      setSelectedFile(null);
-                      setPreviewUrl(null);
+              
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+                {previewUrls.map((url, index) => (
+                  <div 
+                    key={index} 
+                    style={{ 
+                      position: 'relative',
+                      width: '104px',
+                      height: '104px',
+                      border: '1px solid #d9d9d9',
+                      borderRadius: '2px',
+                      overflow: 'hidden'
                     }}
                   >
-                    Remove
-                  </Button>
-                </div>
-              )}
-            </Space>
+                    <img 
+                      src={url} 
+                      alt={`Preview ${index + 1}`}
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover' 
+                      }}
+                    />
+                    
+                    <div 
+                      style={{ 
+                        position: 'absolute', 
+                        bottom: 0, 
+                        left: 0, 
+                        right: 0,
+                        background: 'rgba(0,0,0,0.65)', 
+                        padding: '4px', 
+                        display: 'flex', 
+                        justifyContent: 'space-around' 
+                      }}
+                    >
+                      <Button 
+                        type="text" 
+                        size="small" 
+                        icon={<EyeOutlined style={{ color: 'white' }} />}
+                        onClick={() => handlePreview(url)}
+                      />
+                      <Button 
+                        type="text" 
+                        size="small" 
+                        icon={<DeleteOutlined style={{ color: 'white' }} />}
+                        onClick={() => removeFile(index)}
+                      />
+                    </div>
+                    
+                    {index === 0 && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          background: 'rgba(0,132,255,0.75)',
+                          color: 'white',
+                          padding: '2px 6px',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Cover
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {selectedFiles.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <Text type="secondary">
+                  First image will be used as the cover image. You can upload up to {10 - selectedFiles.length} more images.
+                </Text>
+              </div>
+            )}
           </Form.Item>
+
+          <Modal
+            visible={previewVisible}
+            title="Image Preview"
+            footer={null}
+            onCancel={() => setPreviewVisible(false)}
+          >
+            <img alt="Preview" style={{ width: '100%' }} src={previewImage} />
+          </Modal>
 
           <Divider />
 

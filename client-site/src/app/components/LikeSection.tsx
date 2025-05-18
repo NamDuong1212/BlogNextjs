@@ -65,7 +65,7 @@ const LikeSection: React.FC<LikeSectionProps> = ({ postId }) => {
 
   return (
     <div
-      style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}
+      style={{ display: "flex", justifyContent: "center"}}
     >
       <Space
         align="center"

@@ -6,14 +6,17 @@ import {
   CommentOutlined,
   EditOutlined,
   DeleteOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import { useComment } from "../hooks/useComment";
 import useAuthStore from "../store/useAuthStore";
 import { formatDateTime } from "../utils/formatDateTime";
 import { CommentSectionState } from "../types/comment";
 import ImageComponentAvatar from "./ImageComponentAvatar";
+
 const { TextArea } = Input;
 const { Title } = Typography;
+
 const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
   const [newComment, setNewComment] = useState<string>("");
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -23,6 +26,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     username: string;
   } | null>(null);
   const [replyContent, setReplyContent] = useState<string>("");
+
   const userData = useAuthStore((state) => state.userData);
   const {
     useGetComments,
@@ -31,20 +35,26 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     useDeleteComment,
     useReplyComment,
   } = useComment(postId);
+
   const { data: comments = [], isLoading } = useGetComments();
+
   const createCommentMutation = useCreateComment(() => {
     setNewComment("");
     setReplyingTo(null);
   });
+
   const updateCommentMutation = useUpdateComment(() => {
     setEditingComment(null);
     setEditContent("");
   });
+
   const deleteCommentMutation = useDeleteComment();
+
   const replyCommentMutation = useReplyComment(() => {
     setReplyContent("");
     setReplyingTo(null);
   });
+
   const handleCommentSubmit = () => {
     if (!newComment.trim() || !userData) return;
     createCommentMutation.mutate({
@@ -53,6 +63,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       replyTo: replyingTo?.id || null,
     });
   };
+
   const handleUpdateComment = () => {
     if (!editContent.trim() || !userData) return;
     updateCommentMutation.mutate({
@@ -60,19 +71,22 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
       data: { content: editContent },
     });
   };
+
   const handleReplySubmit = () => {
     if (!replyContent.trim() || !userData || !replyingTo) return;
     replyCommentMutation.mutate({
       parentId: replyingTo.id,
       data: {
         content: replyContent,
-      }
+      },
     });
   };
+
   const startEditing = (comment: any) => {
     setEditingComment(comment.id);
     setEditContent(comment.content);
   };
+
   const actions = (comment: any) => {
     const isOwner = userData && comment.user.id === userData.id;
     return [
@@ -84,7 +98,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
         }
         icon={<CommentOutlined />}
       >
-        Trả lời
+        Reply
       </Button>,
       isOwner && (
         <EditOutlined key="edit" onClick={() => startEditing(comment)} />
@@ -104,10 +118,24 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
 
   const renderReplies = (replies: any[], level: number = 1) => {
     if (!replies || replies.length === 0) return null;
-    
+
     return replies.map((reply) => (
       <React.Fragment key={reply.id}>
-        {renderCommentItem(reply, true, level)}
+        <div style={{ position: "relative" }}>
+          {/* Arrow pointing to the reply */}
+          <div 
+            style={{ 
+              position: "absolute", 
+              left: 24 * level, 
+              top: "20px",
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <ArrowRightOutlined style={{ color: "#1890ff" }} />
+          </div>
+          {renderCommentItem(reply, true, level)}
+        </div>
         {replyingTo?.id === reply.id && (
           <div style={{ marginLeft: 48 * (level + 1), marginTop: 16 }}>
             <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
@@ -139,7 +167,11 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     ));
   };
 
-  const renderCommentItem = (comment: any, isReply = false, level: number = 1) => (
+  const renderCommentItem = (
+    comment: any,
+    isReply = false,
+    level: number = 1
+  ) => (
     <Comment
       key={comment.id}
       actions={actions(comment)}
@@ -177,12 +209,9 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
     />
   );
 
-  // Add this helper function to count total comments including replies
   const countTotalComments = (comments: any[]): number => {
     return comments.reduce((total, comment) => {
-      // Count current comment
       let count = 1;
-      // Add count of all nested replies recursively
       if (comment.replies && comment.replies.length > 0) {
         count += countTotalComments(comment.replies);
       }
@@ -192,14 +221,14 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
 
   return (
     <div style={{ marginTop: "40px" }}>
-      <Title level={4}>Bình luận</Title>
+      <Title level={4}>Comments</Title>
       <List
         loading={isLoading}
         dataSource={comments}
         header={
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <CommentOutlined style={{ fontSize: "20px" }} />
-            {`${countTotalComments(comments)} bình luận`}
+            {`${countTotalComments(comments)} comments`}
           </div>
         }
         itemLayout="horizontal"
@@ -218,7 +247,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                   <TextArea
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
-                    placeholder={`Trả lời ${replyingTo?.username || ""}...`}
+                    placeholder={`Reply to ${replyingTo?.username || ""}...`}
                     rows={2}
                     style={{ flex: 1 }}
                   />
@@ -229,9 +258,9 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
                   style={{ marginRight: 8 }}
                   loading={replyCommentMutation.isPending}
                 >
-                  Trả lời
+                  Reply
                 </Button>
-                <Button onClick={() => setReplyingTo(null)}>Huỷ</Button>
+                <Button onClick={() => setReplyingTo(null)}>Cancel</Button>
               </div>
             )}
             {renderReplies(comment.replies)}
@@ -249,7 +278,7 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
               rows={3}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Hãy viết bình luận ..."
+              placeholder="Write a comment..."
               style={{ flex: 1 }}
             />
           </div>
@@ -259,15 +288,16 @@ const CommentSection: React.FC<CommentSectionState> = ({ postId }) => {
             style={{ marginTop: "10px" }}
             loading={createCommentMutation.isPending}
           >
-            Gửi bình luận
+            Submit Comment
           </Button>
         </div>
       ) : (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
-          Hãy đăng nhập để bình luận
+          Please log in to comment.
         </div>
       )}
     </div>
   );
 };
+
 export default CommentSection;

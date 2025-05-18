@@ -1,16 +1,16 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
 import {
   DesktopOutlined,
-  FileOutlined,
   PieChartOutlined,
-  SnippetsOutlined ,
+  SnippetsOutlined,
   UserOutlined,
   AlibabaOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
 import { useRouter } from 'next/navigation';
+
 const { Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -30,11 +30,11 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('Danh mục', '1', <PieChartOutlined />),
-  getItem('Thu nhập hàng ngày', '2', <DesktopOutlined />),
-  getItem('Bài viết', '3', <AlibabaOutlined />),
-  getItem('Báo cáo', '4', <SnippetsOutlined />),
-  getItem('Người dùng', 'sub1', <UserOutlined />), 
+  getItem('Categories', '1', <PieChartOutlined />),
+  getItem('Daily Income', '2', <DesktopOutlined />),
+  getItem('Posts', '3', <AlibabaOutlined />),
+  getItem('Reports', '4', <SnippetsOutlined />),
+  getItem('Users', 'sub1', <UserOutlined />),
 ];
 
 const LeftBar: React.FC = () => {
@@ -55,27 +55,22 @@ const LeftBar: React.FC = () => {
       case '4':
         router.push('/report');
         break;
-      case '5':
-        router.push('');
-        break;
-      case '6':
-        router.push('');
-        break;
-      case '8':
-        router.push('');
-        break;
-      case '9':
-        router.push('');
-        break;
       default:
         router.push('/');
         break;
     }
   };
+
   return (
     <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-      <div className="demo-logo-vertical" />
-      <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} onClick={handleClick} />
+      <div className="logo" />
+      <Menu
+        theme="dark"
+        defaultSelectedKeys={['1']}
+        mode="inline"
+        items={items}
+        onClick={handleClick}
+      />
     </Sider>
   );
 };

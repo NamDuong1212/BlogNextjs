@@ -64,29 +64,29 @@ const CategoryTable: React.FC = () => {
 
   const columns: TableColumnsType<CategoryType> = [
     {
-      title: "Tên danh mục",
+      title: "Category Name",
       dataIndex: "name",
       key: "name",
       render: (_, record) => (
-        // Tăng giá trị marginLeft để lùi sâu hơn
+        // Increase marginLeft to indent based on level
         <div style={{ marginLeft: record.level && record.level > 1 ? (record.level - 1) * 40 : 0 }}>
           <span style={{ fontWeight: 500 }}>{record.name}</span>
           {record.parent && (
             <div style={{ fontSize: "0.85em", color: "#888" }}>
-
+              {/* Optionally show parent category name here */}
             </div>
           )}
         </div>
       ),
     },
     {
-      title: "Mô tả",
+      title: "Description",
       dataIndex: "description",
       key: "description",
       render: (text: string) => <div style={{ whiteSpace: "pre-wrap" }}>{text}</div>,
     },
     {
-      title: "Cấp độ",
+      title: "Level",
       dataIndex: "level",
       key: "level",
       render: (level: number) => (
@@ -94,7 +94,7 @@ const CategoryTable: React.FC = () => {
       ),
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "action",
       width: 160,
       render: (_, record) => (
@@ -106,9 +106,13 @@ const CategoryTable: React.FC = () => {
             icon={<DeleteOutlined />}
             onClick={() => record._id && handleDelete(record._id)}
           />
-          {/* Chỉ hiển thị nút tạo subcategory nếu level nhỏ hơn 4 */}
+          {/* Only show subcategory button if level is less than 4 */}
           {record.level && record.level < 4 && (
-            <Button type="link" icon={<PlusOutlined />} onClick={() => handleCreateSubcategory(record)} />
+            <Button
+              type="link"
+              icon={<PlusOutlined />}
+              onClick={() => handleCreateSubcategory(record)}
+            />
           )}
         </Space>
       ),
@@ -120,7 +124,7 @@ const CategoryTable: React.FC = () => {
       <Card bordered={false}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
           <Input.Search
-            placeholder="Tìm danh mục"
+            placeholder="Search categories"
             allowClear
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: 300 }}
@@ -133,7 +137,7 @@ const CategoryTable: React.FC = () => {
               setIsModalVisible(true);
             }}
           >
-            Thêm danh mục mới
+            Add New Category
           </Button>
         </div>
         <Table<CategoryType>
@@ -144,6 +148,7 @@ const CategoryTable: React.FC = () => {
           rowKey="_id"
         />
       </Card>
+
       <Modal
         title={editingCategory && editingCategory._id ? "Edit Category" : "Create Category"}
         open={isModalVisible}

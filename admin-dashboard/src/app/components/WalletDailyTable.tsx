@@ -1,59 +1,69 @@
 import React from "react";
-import { Table, Button, Space, Typography } from "antd";
+import { Table, Button, Space } from "antd";
 import { DollarOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import { useViews } from "../hooks/useView";
 
+interface WalletDailyType {
+  key: string | number;
+  author: string;
+  postId: string | number;
+  title: string;
+  viewCount: number;
+  paid: number;
+}
 
 const WalletDailyTable: React.FC = () => {
   const { useGetViews, useCalculateDailyEarnings } = useViews();
   const { data: viewsResponse, isLoading } = useGetViews();
   const { mutate: calculateEarnings } = useCalculateDailyEarnings();
 
-  const columns: TableColumnsType = [
-    { title: "Tác giả", dataIndex: "author", key: "author" },
-    { title: "ID bài viết", dataIndex: "postId", key: "postId" },
-    { title: "Tiêu đề", dataIndex: "title", key: "title" },
-    { title: "Lượt xem", dataIndex: "viewCount", key: "viewCount" },
-    { 
-      title: "Số tiền cần trả", 
-      dataIndex: "Paid", 
-      key: "Paid",
-      render: (value) => (
+  const columns: TableColumnsType<WalletDailyType> = [
+    { title: "Author", dataIndex: "author", key: "author" },
+    { title: "Post ID", dataIndex: "postId", key: "postId" },
+    { title: "Title", dataIndex: "title", key: "title" },
+    { title: "View Count", dataIndex: "viewCount", key: "viewCount" },
+    {
+      title: "Amount Due",
+      dataIndex: "paid",
+      key: "paid",
+      render: (value: number) => (
         <Space>
-          <DollarOutlined style={{ color: '#52c41a' }} />
+          <DollarOutlined />
           <span>{value}</span>
         </Space>
-      )
-    }
+      ),
+    },
   ];
 
-  const data =
+  const data: WalletDailyType[] =
     viewsResponse?.map((item: any) => ({
       key: item.postId,
       author: item.author,
       postId: item.postId,
       title: item.title,
       viewCount: item.viewCount,
-      Paid: item.Paid,
+      paid: item.Paid,
     })) || [];
 
   return (
     <div>
-      <div style={{ marginBottom: 16, textAlign: 'right' }}>
+      <div style={{ marginBottom: 16, textAlign: "right" }}>
         <Button
           type="primary"
           icon={<DollarOutlined />}
           onClick={() => calculateEarnings()}
           size="large"
         >
-          Tính toán số tiền cần trả
+          Calculate Amount Due
         </Button>
       </div>
-      <Table
+      <Table<WalletDailyType>
         columns={columns}
         dataSource={data}
         loading={isLoading}
+        pagination={{ pageSize: 10 }}
+        rowKey="key"
       />
     </div>
   );

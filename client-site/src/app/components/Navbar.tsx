@@ -198,13 +198,15 @@ const Navbar: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <Link
                     href="/login"
-                    className="px-5 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50 transition-all font-medium"
+                    className="px-5 py-2 border rounded-full font-medium transition-all
+             border-transparent bg-gradient-to-r from-indigo-500 to-purple-600 
+             text-transparent bg-clip-text hover:bg-indigo-50"
                   >
                     Log in
                   </Link>
                   <Link
                     href="/register"
-                    className="px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full hover:from-blue-600 hover:to-indigo-700 shadow-sm hover:shadow transition-all font-medium"
+                    className="px-5 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full hover:from-blue-600 hover:to-indigo-700 shadow-sm hover:shadow transition-all font-medium"
                   >
                     Register
                   </Link>

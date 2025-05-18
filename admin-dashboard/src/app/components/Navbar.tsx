@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
 import { Layout as AntLayout, theme } from 'antd';
 import { useRouter } from 'next/navigation';
@@ -22,22 +22,24 @@ const Navbar: React.FC = () => {
   };
 
   const toggleDropdown = () => {
-    setDropDown((prev) => !prev);
+    setDropDown(prev => !prev);
   };
 
   return (
-    <AntLayout.Header style={{ 
-      padding: "0 16px", 
-      background: colorBgContainer, 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      height: '64px',
-      lineHeight: '64px',
-      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03)'
-    }}>
+    <Header
+      style={{
+        padding: "0 16px",
+        background: colorBgContainer,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '64px',
+        lineHeight: '64px',
+        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.03)'
+      }}
+    >
       <div className="text-xl font-bold">
-        <Link href="/">Bảng quản trị</Link>
+        <Link href="/">Admin Dashboard</Link>
       </div>
       <div className="flex items-center gap-4">
         {userData && (
@@ -54,14 +56,14 @@ const Navbar: React.FC = () => {
                   onClick={handleLogout}
                   className="block w-full text-left px-3 py-3 text-red-500 hover:bg-red-100 text-sm"
                 >
-                  Đăng xuất
+                  Logout
                 </button>
               </div>
             )}
           </div>
         )}
       </div>
-    </AntLayout.Header>
+    </Header>
   );
 };
 

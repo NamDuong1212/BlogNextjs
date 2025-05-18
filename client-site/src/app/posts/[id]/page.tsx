@@ -10,6 +10,12 @@ import {
   Form,
   Card,
   Avatar,
+  Divider,
+  Row,
+  Col,
+  Badge,
+  Tooltip,
+  Empty,
 } from "antd";
 import {
   CalendarOutlined,
@@ -20,6 +26,11 @@ import {
   RightOutlined,
   UserOutlined,
   TagOutlined,
+  FireOutlined,
+  GlobalOutlined,
+  CompassOutlined,
+  HeartFilled,
+  ThunderboltFilled,
 } from "@ant-design/icons";
 import { useParams, useRouter } from "next/navigation";
 import { usePost } from "@/app/hooks/usePost";
@@ -184,8 +195,48 @@ const PostDetail: React.FC = () => {
     router.push(`/posts/${postId}`);
   };
 
+  // Function to get random tag color for category
+  const getTagColor = (index: number) => {
+    const colors = [
+      "magenta",
+      "red",
+      "volcano",
+      "orange",
+      "gold",
+      "lime",
+      "green",
+      "cyan",
+      "blue",
+      "geekblue",
+      "purple",
+    ];
+    return colors[index % colors.length];
+  };
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+    <div className="min-h-screen py-8 px-4 sm:px-8" style={{ background: "var(--background-gradient)" }}>
+      <div className="max-w-4xl mx-auto">
+          <Card className="shadow-lg rounded-xl border-none p-6">
+            <div className="animate-pulse">
+              <div className="flex justify-center mb-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
+              </div>
+              <div className="text-center mb-6">
+                <div className="h-8 bg-gray-200 rounded w-2/3 mx-auto mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/3 mx-auto"></div>
+              </div>
+              <div className="h-64 bg-gray-200 rounded-xl mb-6"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   if (!post || !id) {
@@ -196,394 +247,496 @@ const PostDetail: React.FC = () => {
     );
   }
 
-  return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-      <div id="post-content">
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <div style={{ textAlign: "center" }}>
-            <ImageComponentAvatar
-              size={80}
-              src={post.user?.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
-              alt="User Avatar"
-            />
-            <Title level={4}>{post.user?.username || "User"}</Title>
-            <Paragraph>
-              <Space size="large">
-                {post.categoryHierarchy?.length > 0 && (
-                  <Space size="small">
-                    {post.categoryHierarchy?.map(
-                      (cat: { id: string; name: string }) => (
-                        <Tag
-                          key={cat.id}
-                          bordered={false}
-                          color="processing"
-                          style={{ cursor: "pointer" }}
-                        >
-                          {cat.name}
-                        </Tag>
-                      ),
-                    )}
-                  </Space>
-                )}
+  const featuredIndex = Math.floor(Math.random() * 3); // Simulate a featured post (0, 1, or 2)
 
-                <span>
-                  <CalendarOutlined style={{ marginRight: 4 }} />
-                  {formatDateTime(post.createdAt)}
-                </span>
-                <span className="view-count">
-                  <EyeOutlined style={{ marginRight: 4 }} />
-                  {post.viewCount} views
-                </span>
-              </Space>
-            </Paragraph>
+  return (
+    <div className="min-h-screen py-8 px-4 sm:px-8" style={{ background: "var(--background-gradient)" }}>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6">
+          <Button
+            onClick={() => router.push('/')}
+            icon={<LeftOutlined />}
+            className="border-indigo-200 text-indigo-600 hover:text-indigo-700 hover:border-indigo-400 shadow-sm"
+          >
+            Back to Posts
+          </Button>
+        </div>
+
+        {/* Main post content */}
+        <Card 
+          className="shadow-lg rounded-xl overflow-hidden border-none mb-8"
+          id="post-content"
+        >
+          {/* Post Header */}
+          <div className="mb-6">
+            <div className="flex flex-wrap justify-between items-center mb-4">
+              <div className="flex items-center mb-2 sm:mb-0">
+                <ImageComponentAvatar
+                  size={48}
+                  src={post.user?.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
+                  alt="User Avatar"
+                />
+                <div>
+                  <Title level={5} className="m-0 text-indigo-800">
+                    {post.user?.username || "User"}
+                  </Title>
+                  <Text className="text-gray-500 text-sm">Author</Text>
+                </div>
+              </div>
+              
+              <div>
+                <Space>
+                  <Tooltip title="Posted on">
+                    <span className="flex items-center text-gray-500">
+                      <CalendarOutlined className="mr-1 text-indigo-500" />
+                      {formatDateTime(post.createdAt)}
+                    </span>
+                  </Tooltip>
+                  <span className="view-count flex items-center text-gray-500">
+                    <EyeOutlined className="mr-1 text-purple-500" />
+                    {post.viewCount} views
+                  </span>
+                </Space>
+              </div>
+            </div>
+            
+            {/* Categories */}
+            {post.categoryHierarchy?.length > 0 && (
+              <div className="mb-4 flex flex-wrap gap-2">
+                {post.categoryHierarchy.map((cat: { id: string; name: string }, idx: number) => (
+                  <Tag
+                    key={cat.id}
+                    color={getTagColor(idx)}
+                    className="m-0 px-3 py-1 rounded-full font-medium"
+                  >
+                    {cat.name}
+                  </Tag>
+                ))}
+              </div>
+            )}
           </div>
 
-          <Title level={2} style={{ textAlign: "center" }}>
+          {/* Post Title */}
+          <Title level={2} className="text-center mb-6 text-indigo-800 font-bold">
             {post.title}
           </Title>
 
-          {post.image ? (
-            <div style={{ textAlign: "center" }}>
-              <ImageComponentPostImage
-                src={post.image}
-                alt="Post Image"
-                width="100%"
-                height="100%"
-              />
-            </div>
-          ) : (
-            <div style={{ textAlign: "center" }}>
-              <img
-                src="https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"
-                alt="Default Image"
-                style={{ width: "100%", borderRadius: "8px" }}
+          {/* Featured Badge */}
+          {featuredIndex < 3 && (
+            <div className="absolute top-4 right-4">
+              <Badge
+                count={
+                  featuredIndex === 0 ? (
+                    <ThunderboltFilled style={{ color: "#fff" }} />
+                  ) : featuredIndex === 1 ? (
+                    <FireOutlined style={{ color: "#fff" }} />
+                  ) : (
+                    <HeartFilled style={{ color: "#fff" }} />
+                  )
+                }
+                color={
+                  featuredIndex === 0
+                    ? "#FF4D4F"
+                    : featuredIndex === 1
+                      ? "#FAAD14"
+                      : "#52C41A"
+                }
+                className="animate-pulse"
               />
             </div>
           )}
 
-          <Paragraph style={{ whiteSpace: "pre-wrap" }}>
-            <Linkify
-              componentDecorator={(href, text, key) => (
-                <a
-                  href={href}
-                  key={key}
-                  style={{ color: "dodgerblue", textDecoration: "underline" }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {text}
-                </a>
-              )}
-            >
-              {post.content}
-            </Linkify>
-          </Paragraph>
-
-          <div className="likes-section">
-            <LikeSection postId={id} />
+          {/* Post Image */}
+          <div className="rounded-xl overflow-hidden shadow-md mb-8 relative">
+            <ImageComponentPostImage
+              images={post.images || (post.image ? [post.image] : [])}
+              alt="Post Image"
+              width="100%"
+              height="400px"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent h-16 opacity-60"></div>
           </div>
-          <div className="ratings-section">
-            <RatingSection postId={id} />
-          </div>
-        </Space>
-      </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "12px",
-          marginTop: "20px",
-        }}
-      >
-        <Button
-          type="primary"
-          icon={<DownloadOutlined />}
-          onClick={handleDownload}
-          loading={isDownloading}
-          size="large"
-        >
-          Download PDF
-        </Button>
-        <Button
-          type="default"
-          danger
-          icon={<FlagOutlined />}
-          onClick={() => setIsReportModalOpen(true)}
-          size="large"
-        >
-          Report
-        </Button>
-      </div>
-
-      <Modal
-        title="Report Post"
-        open={isReportModalOpen}
-        onCancel={() => {
-          setIsReportModalOpen(false);
-          form.resetFields();
-        }}
-        footer={null}
-      >
-        <Form form={form} onFinish={handleReportSubmit} layout="vertical">
-          <Form.Item
-            name="reason"
-            label="Reason for report"
-            rules={[
-              {
-                required: true,
-                message: "Please enter a reason for reporting",
-              },
-            ]}
-          >
-            <TextArea rows={4} placeholder="Enter report reason here..." />
-          </Form.Item>
-          <Form.Item>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "8px",
+          {/* Post Content */}
+          <div className="p-6 rounded-xl">
+            <Paragraph 
+              style={{ 
+                whiteSpace: "pre-wrap", 
+                fontSize: "16px", 
+                lineHeight: "1.8",
+                color: "#374151" 
               }}
             >
-              <Button onClick={() => setIsReportModalOpen(false)}>Cancel</Button>
-              <Button
-                type="primary"
-                danger
-                htmlType="submit"
-                loading={createReportMutation.isPending}
+              <Linkify
+                componentDecorator={(href, text, key) => (
+                  <a
+                    href={href}
+                    key={key}
+                    style={{ color: "#4F46E5", textDecoration: "underline" }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {text}
+                  </a>
+                )}
               >
-                Submit Report
-              </Button>
-            </div>
-          </Form.Item>
-        </Form>
-      </Modal>
+                {post.content}
+              </Linkify>
+            </Paragraph>
+          </div>
 
-      {id && (
-        <CommentSection
-          postId={id}
-          id=""
-          content=""
-          createdAt=""
-          updatedAt=""
-          user={{
-            id: "",
-            name: "",
-          }}
-          post={{
-            id: "",
-          }}
-        />
-      )}
+          {/* Interactions */}
+          <div className="mt-6">
+            <Row gutter={16} style={{ display: 'flex', alignItems: 'center' }}>
+              <Col span={10}>
+                <div className="likes-section">
+                  <LikeSection postId={id} />
+                </div>
+              </Col>
+              <Col span={10}>
+                <div className="ratings-section">
+                  <RatingSection postId={id} />
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Card>
 
-      <div style={{ marginTop: "40px" }}>
+        {/* Actions */}
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "15px",
+            justifyContent: "center",
+            gap: "12px",
+            marginBottom: "20px",
           }}
         >
-          <Title level={4} style={{ margin: 0 }}>
-            You Might Also Like
-          </Title>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <Button
-              type="default"
-              icon={<LeftOutlined />}
-              onClick={() => scrollRelatedPosts("left")}
-              disabled={isLoadingRelated || relatedPosts.length === 0}
-            />
-            <Button
-              type="default"
-              icon={<RightOutlined />}
-              onClick={() => scrollRelatedPosts("right")}
-              disabled={isLoadingRelated || relatedPosts.length === 0}
-            />
-          </div>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={handleDownload}
+            loading={isDownloading}
+            size="large"
+            className="bg-indigo-600 hover:bg-indigo-700 flex items-center shadow-md"
+          >
+            Download PDF
+          </Button>
+          <Button
+            danger
+            icon={<FlagOutlined />}
+            onClick={() => setIsReportModalOpen(true)}
+            size="large"
+            className="border-red-200 text-red-600 hover:text-red-700 hover:border-red-400 shadow-md"
+          >
+            Report
+          </Button>
         </div>
 
-        <div
-          ref={relatedPostsRef}
-          style={{
-            display: "flex",
-            overflowX: "auto",
-            gap: "16px",
-            padding: "4px",
-            scrollbarWidth: "thin",
-            msOverflowStyle: "none",
-            scrollSnapType: "x mandatory",
+        <Modal
+          title={
+            <div className="flex items-center">
+              <FlagOutlined className="text-red-500 mr-2" /> 
+              <span>Report Post</span>
+            </div>
+          }
+          open={isReportModalOpen}
+          onCancel={() => {
+            setIsReportModalOpen(false);
+            form.resetFields();
           }}
-          className="hide-scrollbar"
+          footer={null}
+          className="report-modal"
         >
-          {isLoadingRelated ? (
-            <div
-              style={{ padding: "20px", textAlign: "center", width: "100%" }}
+          <Form form={form} onFinish={handleReportSubmit} layout="vertical">
+            <Form.Item
+              name="reason"
+              label="Reason for report"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter a reason for reporting",
+                },
+              ]}
             >
-              Loading related posts...
-            </div>
-          ) : relatedPosts.length === 0 ? (
-            <div
-              style={{ padding: "20px", textAlign: "center", width: "100%" }}
-            >
-              No related posts available
-            </div>
-          ) : (
-            relatedPosts.map((relatedPost: any) => (
-              <Card
-                key={relatedPost.id}
-                hoverable
+              <TextArea rows={4} placeholder="Enter report reason here..." />
+            </Form.Item>
+            <Form.Item>
+              <div
                 style={{
-                  width: 280,
-                  minWidth: 280,
-                  scrollSnapAlign: "start",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "8px",
                 }}
-                cover={
-                  <div
-                    style={{
-                      height: 160,
-                      overflow: "hidden",
-                      position: "relative",
-                    }}
-                  >
-                    <ImageComponentPostImage
-                      alt={relatedPost.title}
-                      src={
-                        relatedPost.image
-                          ? `${relatedPost.image}`
-                          : "https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"
-                      }
-                    />
-                  </div>
-                }
-                onClick={() => navigateToPost(relatedPost.id)}
               >
-                <Meta
-                  avatar={
-                    <ImageComponentAvatar
-                      size={35}
-                      src={
-                        relatedPost.user?.avatar ||
-                        relatedPost.avatar ||
-                        "https://i.imgur.com/CzXTtJV.jpg"
-                      }
-                      alt=""
-                    />
-                  }
-                  title={
+                <Button onClick={() => setIsReportModalOpen(false)}>Cancel</Button>
+                <Button
+                  type="primary"
+                  danger
+                  htmlType="submit"
+                  loading={createReportMutation.isPending}
+                >
+                  Submit Report
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Comments */}
+        <Card className="shadow-lg rounded-xl border-none mb-8">
+          <div className="flex items-center mb-4">
+            <div className="w-1 h-6 bg-indigo-600 rounded-full mr-2"></div>
+            <Title level={4} className="m-0 text-indigo-800 font-bold">
+              <CompassOutlined className="mr-2 text-indigo-600" />
+              Comments
+            </Title>
+          </div>
+          
+          {id && (
+            <CommentSection
+              postId={id}
+              id=""
+              content=""
+              createdAt=""
+              updatedAt=""
+              user={{
+                id: "",
+                name: "",
+              }}
+              post={{
+                id: "",
+              }}
+            />
+          )}
+        </Card>
+
+        {/* Related Posts */}
+        <Card className="shadow-lg rounded-xl border-none">
+          <div 
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "15px",
+            }}
+          >
+            <div className="flex items-center">
+              <div className="w-1 h-6 bg-purple-600 rounded-full mr-2"></div>
+              <Title level={4} className="m-0 text-purple-800 font-bold flex items-center">
+                <CompassOutlined className="mr-2 text-purple-600" />
+                You Might Also Like
+              </Title>
+            </div>
+            
+            <div style={{ display: "flex", gap: "8px" }}>
+              <Button
+                type="default"
+                icon={<LeftOutlined />}
+                onClick={() => scrollRelatedPosts("left")}
+                disabled={isLoadingRelated || relatedPosts.length === 0}
+                className="border-purple-200 text-purple-600 hover:text-purple-700 hover:border-purple-400"
+              />
+              <Button
+                type="default"
+                icon={<RightOutlined />}
+                onClick={() => scrollRelatedPosts("right")}
+                disabled={isLoadingRelated || relatedPosts.length === 0}
+                className="border-purple-200 text-purple-600 hover:text-purple-700 hover:border-purple-400"
+              />
+            </div>
+          </div>
+
+          <div
+            ref={relatedPostsRef}
+            style={{
+              display: "flex",
+              overflowX: "auto",
+              gap: "16px",
+              padding: "4px",
+              scrollbarWidth: "thin",
+              msOverflowStyle: "none",
+              scrollSnapType: "x mandatory",
+            }}
+            className="hide-scrollbar"
+          >
+            {isLoadingRelated ? (
+              <div style={{ padding: "20px", textAlign: "center", width: "100%" }}>
+                Loading related posts...
+              </div>
+            ) : relatedPosts.length === 0 ? (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="No related posts available"
+                className="py-12 w-full"
+              />
+            ) : (
+              relatedPosts.map((relatedPost: any, index: number) => (
+                <Card
+                  key={relatedPost.id}
+                  hoverable
+                  className="shadow-md rounded-xl overflow-hidden border-none hover:shadow-xl transition-all duration-300"
+                  style={{
+                    width: 280,
+                    minWidth: 280,
+                    scrollSnapAlign: "start",
+                  }}
+                  cover={
                     <div
                       style={{
-                        whiteSpace: "nowrap",
+                        height: 160,
                         overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        position: "relative",
                       }}
                     >
-                      {relatedPost.title}
+                      <ImageComponentPostImage
+                        alt={relatedPost.title}
+                        src={
+                          relatedPost.image
+                            ? `${relatedPost.image}`
+                            : "https://farm4.staticflickr.com/3224/3081748027_0ee3d59fea_z_d.jpg"
+                        }
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent h-24 opacity-80" />
+                      <div className="absolute bottom-3 left-3 flex items-center">
+                        <Badge
+                          count={<EyeOutlined style={{ color: "#fff" }} />}
+                          color="#4F46E5"
+                          className="mr-2"
+                        />
+                        <Text className="text-white font-medium">
+                          {relatedPost.viewCount || 0}
+                        </Text>
+                      </div>
+                      
+                      {index < 3 && (
+                        <div className="absolute top-3 right-3">
+                          <Badge
+                            count={index === 0 ? (
+                              <ThunderboltFilled style={{ color: "#fff" }} />
+                            ) : index === 1 ? (
+                              <FireOutlined style={{ color: "#fff" }} />
+                            ) : (
+                              <HeartFilled style={{ color: "#fff" }} />
+                            )}
+                            color={
+                              index === 0
+                                ? "#FF4D4F"
+                                : index === 1
+                                  ? "#FAAD14"
+                                  : "#52C41A"
+                            }
+                            className="animate-pulse"
+                          />
+                        </div>
+                      )}
                     </div>
                   }
-                  description={
-                    <div>
+                  onClick={() => navigateToPost(relatedPost.id)}
+                >
+                  <Meta
+                    avatar={
+                      <ImageComponentAvatar
+                        size={35}
+                        src={
+                          relatedPost.user?.avatar ||
+                          relatedPost.avatar ||
+                          "https://i.imgur.com/CzXTtJV.jpg"
+                        }
+                        alt=""
+                      />
+                    }
+                    title={
                       <div
                         style={{
-                          fontSize: "13px",
-                          marginBottom: "6px",
-                          display: "flex",
-                          alignItems: "center",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
-                        <UserOutlined
-                          style={{ marginRight: 4, fontSize: "12px" }}
-                        />
-                        <span
+                        {relatedPost.title}
+                      </div>
+                    }
+                    description={
+                      <div>
+                        <div
                           style={{
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
+                            fontSize: "13px",
+                            marginBottom: "6px",
+                            display: "flex",
+                            alignItems: "center",
                           }}
                         >
-                          {relatedPost.user?.username ||
-                            relatedPost.author ||
-                            "Unknown"}
-                        </span>
-                      </div>
+                          <UserOutlined
+                            style={{ marginRight: 4, fontSize: "12px" }}
+                          />
+                          <span
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {relatedPost.user?.username ||
+                              relatedPost.author ||
+                              "Unknown"}
+                          </span>
+                        </div>
 
-                      {relatedPost.categoryHierarchy?.length > 0 && (
+                        {relatedPost.categoryHierarchy?.length > 0 && (
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              color: "#8c8c8c",
+                              marginBottom: "4px",
+                              display: "flex",
+                              alignItems: "flex-start",
+                            }}
+                          >
+                            <TagOutlined
+                              style={{ marginRight: 4, marginTop: "3px" }}
+                            />
+                            <div
+                              style={{
+                                flex: 1,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 1,
+                                WebkitBoxOrient: "vertical",
+                              }}
+                            >
+                              {relatedPost.categoryHierarchy.map(
+                                (cat: any, index: number) => (
+                                  <React.Fragment key={cat.id}>
+                                    <span>{cat.name}</span>
+                                    {index <
+                                      relatedPost.categoryHierarchy.length - 1 &&
+                                      " > "}
+                                  </React.Fragment>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         <div
                           style={{
                             fontSize: "12px",
                             color: "#8c8c8c",
-                            marginBottom: "4px",
-                            display: "flex",
-                            alignItems: "flex-start",
+                            marginTop: "4px",
                           }}
                         >
-                          <TagOutlined
-                            style={{ marginRight: 4, marginTop: "3px" }}
-                          />
-                          <div
-                            style={{
-                              flex: 1,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              display: "-webkit-box",
-                              WebkitLineClamp: 1,
-                              WebkitBoxOrient: "vertical",
-                            }}
-                          >
-                            {relatedPost.categoryHierarchy.map(
-                              (cat: any, index: number) => (
-                                <React.Fragment key={cat.id}>
-                                  <span>{cat.name}</span>
-                                  {index <
-                                    relatedPost.categoryHierarchy.length - 1 &&
-                                    " > "}
-                                </React.Fragment>
-                              ),
-                            )}
-                          </div>
+                          <CalendarOutlined style={{ marginRight: 4 }} />
+                          {formatDateTime(relatedPost.createdAt)}
                         </div>
-                      )}
-
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          color: "#8c8c8c",
-                          marginTop: "4px",
-                        }}
-                      >
-                        <CalendarOutlined style={{ marginRight: 4 }} />
-                        {formatDateTime(relatedPost.createdAt)}
                       </div>
-                    </div>
-                  }
-                />
-              </Card>
-            ))
-          )}
-        </div>
-
-        <style jsx global>{
-          `.hide-scrollbar::-webkit-scrollbar {
-            height: 6px;
-          }
-
-          .hide-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 3px;
-          }
-
-          .hide-scrollbar::-webkit-scrollbar-track {
-            background-color: transparent;
-          }
-
-          @media (hover: none) {
-            .hide-scrollbar::-webkit-scrollbar {
-              display: none;
-            }
-          }`
-        }</style>
+                    }
+                  />
+                </Card>
+              ))
+            )}
+          </div>
+        </Card>
       </div>
     </div>
   );

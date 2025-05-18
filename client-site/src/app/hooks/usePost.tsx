@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { postApi, categoryApi } from "../services/api";
 import { toast } from "react-hot-toast";
 
+export interface DeletePostImageParams {
+  postId: string;
+  imageUrl: string;
+}
+
 export const usePost = () => {
   const queryClient = useQueryClient();
 
@@ -98,19 +103,34 @@ export const usePost = () => {
   };
 
   const useUploadPostImage = (onSuccess?: () => void) => {
-    return useMutation({
-      mutationFn: ({ id, file }: { id: any; file: File }) =>
-        postApi.uploadPostImage(id, file),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["post"] });
-        toast.success("Image uploaded successfully");
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        toast.error(error.message || "Failed to upload image");
-      },
-    });
-  };
+  return useMutation({
+    mutationFn: ({ id, files }: { id: any; files: File[] }) =>
+      postApi.uploadPostImages(id, files),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post"] });
+      toast.success("Images uploaded successfully");
+      onSuccess?.();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to upload images");
+    },
+  });
+};
+
+const useDeletePostImage = (onSuccess?: () => void) => {
+  return useMutation({
+    mutationFn: ({ postId, imageUrl }: DeletePostImageParams) => 
+      postApi.deletePostImage(postId, imageUrl),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post"] });
+      toast.success("Image deleted successfully");
+      onSuccess?.();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete image");
+    },
+  });
+};
 
   return {
     useGetPosts,
@@ -123,5 +143,6 @@ export const usePost = () => {
     useUploadPostImage,
     useGetPostByCreator,
     useGetRelatedPosts,
+    useDeletePostImage
   };
 };

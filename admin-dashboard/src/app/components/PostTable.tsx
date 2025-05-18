@@ -5,38 +5,58 @@ import type { TableColumnsType } from "antd";
 import { usePosts } from "../hooks/usePost";
 import dayjs from "dayjs";
 
+interface PostType {
+  key: string;
+  _id: string;
+  title: string;
+  content: string;
+  viewCount: number;
+  category: string;
+  user: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const PostTable: React.FC = () => {
   const { useGetPosts, useDeletePost } = usePosts();
   const { data: postsResponse, isLoading } = useGetPosts();
   const { mutate: deletePost } = useDeletePost();
 
-  const columns: TableColumnsType = [
-    { title: "ID", dataIndex: "_id", key: "_id"},
-    { title: "Tiêu đề", dataIndex: "title", key: "title" },
+  const handleDelete = (id: string) => {
+    deletePost(id);
+  };
+
+  const columns: TableColumnsType<PostType> = [
+    { title: "ID", dataIndex: "_id", key: "_id" },
+    { title: "Title", dataIndex: "title", key: "title" },
     {
-      title: "Lượt xem",
+      title: "Views",
       dataIndex: "viewCount",
-      sorter: (a, b) => a.viewCount - b.viewCount,
       key: "viewCount",
+      sorter: (a, b) => a.viewCount - b.viewCount,
     },
-    { title: "Danh mục", dataIndex: "category", key: "category" },
-    { title: "Tác giả", dataIndex: "user", key: "user" },
+    { title: "Category", dataIndex: "category", key: "category" },
+    { title: "Author", dataIndex: "user", key: "user" },
     {
-      title: "Ngày tạo",
+      title: "Created At",
       dataIndex: "createdAt",
-      sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
       key: "createdAt",
-      render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+      sorter: (a, b) =>
+        dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
+      render: (date: string) =>
+        dayjs(date).format("DD/MM/YYYY HH:mm"),
     },
     {
-      title: "Ngày sửa dổi",
+      title: "Updated At",
       dataIndex: "updatedAt",
-      sorter: (a, b) => dayjs(a.updatedAt).unix() - dayjs(b.updatedAt).unix(),
       key: "updatedAt",
-      render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+      sorter: (a, b) =>
+        dayjs(a.updatedAt).unix() - dayjs(b.updatedAt).unix(),
+      render: (date: string) =>
+        dayjs(date).format("DD/MM/YYYY HH:mm"),
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "action",
       render: (_, record) => (
         <Space>
@@ -51,29 +71,24 @@ const PostTable: React.FC = () => {
     },
   ];
 
-  const handleDelete = (id: string) => {
-    deletePost(id);
-  };
-
-  const data =
-  postsResponse?.data?.map((post: any) => ({
-    key: post.id,
-    _id: post.id,
-    title: post.title,
-    content: post.content,
-    viewCount: post.viewCount,
-    category: post.categoryHierarchy
-      .map((cat: any) => cat.name)
-      .join(" > "),
-    user: post.user.username,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-  })) || [];
-
+  const data: PostType[] =
+    postsResponse?.data?.map((post: any) => ({
+      key: post.id,
+      _id: post.id,
+      title: post.title,
+      content: post.content,
+      viewCount: post.viewCount,
+      category: post.categoryHierarchy
+        .map((cat: any) => cat.name)
+        .join(" > "),
+      user: post.user.username,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    })) || [];
 
   return (
     <div>
-      <Table
+      <Table<PostType>
         columns={columns}
         dataSource={data}
         loading={isLoading}
@@ -82,6 +97,8 @@ const PostTable: React.FC = () => {
             <p style={{ margin: 0 }}>{record.content}</p>
           ),
         }}
+        pagination={{ pageSize: 10 }}
+        rowKey="_id"
       />
     </div>
   );
