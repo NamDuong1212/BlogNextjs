@@ -18,11 +18,19 @@ export const usePost = () => {
     });
   };
 
-  const useGetPostByCreator = (userId: string | undefined, page = 1, limit = 10) => {
+  const useGetPostByCreator = (
+    userId: string | undefined,
+    page = 1,
+    limit = 10,
+  ) => {
     return useQuery({
       queryKey: ["posts", "creator", userId, page, limit],
       queryFn: () => {
-        if (!userId) return { data: [], pagination: { total: 0, totalPages: 0, page, limit } };
+        if (!userId)
+          return {
+            data: [],
+            pagination: { total: 0, totalPages: 0, page, limit },
+          };
         return postApi.getPostByCreator(userId, page, limit);
       },
       enabled: !!userId,
@@ -103,34 +111,44 @@ export const usePost = () => {
   };
 
   const useUploadPostImage = (onSuccess?: () => void) => {
-  return useMutation({
-    mutationFn: ({ id, files }: { id: any; files: File[] }) =>
-      postApi.uploadPostImages(id, files),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post"] });
-      toast.success("Images uploaded successfully");
-      onSuccess?.();
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to upload images");
-    },
-  });
-};
+    return useMutation({
+      mutationFn: ({ id, files }: { id: any; files: File[] }) =>
+        postApi.uploadPostImages(id, files),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["post"] });
+        toast.success("Images uploaded successfully");
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        toast.error(error.message || "Failed to upload images");
+      },
+    });
+  };
 
-const useDeletePostImage = (onSuccess?: () => void) => {
-  return useMutation({
-    mutationFn: ({ postId, imageUrl }: DeletePostImageParams) => 
-      postApi.deletePostImage(postId, imageUrl),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post"] });
-      toast.success("Image deleted successfully");
-      onSuccess?.();
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to delete image");
-    },
-  });
-};
+  const useDeletePostImage = (onSuccess?: () => void) => {
+    return useMutation({
+      mutationFn: ({ postId, imageUrl }: DeletePostImageParams) =>
+        postApi.deletePostImage(postId, imageUrl),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["post"] });
+        toast.success("Image deleted successfully");
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        toast.error(error.message || "Failed to delete image");
+      },
+    });
+  };
+
+  const useSearchPosts = (query: string, page = 1, limit = 10) => {
+    return useQuery({
+      queryKey: ["searchPosts", query, page, limit],
+      queryFn: () => postApi.searchPosts(query, page, limit),
+      enabled: !!query && query.trim().length > 0,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
+    });
+  };
 
   return {
     useGetPosts,
@@ -143,6 +161,7 @@ const useDeletePostImage = (onSuccess?: () => void) => {
     useUploadPostImage,
     useGetPostByCreator,
     useGetRelatedPosts,
-    useDeletePostImage
+    useDeletePostImage,
+    useSearchPosts,
   };
 };

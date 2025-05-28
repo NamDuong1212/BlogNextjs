@@ -1,7 +1,18 @@
 import axios from "axios";
-import { LoginState, RegisterState, VerifyOtpState } from "../types/auth";
+import {
+  LoginState,
+  RegisterState,
+  VerifyOtpState,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+} from "../types/auth";
 import { UpdateUser } from "../types/profile";
 import { CreateCategoryType } from "../types/category";
+
 import { get } from "http";
 
 const getAuthToken = () => localStorage.getItem("token");
@@ -36,6 +47,25 @@ export const authApi = {
   },
   verifyOtp: async (data: any): Promise<any> => {
     const response = await api.post("/auth/verify-otp", data);
+    return response.data;
+  },
+  changePassword: async (
+    data: ChangePasswordRequest,
+  ): Promise<ChangePasswordResponse> => {
+    const response = await api.post("/auth/change-password", data);
+    return response.data;
+  },
+  forgotPassword: async (
+    data: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> => {
+    const response = await api.post("/auth/forgot-password", data);
+    return response.data;
+  },
+
+  resetPassword: async (
+    data: ResetPasswordRequest,
+  ): Promise<ResetPasswordResponse> => {
+    const response = await api.post("/auth/reset-password", data);
     return response.data;
   },
 };
@@ -84,7 +114,6 @@ export const tagApi = {
     const response = await api.get("/tag/getAll");
     return response.data.data;
   },
-  
 };
 
 export const postApi = {
@@ -98,13 +127,30 @@ export const postApi = {
     return response.data;
   },
 
-  getPostByCreator: async (userId: string, page = 1, limit = 10): Promise<any> => {
-    const response = await api.get(`/post/by-user/${userId}?page=${page}&limit=${limit}`);
-    return response.data || { data: [], pagination: { total: 0, totalPages: 0, page, limit } };
+  getPostByCreator: async (
+    userId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<any> => {
+    const response = await api.get(
+      `/post/by-user/${userId}?page=${page}&limit=${limit}`,
+    );
+    return (
+      response.data || {
+        data: [],
+        pagination: { total: 0, totalPages: 0, page, limit },
+      }
+    );
   },
 
-  getPostsByCategory: async (categoryId: string, page = 1, limit = 10): Promise<any> => {
-    const response = await api.get(`/post/getByCategory/${categoryId}?page=${page}&limit=${limit}`);
+  getPostsByCategory: async (
+    categoryId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<any> => {
+    const response = await api.get(
+      `/post/getByCategory/${categoryId}?page=${page}&limit=${limit}`,
+    );
     return response.data;
   },
 
@@ -115,7 +161,7 @@ export const postApi = {
 
   getRelatedPosts: async (postId: string): Promise<any> => {
     const response = await api.get(`/post/related/${postId}`);
-    return response.data|| [];
+    return response.data || [];
   },
 
   updatePost: async (data: any): Promise<any> => {
@@ -128,27 +174,34 @@ export const postApi = {
     return response.data.data;
   },
   uploadPostImages: async (id: any, files: File[]): Promise<any> => {
-  const formData = new FormData();
-  
-  // Append each file with the key "images" to match backend FilesInterceptor('images', 10, ...)
-  files.forEach(file => {
-    formData.append("images", file);
-  });
-  
-  const response = await api.patch(`/post/${id}/upload-images`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
-},
+    const formData = new FormData();
 
-deletePostImage: async (postId: string, imageUrl: string): Promise<any> => {
-  const response = await api.delete(`/post/${postId}/images`, {
-    data: { imageUrl }
-  });
-  return response.data;
-},
+    // Append each file with the key "images" to match backend FilesInterceptor('images', 10, ...)
+    files.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    const response = await api.patch(`/post/${id}/upload-images`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
+  deletePostImage: async (postId: string, imageUrl: string): Promise<any> => {
+    const response = await api.delete(`/post/${postId}/images`, {
+      data: { imageUrl },
+    });
+    return response.data;
+  },
+
+  searchPosts: async (query: string, page = 1, limit = 10): Promise<any> => {
+    const response = await api.get(
+      `/post/search?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
+    );
+    return response.data;
+  },
 };
 
 export const likeApi = {
@@ -171,9 +224,9 @@ export const likeApi = {
     const response = await api.get(`/like/${postId}/status`);
     return response.data;
   },
-  
+
   getUserLikedPosts: async (): Promise<any> => {
-    const response = await api.get('/like/user/posts');
+    const response = await api.get("/like/user/posts");
     return response.data.posts || [];
   },
 };
@@ -276,24 +329,63 @@ export const itineraryApi = {
     return response.data;
   },
 
-  uploadDayImage: async (itineraryId: string, dayNumber: number, file: File): Promise<any> => {
+  uploadDayImage: async (
+    itineraryId: string,
+    dayNumber: number,
+    file: File,
+  ): Promise<any> => {
     const formData = new FormData();
     formData.append("image", file);
 
     const response = await api.patch(
-      `/itinerary/${itineraryId}/days/${dayNumber}/upload-image`, 
-      formData, 
+      `/itinerary/${itineraryId}/days/${dayNumber}/upload-image`,
+      formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return response.data;
   },
 
-  deleteItineraryDay: async (itineraryId: string, dayId: string): Promise<any> => {
-    const response = await api.delete(`/itinerary/${itineraryId}/days/${dayId}`);
+  deleteItineraryDay: async (
+    itineraryId: string,
+    dayId: string,
+  ): Promise<any> => {
+    const response = await api.delete(
+      `/itinerary/${itineraryId}/days/${dayId}`,
+    );
+    return response.data;
+  },
+};
+
+export const notificationApi = {
+  getUserNotifications: async (): Promise<any> => {
+    const response = await api.get("/user/notifications");
+    return response.data;
+  },
+
+  markNotificationAsRead: async (notificationId: string): Promise<any> => {
+    const response = await api.patch(
+      `/user/notifications/${notificationId}/read`,
+    );
+    return response.data;
+  },
+
+  markAllNotificationsAsRead: async (): Promise<any> => {
+    const response = await api.patch("/user/notifications/read-all");
+    return response.data;
+  },
+};
+export const creatorRequestApi = {
+  createCreatorRequest: async (data: { reason: string }): Promise<any> => {
+    const response = await api.post("/creator-request", data);
+    return response.data;
+  },
+
+  getUserCreatorRequests: async (): Promise<any> => {
+    const response = await api.get("/creator-request/my-requests");
     return response.data;
   },
 };

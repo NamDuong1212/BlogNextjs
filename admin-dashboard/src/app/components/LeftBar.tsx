@@ -5,7 +5,8 @@ import {
   PieChartOutlined,
   SnippetsOutlined,
   UserOutlined,
-  AlibabaOutlined
+  AlibabaOutlined,
+  PicLeftOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
@@ -34,6 +35,7 @@ const items: MenuItem[] = [
   getItem('Daily Income', '2', <DesktopOutlined />),
   getItem('Posts', '3', <AlibabaOutlined />),
   getItem('Reports', '4', <SnippetsOutlined />),
+  getItem('Requests', '5', <PicLeftOutlined />),
   getItem('Users', 'sub1', <UserOutlined />),
 ];
 
@@ -55,8 +57,11 @@ const LeftBar: React.FC = () => {
       case '4':
         router.push('/report');
         break;
+      case '5':
+        router.push('/request');
+        break;
       default:
-        router.push('/');
+        router.push('/user');
         break;
     }
   };

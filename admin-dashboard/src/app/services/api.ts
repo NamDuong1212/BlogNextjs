@@ -1,5 +1,6 @@
 import axios from "axios";
 import { get } from "http";
+import { User , UpdateCreatorStatusDto} from "@/app/types/user";
 
 const getAuthToken = () => localStorage.getItem("token");
 const api = axios.create({
@@ -87,4 +88,54 @@ export const reportApi = {
     const response = await api.delete(`/cms/report/${id}`);
     return response.data;
   }
+};
+
+export const userApi = {
+  getAllUsers: async (): Promise<{ message: string; data: User[] }> => {
+    const response = await api.get("/cms/user/get-all");
+    return response.data;
+  },
+
+  getUserById: async (id: string): Promise<{ message: string; data: User }> => {
+    const response = await api.get(`/cms/user/${id}`);
+    return response.data;
+  },
+
+  updateCreatorStatus: async (
+    userId: string,
+    updateData: UpdateCreatorStatusDto
+  ): Promise<{ message: string; data: User }> => {
+    const response = await api.patch(`/cms/user/${userId}/creator-status`, updateData);
+    return response.data;
+  },
+
+  deleteUser: async (userId: string): Promise<{ message: string }> => {
+    const response = await api.delete(`/cms/user/${userId}`);
+    return response.data;
+  },
+
+  // Additional methods for notifications
+  sendNotification: async (
+    userId: string,
+    notificationData: {
+      type: string;
+      title: string;
+      message: string;
+    }
+  ): Promise<{ message: string }> => {
+    const response = await api.post(`/cms/user/${userId}/notification`, notificationData);
+    return response.data;
+  },
+};
+
+export const creatorRequestApi = {
+  getAllCreatorRequests: async (): Promise<any> => {
+    const response = await api.get(`/cms/creator-requests`);
+    return response.data;
+  },
+
+  reviewCreatorRequest: async (id: string, data: any): Promise<any> => {
+    const response = await api.patch(`/cms/creator-requests/${id}/review`, data);
+    return response.data;
+  },
 };

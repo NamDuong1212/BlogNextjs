@@ -77,14 +77,7 @@ const Register: React.FC = () => {
         otp: values.otp,
       });
       setCurrentStep(2);
-      toast.success("Account verified successfully!", {
-        icon: "✅",
-        style: {
-          borderRadius: "10px",
-          background: "#10B981",
-          color: "#fff",
-        },
-      });
+      toast.success("Account verified successfully!");
 
       // Redirect after a small delay to show success state
       setTimeout(() => {
@@ -248,11 +241,7 @@ const Register: React.FC = () => {
             </Col>
           </Row>
 
-          <div className="text-center mt-6">
-            <Text className="text-gray-500">
-              © {new Date().getFullYear()} • All Rights Reserved
-            </Text>
-          </div>
+          
         </div>
       </div>
     );
@@ -431,11 +420,18 @@ const Register: React.FC = () => {
                 </Form.Item>
 
                 {/* Travel Inspiration Icons */}
-                <div className="grid grid-cols-3 gap-2 my-6">
+                <div
+                  className={`
+    grid
+    ${travelIcons.length === 2 ? "grid-cols-2 justify-items-center" : "grid-cols-3"}
+    gap-2 my-6
+  `}
+                >
                   {travelIcons.map((item, index) => (
                     <div
                       key={index}
-                      className="flex flex-col items-center justify-center bg-gray-50 p-3 rounded-lg"
+                      // Giờ chỉ còn flex, không có background hay border
+                      className="flex flex-col items-center justify-center"
                     >
                       <div className="text-2xl text-indigo-600 mb-1">
                         {item.icon}
@@ -466,12 +462,6 @@ const Register: React.FC = () => {
                 </div>
               </Form>
             </Card>
-
-            <div className="text-center mt-6">
-              <Text className="text-gray-500">
-                © {new Date().getFullYear()} • All Rights Reserved
-              </Text>
-            </div>
           </Col>
         </Row>
       </div>

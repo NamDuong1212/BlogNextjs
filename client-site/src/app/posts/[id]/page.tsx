@@ -44,6 +44,7 @@ import ImageComponentPostImage from "@/app/components/ImageComponentPostImage";
 import ImageComponentAvatar from "@/app/components/ImageComponentAvatar";
 import Linkify from "react-linkify";
 import html2pdf from "html2pdf.js";
+import ItineraryDetail from "@/app/components/ItineraryDetailComponent";
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
@@ -384,6 +385,8 @@ const PostDetail: React.FC = () => {
               </Linkify>
             </Paragraph>
           </div>
+
+          {id && <ItineraryDetail postId={id} />}
 
           {/* Interactions */}
           <div className="mt-6">

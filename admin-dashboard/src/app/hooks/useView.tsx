@@ -17,11 +17,11 @@ export const useViews = () => {
     return useMutation({
       mutationFn: dailyApi.getDailyWallet,
       onSuccess: () => {
-        toast.success("Tính toán thành công");
+        toast.success("Calculate earnings successfully");
         queryClient.invalidateQueries({ queryKey: ["daily"] });
       },
       onError: () => {
-        toast.error("Lỗi tính toán");
+        toast.error("Error calculating earnings");
       },
     });
   };

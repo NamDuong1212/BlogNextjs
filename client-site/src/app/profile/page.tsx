@@ -35,6 +35,8 @@ import {
   FileTextOutlined,
   BankOutlined,
   SendOutlined,
+  SafetyOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
 import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
@@ -43,7 +45,9 @@ import ImageComponentAvatar from "../components/ImageComponentAvatar";
 import { useWallet } from "../hooks/useWallet";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
-import dayjs from "dayjs"; // Import dayjs for better date handling
+import dayjs from "dayjs";
+import ChangePasswordModal from "../components/ChangePasswordComponent";
+import CreatorRequestComponent from "../components/CreatorRequestComponent";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -51,6 +55,8 @@ const Profile = () => {
   const { userData } = useAuthStore();
   const { updateProfileMutation, updateAvatarMutation } = useProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
   const { useCreateWallet, useGetWalletByUserId, useRequestWithdrawal } =
     useWallet(userData?.id || "");
   const requestWithdrawalMutation = useRequestWithdrawal();
@@ -60,6 +66,8 @@ const Profile = () => {
   const createWalletMutation = useCreateWallet();
   const [form] = Form.useForm();
   const isCreator = userData?.isCreator || false;
+  const [isCreatorRequestModalOpen, setIsCreatorRequestModalOpen] =
+    useState(false);
 
   // Set form values when userData changes or modal opens
   useEffect(() => {
@@ -77,7 +85,9 @@ const Profile = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50">
         <Card className="shadow-lg rounded-xl p-8 border-none">
-          <Title level={4} className="text-center mb-4">Information Not Found</Title>
+          <Title level={4} className="text-center mb-4">
+            Information Not Found
+          </Title>
           <Paragraph className="text-center text-gray-500">
             Invalid user data, please log in
           </Paragraph>
@@ -103,8 +113,8 @@ const Profile = () => {
     // Format birthday properly before submitting
     const formattedValues = {
       ...values,
-      birthday: values.birthday 
-        ? values.birthday.format('YYYY-MM-DD') // Format as ISO date string
+      birthday: values.birthday
+        ? values.birthday.format("YYYY-MM-DD") // Format as ISO date string
         : undefined,
     };
 
@@ -115,8 +125,10 @@ const Profile = () => {
         toast.success("Profile updated successfully!");
       },
       onError: (error: any) => {
-        toast.error(error?.response?.data?.message || "Failed to update profile");
-      }
+        toast.error(
+          error?.response?.data?.message || "Failed to update profile",
+        );
+      },
     });
   };
 
@@ -152,7 +164,8 @@ const Profile = () => {
       setWithdrawAmount(0);
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Withdrawal error, please try again later",
+        error?.response?.data?.message ||
+          "Withdrawal error, please try again later",
       );
     }
   };
@@ -163,13 +176,17 @@ const Profile = () => {
     : "Not updated";
 
   // Calculate percentage for wallet balance visual
-  const maxBalance = walletData?.balance ? Math.max(walletData.balance * 1.5, 100) : 100;
-  const percentage = walletData?.balance ? (walletData.balance / maxBalance) * 100 : 0;
+  const maxBalance = walletData?.balance
+    ? Math.max(walletData.balance * 1.5, 100)
+    : 100;
+  const percentage = walletData?.balance
+    ? (walletData.balance / maxBalance) * 100
+    : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <Card 
+        <Card
           className="shadow-2xl rounded-3xl overflow-hidden border-none"
           bodyStyle={{ padding: 0 }}
         >
@@ -177,7 +194,7 @@ const Profile = () => {
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 pt-16 pb-24 px-8 relative">
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
           </div>
-          
+
           {/* Profile content */}
           <div className="px-8 pb-8 pt-0 relative">
             {/* Avatar section - positioned to overlap the header */}
@@ -208,18 +225,19 @@ const Profile = () => {
                 </Upload>
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-full transition-all duration-300" />
               </div>
-              
+
               <div className="text-center sm:text-left">
-                <Badge 
-                  dot={isCreator} 
-                  color="blue" 
-                  offset={[-2, 2]}
-                >
-                  <Title level={2} className="mb-1 text-gray-800 flex items-center gap-2">
+                <Badge dot={isCreator} color="blue" offset={[-2, 2]}>
+                  <Title
+                    level={2}
+                    className="mb-1 text-gray-800 flex items-center gap-2"
+                  >
                     {userData.username}
                     {isCreator && (
                       <Tooltip title="Creator">
-                        <span className="text-blue-500 text-sm bg-blue-50 px-2 py-1 rounded-md">Creator</span>
+                        <span className="text-blue-500 text-sm bg-blue-50 px-2 py-1 rounded-md">
+                          Creator
+                        </span>
                       </Tooltip>
                     )}
                   </Title>
@@ -229,7 +247,16 @@ const Profile = () => {
                 </Paragraph>
               </div>
 
-              <div className="ml-auto mt-4 sm:mt-0">
+              <div className="ml-auto mt-4 sm:mt-0 flex gap-3">
+                <Button
+                  type="default"
+                  size="large"
+                  icon={<SafetyOutlined />}
+                  onClick={() => setIsChangePasswordModalOpen(true)}
+                  className="px-4 h-10 flex items-center shadow-md"
+                >
+                  Change Password
+                </Button>
                 <Button
                   type="primary"
                   size="large"
@@ -248,7 +275,7 @@ const Profile = () => {
             <Row gutter={[24, 24]}>
               {/* Left column - User details */}
               <Col xs={24} md={16}>
-                <Card 
+                <Card
                   title={
                     <div className="flex items-center gap-2">
                       <UserOutlined className="text-blue-500" />
@@ -264,17 +291,21 @@ const Profile = () => {
                         <UserOutlined className="mr-2 text-blue-500" />
                         Username
                       </Text>
-                      <Text strong className="text-lg">{userData.username}</Text>
+                      <Text strong className="text-lg">
+                        {userData.username}
+                      </Text>
                     </div>
-                    
+
                     <div>
                       <Text type="secondary" className="block mb-1">
                         <MailOutlined className="mr-2 text-blue-500" />
                         Email
                       </Text>
-                      <Text strong className="text-lg">{userData.email}</Text>
+                      <Text strong className="text-lg">
+                        {userData.email}
+                      </Text>
                     </div>
-                    
+
                     <div>
                       <Text type="secondary" className="block mb-1">
                         <CalendarOutlined className="mr-2 text-blue-500" />
@@ -284,7 +315,7 @@ const Profile = () => {
                         {formattedBirthday}
                       </Text>
                     </div>
-                    
+
                     <div>
                       <Text type="secondary" className="block mb-1">
                         <InfoCircleOutlined className="mr-2 text-blue-500" />
@@ -303,7 +334,7 @@ const Profile = () => {
                 <Row gutter={[0, 24]}>
                   {/* Wallet section */}
                   <Col xs={24}>
-                    <Card 
+                    <Card
                       title={
                         <div className="flex items-center gap-2">
                           <WalletOutlined className="text-blue-500" />
@@ -322,7 +353,9 @@ const Profile = () => {
                           <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg p-4 text-white">
                             <div className="flex justify-between items-center">
                               <div>
-                                <Text className="text-white opacity-80">Current Balance</Text>
+                                <Text className="text-white opacity-80">
+                                  Current Balance
+                                </Text>
                                 <Title level={2} className="text-white mb-0">
                                   ${walletData.balance.toFixed(2)}
                                 </Title>
@@ -330,26 +363,34 @@ const Profile = () => {
                               <BankOutlined className="text-4xl opacity-80" />
                             </div>
                           </div>
-                          
+
                           <div className="mt-4">
-                            <Text strong className="block mb-2">Withdraw Funds</Text>
+                            <Text strong className="block mb-2">
+                              Withdraw Funds
+                            </Text>
                             <div className="space-y-3">
                               <Input
                                 type="number"
                                 min={0}
                                 max={walletData.balance}
                                 value={withdrawAmount}
-                                onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                                prefix={<DollarOutlined className="text-gray-400" />}
+                                onChange={(e) =>
+                                  setWithdrawAmount(Number(e.target.value))
+                                }
+                                prefix={
+                                  <DollarOutlined className="text-gray-400" />
+                                }
                                 addonAfter="USD"
                                 size="large"
                               />
-                              <Progress 
-                                percent={(withdrawAmount / walletData.balance) * 100} 
+                              <Progress
+                                percent={
+                                  (withdrawAmount / walletData.balance) * 100
+                                }
                                 showInfo={false}
                                 strokeColor={{
-                                  '0%': '#108ee9',
-                                  '100%': '#87d068',
+                                  "0%": "#108ee9",
+                                  "100%": "#87d068",
                                 }}
                               />
                               <Button
@@ -357,7 +398,10 @@ const Profile = () => {
                                 block
                                 onClick={handleRequestWithdrawal}
                                 loading={requestWithdrawalMutation.isPending}
-                                disabled={withdrawAmount <= 0 || withdrawAmount > walletData.balance}
+                                disabled={
+                                  withdrawAmount <= 0 ||
+                                  withdrawAmount > walletData.balance
+                                }
                                 icon={<SendOutlined />}
                                 size="large"
                                 className="mt-2"
@@ -370,7 +414,9 @@ const Profile = () => {
                       ) : isCreator ? (
                         <div className="text-center py-6">
                           <InfoCircleOutlined className="text-4xl text-gray-300 mb-4" />
-                          <Paragraph className="mb-4">You don't have a wallet yet</Paragraph>
+                          <Paragraph className="mb-4">
+                            You don't have a wallet yet
+                          </Paragraph>
                           <Button
                             type="primary"
                             size="large"
@@ -391,11 +437,43 @@ const Profile = () => {
                     </Card>
                   </Col>
 
+                  {!isCreator && (
+                    <Col xs={24}>
+                      <Card
+                        className="shadow-md rounded-xl"
+                        bordered={false}
+                        title={
+                          <div className="flex items-center gap-2">
+                            <StarOutlined className="text-yellow-500" />
+                            <span>Become a Creator</span>
+                          </div>
+                        }
+                      >
+                        <div className="text-center py-4">
+                          <StarOutlined className="text-4xl text-yellow-400 mb-4" />
+                          <Paragraph className="mb-4 text-gray-600">
+                            Share your content and connect with your audience
+                          </Paragraph>
+                          <Button
+                            type="primary"
+                            size="large"
+                            icon={<SendOutlined />}
+                            onClick={() => setIsCreatorRequestModalOpen(true)}
+                            block
+                            className="bg-gradient-to-r from-yellow-400 to-orange-500 border-none hover:shadow-lg transition-all"
+                          >
+                            Apply to be Creator
+                          </Button>
+                        </div>
+                      </Card>
+                    </Col>
+                  )}
+
                   {/* Manage Posts section (for creators) */}
                   {isCreator && (
                     <Col xs={24}>
-                      <Card 
-                        className="shadow-md rounded-xl" 
+                      <Card
+                        className="shadow-md rounded-xl"
                         bordered={false}
                         title={
                           <div className="flex items-center gap-2">
@@ -439,7 +517,7 @@ const Profile = () => {
         width={560}
         centered
         className="rounded-xl overflow-hidden"
-        destroyOnClose={true} // Important to prevent form state issues
+        destroyOnClose={true}
       >
         <Form
           form={form}
@@ -452,51 +530,50 @@ const Profile = () => {
             name="username"
             rules={[{ required: true, message: "Please enter your username" }]}
           >
-            <Input 
-              size="large" 
-              prefix={<UserOutlined className="text-gray-400" />} 
-              placeholder="Enter your username" 
+            <Input
+              size="large"
+              prefix={<UserOutlined className="text-gray-400" />}
+              placeholder="Enter your username"
             />
           </Form.Item>
-          
-          <Form.Item 
-            label="Bio" 
+
+          <Form.Item
+            label="Bio"
             name="bio"
             extra="Write a few lines to introduce yourself"
           >
-            <Input.TextArea 
-              rows={4} 
-              placeholder="Write a few lines about yourself..." 
+            <Input.TextArea
+              rows={4}
+              placeholder="Write a few lines about yourself..."
               className="text-base"
             />
           </Form.Item>
-          
-          <Form.Item 
-            label="Birthday" 
-            name="birthday"
-          >
+
+          <Form.Item label="Birthday" name="birthday">
             <DatePicker
               format="DD-MM-YYYY"
               className="w-full"
               placeholder="Select your birthday"
               size="large"
               showToday={false}
-              disabledDate={current => current && current > dayjs().endOf('day')}
+              disabledDate={(current) =>
+                current && current > dayjs().endOf("day")
+              }
             />
           </Form.Item>
-          
+
           <div className="flex gap-3 mt-6">
-            <Button 
-              onClick={() => setIsModalOpen(false)} 
-              size="large" 
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              size="large"
               className="flex-1"
             >
               Cancel
             </Button>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              size="large" 
+            <Button
+              type="primary"
+              htmlType="submit"
+              size="large"
               loading={updateProfileMutation.isPending}
               className="flex-1"
             >
@@ -505,6 +582,17 @@ const Profile = () => {
           </div>
         </Form>
       </Modal>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
+      />
+      <CreatorRequestComponent
+        isOpen={isCreatorRequestModalOpen}
+        onClose={() => setIsCreatorRequestModalOpen(false)}
+        isCreator={isCreator}
+      />
     </div>
   );
 };

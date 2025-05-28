@@ -92,7 +92,6 @@ const Login: React.FC = () => {
                 className="transition-all duration-700 hover:scale-105"
               />
               <div className="absolute bottom-8 left-8 z-20 text-white">
-                
                 <Text className="text-gray-100 opacity-90">
                   Join thousands of travelers sharing their experiences around
                   the world.
@@ -210,6 +209,17 @@ const Login: React.FC = () => {
                 </Divider>
 
                 <div className="text-center">
+                  {/* Forgot password link - đặt trước register section */}
+                  <div className="mb-4 text-center">
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+
+                  {/* Register section */}
                   <Space>
                     <Text className="text-gray-600">
                       Don't have an account?
@@ -226,12 +236,6 @@ const Login: React.FC = () => {
             </Card>
           </Col>
         </Row>
-
-        <div className="text-center mt-6">
-          <Text className="text-gray-500">
-            © {new Date().getFullYear()} • All Rights Reserved
-          </Text>
-        </div>
       </div>
     </div>
   );

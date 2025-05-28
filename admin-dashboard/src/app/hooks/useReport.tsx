@@ -20,7 +20,7 @@ export const useReport = () => {
           onSuccess?.();
         },
         onError: (error: Error) => {
-          toast.error(error.message || "Lỗi xử lý báo cáo");
+          toast.error(error.message || "Error deleting report");
         },
       });
     }

@@ -20,7 +20,7 @@ export const useAuth = () => {
       localStorage.setItem("token", data.token);
 
       const toastPromise = new Promise<void>((resolve) => {
-        toast.success("Đăng nhập thành công", {
+        toast.success("Login successfully", {
           duration: 2000,
         });
         setTimeout(resolve, 2000);
@@ -31,7 +31,7 @@ export const useAuth = () => {
       });
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi đăng nhập");
+      toast.error(error.message || "Error logging in");
     },
   });
 
@@ -39,7 +39,7 @@ export const useAuth = () => {
     mutationFn: (userData: RegisterState) => authApi.register(userData),
     onSuccess: () => {
       const toastPromise = new Promise<void>((resolve) => {
-        toast.success("Đăng ký thành công", {
+        toast.success("Register successfully", {
           duration: 2000,
         });
         setTimeout(resolve, 2000);
@@ -50,7 +50,7 @@ export const useAuth = () => {
       });
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Lỗi khi đăng ký");
+      toast.error(error.message || "Error registering user");
     },
   });
 
