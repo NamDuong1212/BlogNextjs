@@ -225,7 +225,6 @@ const UserManagementTable: React.FC = () => {
     <div style={{ padding: 24 }}>
       <Card bordered={false}>
         <div style={{ marginBottom: 16 }}>
-          <Title level={3}>User Management</Title>
           <div style={{ 
             display: "flex", 
             justifyContent: "space-between", 

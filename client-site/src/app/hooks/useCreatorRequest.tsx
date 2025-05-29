@@ -6,16 +6,14 @@ import { creatorRequestApi } from "../services/api";
 export const useCreatorRequest = () => {
   const queryClient = useQueryClient();
 
-  // Get user's creator requests
   const useGetUserCreatorRequests = () => {
     return useQuery({
       queryKey: ["creator-requests", "user"],
       queryFn: () => creatorRequestApi.getUserCreatorRequests(),
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 0,
     });
   };
 
-  // Submit creator request
   const useCreateCreatorRequest = () => {
     return useMutation({
       mutationFn: (data: { reason: string }) =>

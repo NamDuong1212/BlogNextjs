@@ -324,7 +324,6 @@ const Navbar: React.FC = () => {
                           className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-all"
                         >
                           <span className="flex items-center">
-                            <i className="mr-2">↪</i>
                             Log out
                           </span>
                         </button>

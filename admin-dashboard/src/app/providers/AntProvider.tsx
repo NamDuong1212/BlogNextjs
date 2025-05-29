@@ -1,6 +1,6 @@
 "use client";
 
-import { ConfigProvider } from "antd";
+import { App as AntdApp, ConfigProvider } from "antd";
 import { ReactNode } from "react";
 
 interface AntProviderProps {
@@ -9,14 +9,14 @@ interface AntProviderProps {
 
 export default function AntProvider({ children }: AntProviderProps) {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#1890ff",
-        },
-      }}
-    >
-      {children}
-    </ConfigProvider>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#1890ff",
+          },
+        }}
+      >
+        {children}
+      </ConfigProvider>
   );
 }

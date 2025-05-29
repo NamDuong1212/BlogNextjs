@@ -62,8 +62,15 @@ export const postApi = {
     const response = await api.get(`/post/getAll`);
     return response.data;
   },
-  getDeletePost: async (id: string): Promise<any> => {
-    const response = await api.delete(`${BASE$1}/${id}`);
+  
+  deletePost: async (id: string, reason: string): Promise<any> => {
+    const response = await api.delete(`${BASE$1}/${id}`, {
+      data: { reason } 
+    });
+    return response.data;
+  },
+  notifyPostDeletion: async (postId: string): Promise<any> => {
+    const response = await api.post(`cms/notify`, { postId });
     return response.data;
   }
 };

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -73,6 +73,49 @@ export const CreateItineraryForm: React.FC<CreateItineraryFormProps> = ({
   const [createdItineraryId, setCreatedItineraryId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Auto generate days based on date range
+  const handleDateRangeChange = (dates: any) => {
+    if (dates && dates[0] && dates[1]) {
+      const startDate = dates[0];
+      const endDate = dates[1];
+      const totalDays = endDate.diff(startDate, 'day') + 1; // +1 to include both start and end date
+      
+      // Generate new days array based on total days
+      const newDays = Array.from({ length: totalDays }, (_, index) => ({
+        dayNumber: index + 1,
+        activities: [],
+        budgetMin: 0,
+        budgetMax: 0,
+      }));
+      
+      setDays(newDays);
+      
+      // Clear existing form data for activities and budgets
+      const formValues = form.getFieldsValue();
+      const newFormValues = { ...formValues };
+      
+      // Clear old day fields
+      Object.keys(formValues).forEach(key => {
+        if (key.startsWith('activities_') || key.startsWith('location_') || 
+            key.startsWith('budgetMin_') || key.startsWith('budgetMax_')) {
+          delete newFormValues[key];
+        }
+      });
+      
+      form.setFieldsValue(newFormValues);
+      
+      // Clear images
+      setSelectedFiles({});
+      setPreviewUrls(prev => {
+        // Clean up object URLs
+        Object.values(prev).forEach(url => URL.revokeObjectURL(url));
+        return {};
+      });
+      
+      message.info(`Generated ${totalDays} days based on your travel dates`);
+    }
+  };
+
   const handleFinish = async (values: any) => {
     if (!postId) {
       message.error("Post ID is required to create an itinerary");
@@ -136,52 +179,8 @@ export const CreateItineraryForm: React.FC<CreateItineraryFormProps> = ({
     }
   };
 
-  const addDay = () => {
-    const newDay = {
-      dayNumber: days.length + 1,
-      activities: [],
-      budgetMin: 0,
-      budgetMax: 0,
-    };
-    setDays([...days, newDay]);
-  };
-
-  const removeDay = (index: number) => {
-    if (days.length <= 1) {
-      message.info("You must have at least one day in your itinerary");
-      return;
-    }
-    
-    const newDays = [...days];
-    newDays.splice(index, 1);
-    
-    // Renumber the days
-    const renumberedDays = newDays.map((day, idx) => ({
-      ...day,
-      dayNumber: idx + 1,
-    }));
-    
-    // Clean up any image preview and file for the removed day
-    const dayNumber = index + 1;
-    if (previewUrls[dayNumber]) {
-      URL.revokeObjectURL(previewUrls[dayNumber]);
-      
-      setPreviewUrls(prev => {
-        const newUrls = {...prev};
-        delete newUrls[dayNumber];
-        return newUrls;
-      });
-      
-      setSelectedFiles(prev => {
-        const newFiles = {...prev};
-        delete newFiles[dayNumber];
-        return newFiles;
-      });
-    }
-    
-    setDays(renumberedDays);
-  };
-
+  // Remove the manual add/remove day functions since days are now auto-generated
+  // Keep only the image handling functions
   const handleImageUpload = (dayNumber: number, file: File) => {
     // Check file type
     const isImage = file.type.startsWith('image/');
@@ -240,227 +239,243 @@ export const CreateItineraryForm: React.FC<CreateItineraryFormProps> = ({
   const isFormSubmitting = createMutation.isPending || isUploading;
 
   return (
-    
-      <><Form
-      form={form}
-      layout="vertical"
-      onFinish={handleFinish}
-      disabled={disabled || isFormSubmitting}
-    >
-      <Row gutter={16}>
-        <Col span={24}>
-          <Form.Item
-            name="title"
-            label="Itinerary Title"
-            rules={[{ required: true, message: "Please enter a title" }]}
-          >
-            <Input placeholder="e.g., 7-Day Adventure in Vietnam" maxLength={100} showCount />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={24}>
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: "Please provide a description" }]}
-          >
-            <TextArea
-              placeholder="Write a brief overview of this itinerary"
-              rows={3}
-              showCount
-              maxLength={500} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={16}>
-          <Form.Item
-            name="dateRange"
-            label="Travel Dates"
-            rules={[{ required: true, message: "Please select travel dates" }]}
-          >
-            <DatePicker.RangePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            name="currency"
-            label="Currency"
-            rules={[{ required: true, message: "Please select a currency" }]}
-            initialValue="USD"
-          >
-            <Select placeholder="Select currency">
-              {currencyOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Divider orientation="left">Itinerary Days</Divider>
-
-      <Collapse defaultActiveKey={['0']} accordion>
-        {days.map((day, index) => (
-          <Panel
-            header={`Day ${day.dayNumber}`}
-            key={index.toString()}
-            extra={<Button
-              danger
-              type="text"
-              icon={<DeleteOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                removeDay(index);
-              } } />}
-          >
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name={`location_${index}`}
-                  label={<Space>
-                    <EnvironmentOutlined />
-                    <span>Location</span>
-                  </Space>}
-                >
-                  <Input placeholder="e.g., Hanoi Old Quarter" />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name={`activities_${index}`}
-                  label="Activities & Notes"
-                  rules={[{ required: true, message: "Please describe the day's activities" }]}
-                >
-                  <TextArea
-                    placeholder="Describe what to do on this day..."
-                    rows={4} />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name={`budgetMin_${index}`}
-                  label={<Space>
-                    <DollarOutlined />
-                    <span>Minimum Budget</span>
-                  </Space>}
-                  initialValue={0}
-                >
-                  <InputNumber
-                    style={{ width: "100%" }}
-                    min={0}
-                    precision={2}
-                    placeholder="0.00" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name={`budgetMax_${index}`}
-                  label="Maximum Budget"
-                  initialValue={0}
-                >
-                  <InputNumber
-                    style={{ width: "100%" }}
-                    min={0}
-                    precision={2}
-                    placeholder="0.00" />
-                </Form.Item>
-              </Col>
-            </Row>
-
+    <>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFinish}
+        disabled={disabled || isFormSubmitting}
+      >
+        <Row gutter={16}>
+          <Col span={24}>
             <Form.Item
-              label={<Space>
-                <PictureOutlined />
-                <span>Day Image</span>
-              </Space>}
+              name="title"
+              label="Itinerary Title"
+              rules={[{ required: true, message: "Please enter a title" }]}
             >
-              {previewUrls[day.dayNumber] ? (
-                <div style={{ position: 'relative', width: '104px', height: '104px', border: '1px solid #d9d9d9', borderRadius: '2px', overflow: 'hidden' }}>
-                  <img
-                    src={previewUrls[day.dayNumber]}
-                    alt={`Day ${day.dayNumber} Preview`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      background: 'rgba(0,0,0,0.65)',
-                      padding: '4px',
-                      display: 'flex',
-                      justifyContent: 'space-around'
-                    }}
-                  >
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<EyeOutlined style={{ color: 'white' }} />}
-                      onClick={() => handlePreview(previewUrls[day.dayNumber])} />
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<DeleteOutlined style={{ color: 'white' }} />}
-                      onClick={() => removeImage(day.dayNumber)} />
-                  </div>
-                </div>
-              ) : (
-                <Upload
-                  listType="picture-card"
-                  beforeUpload={(file) => handleImageUpload(day.dayNumber, file)}
-                  showUploadList={false}
-                  accept="image/*"
-                >
-                  <div>
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
-                </Upload>
-              )}
-              <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
-                Upload an image for Day {day.dayNumber} (max 5MB)
-              </Text>
+              <Input placeholder="e.g., 7-Day Adventure in Vietnam" maxLength={100} showCount />
             </Form.Item>
-          </Panel>
-        ))}
-      </Collapse>
+          </Col>
+        </Row>
 
-      <div style={{ marginTop: 16, marginBottom: 16 }}>
-        <Button type="dashed" onClick={addDay} block icon={<PlusOutlined />}>
-          Add Day
-        </Button>
-      </div>
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[{ required: true, message: "Please provide a description" }]}
+            >
+              <TextArea
+                placeholder="Write a brief overview of this itinerary"
+                rows={3}
+                showCount
+                maxLength={500} 
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={isFormSubmitting}
-          disabled={!postId || disabled}
-          icon={<SaveOutlined />}
-        >
-          {isFormSubmitting ? "Creating Itinerary..." : "Create Itinerary"}
-        </Button>
-      </Form.Item>
-    </Form><Modal
-      visible={previewVisible}
-      title="Image Preview"
-      footer={null}
-      onCancel={() => setPreviewVisible(false)}
-    >
+        <Row gutter={16}>
+          <Col span={16}>
+            <Form.Item
+              name="dateRange"
+              label="Travel Dates"
+              rules={[{ required: true, message: "Please select travel dates" }]}
+            >
+              <DatePicker.RangePicker 
+                style={{ width: "100%" }} 
+                format="YYYY-MM-DD"
+                onChange={handleDateRangeChange}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              name="currency"
+              label="Currency"
+              rules={[{ required: true, message: "Please select a currency" }]}
+              initialValue="USD"
+            >
+              <Select placeholder="Select currency">
+                {currencyOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Divider orientation="left">
+          Itinerary Days ({days.length} {days.length === 1 ? 'day' : 'days'})
+        </Divider>
+
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary">
+            💡 Days are automatically generated based on your selected travel dates. 
+            Select your travel dates above to see the days.
+          </Text>
+        </div>
+
+        <Collapse defaultActiveKey={days.length > 0 ? ['0'] : []} accordion>
+          {days.map((day, index) => (
+            <Panel
+              header={`Day ${day.dayNumber}`}
+              key={index.toString()}
+            >
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name={`location_${index}`}
+                    label={<Space>
+                      <EnvironmentOutlined />
+                      <span>Location</span>
+                    </Space>}
+                  >
+                    <Input placeholder="e.g., Hanoi Old Quarter" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={24}>
+                  <Form.Item
+                    name={`activities_${index}`}
+                    label="Activities & Notes"
+                    rules={[{ message: "Please describe the day's activities" }]}
+                  >
+                    <TextArea
+                      placeholder="Describe what to do on this day..."
+                      rows={4} 
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name={`budgetMin_${index}`}
+                    label={<Space>
+                      <DollarOutlined />
+                      <span>Minimum Budget</span>
+                    </Space>}
+                    initialValue={0}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      min={0}
+                      precision={2}
+                      placeholder="0.00" 
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name={`budgetMax_${index}`}
+                    label="Maximum Budget"
+                    initialValue={0}
+                  >
+                    <InputNumber
+                      style={{ width: "100%" }}
+                      min={0}
+                      precision={2}
+                      placeholder="0.00" 
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item
+                label={<Space>
+                  <PictureOutlined />
+                  <span>Day Image</span>
+                </Space>}
+              >
+                {previewUrls[day.dayNumber] ? (
+                  <div style={{ position: 'relative', width: '104px', height: '104px', border: '1px solid #d9d9d9', borderRadius: '2px', overflow: 'hidden' }}>
+                    <img
+                      src={previewUrls[day.dayNumber]}
+                      alt={`Day ${day.dayNumber} Preview`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        background: 'rgba(0,0,0,0.65)',
+                        padding: '4px',
+                        display: 'flex',
+                        justifyContent: 'space-around'
+                      }}
+                    >
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<EyeOutlined style={{ color: 'white' }} />}
+                        onClick={() => handlePreview(previewUrls[day.dayNumber])} 
+                      />
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<DeleteOutlined style={{ color: 'white' }} />}
+                        onClick={() => removeImage(day.dayNumber)} 
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <Upload
+                    listType="picture-card"
+                    beforeUpload={(file) => handleImageUpload(day.dayNumber, file)}
+                    showUploadList={false}
+                    accept="image/*"
+                  >
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  </Upload>
+                )}
+                <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+                  Upload an image for Day {day.dayNumber} (max 5MB)
+                </Text>
+              </Form.Item>
+            </Panel>
+          ))}
+        </Collapse>
+
+        {days.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+            <CalendarOutlined style={{ fontSize: '48px', marginBottom: '16px' }} />
+            <div>Please select your travel dates to generate itinerary days</div>
+          </div>
+        )}
+
+        <Form.Item style={{ marginTop: 24 }}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={isFormSubmitting}
+            disabled={!postId || disabled || days.length === 0}
+            icon={<SaveOutlined />}
+          >
+            {isFormSubmitting ? "Creating Itinerary..." : "Create Itinerary"}
+          </Button>
+        </Form.Item>
+      </Form>
+      
+      <Modal
+        visible={previewVisible}
+        title="Image Preview"
+        footer={null}
+        onCancel={() => setPreviewVisible(false)}
+      >
         <img alt="Preview" style={{ width: '100%' }} src={previewImage} />
-      </Modal></>
+      </Modal>
+    </>
   );
 };
 
