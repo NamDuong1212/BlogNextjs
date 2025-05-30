@@ -42,7 +42,7 @@ import useAuthStore from "../store/useAuthStore";
 import { useProfile } from "../hooks/useProfile";
 import type { RcFile } from "antd/es/upload/interface";
 import ImageComponentAvatar from "../components/ImageComponentAvatar";
-import { useWallet } from "../hooks/useWallet";
+import WalletComponent from "../components/WalletComponent";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import dayjs from "dayjs";
@@ -57,13 +57,6 @@ const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useState(false);
-  const { useCreateWallet, useGetWalletByUserId, useRequestWithdrawal } =
-    useWallet(userData?.id || "");
-  const requestWithdrawalMutation = useRequestWithdrawal();
-  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
-  const { data: walletData, isPending: isWalletPending } =
-    useGetWalletByUserId();
-  const createWalletMutation = useCreateWallet();
   const [form] = Form.useForm();
   const isCreator = userData?.isCreator || false;
   const [isCreatorRequestModalOpen, setIsCreatorRequestModalOpen] =
@@ -148,44 +141,14 @@ const Profile = () => {
     }
   };
 
-  const handleCreateWallet = async () => {
-    try {
-      await createWalletMutation.mutateAsync();
-      toast.success("Wallet created successfully!");
-    } catch (error) {
-      toast.error("Unable to create wallet, please try again later.");
-    }
-  };
-
-  const handleRequestWithdrawal = async () => {
-    try {
-      await requestWithdrawalMutation.mutateAsync({ amount: withdrawAmount });
-      toast.success("Withdrawal request submitted!");
-      setWithdrawAmount(0);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          "Withdrawal error, please try again later",
-      );
-    }
-  };
-
   // Format birthday for display
   const formattedBirthday = userData.birthday
     ? dayjs(userData.birthday).format("DD-MM-YYYY")
     : "Not updated";
 
-  // Calculate percentage for wallet balance visual
-  const maxBalance = walletData?.balance
-    ? Math.max(walletData.balance * 1.5, 100)
-    : 100;
-  const percentage = walletData?.balance
-    ? (walletData.balance / maxBalance) * 100
-    : 0;
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <Card
           className="shadow-2xl rounded-3xl overflow-hidden border-none"
           bodyStyle={{ padding: 0 }}
@@ -332,109 +295,12 @@ const Profile = () => {
               {/* Right column - Wallet & Actions */}
               <Col xs={24} md={8}>
                 <Row gutter={[0, 24]}>
-                  {/* Wallet section */}
+                  {/* Wallet Component */}
                   <Col xs={24}>
-                    <Card
-                      title={
-                        <div className="flex items-center gap-2">
-                          <WalletOutlined className="text-blue-500" />
-                          <span>My Wallet</span>
-                        </div>
-                      }
-                      className="shadow-md rounded-xl"
-                      bordered={false}
-                    >
-                      {isWalletPending ? (
-                        <div className="flex justify-center py-8">
-                          <Spin size="large" />
-                        </div>
-                      ) : walletData?.balance !== undefined ? (
-                        <div className="space-y-4">
-                          <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg p-4 text-white">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <Text className="text-white opacity-80">
-                                  Current Balance
-                                </Text>
-                                <Title level={2} className="text-white mb-0">
-                                  ${walletData.balance.toFixed(2)}
-                                </Title>
-                              </div>
-                              <BankOutlined className="text-4xl opacity-80" />
-                            </div>
-                          </div>
-
-                          <div className="mt-4">
-                            <Text strong className="block mb-2">
-                              Withdraw Funds
-                            </Text>
-                            <div className="space-y-3">
-                              <Input
-                                type="number"
-                                min={0}
-                                max={walletData.balance}
-                                value={withdrawAmount}
-                                onChange={(e) =>
-                                  setWithdrawAmount(Number(e.target.value))
-                                }
-                                prefix={
-                                  <DollarOutlined className="text-gray-400" />
-                                }
-                                addonAfter="USD"
-                                size="large"
-                              />
-                              <Progress
-                                percent={
-                                  (withdrawAmount / walletData.balance) * 100
-                                }
-                                showInfo={false}
-                                strokeColor={{
-                                  "0%": "#108ee9",
-                                  "100%": "#87d068",
-                                }}
-                              />
-                              <Button
-                                type="primary"
-                                block
-                                onClick={handleRequestWithdrawal}
-                                loading={requestWithdrawalMutation.isPending}
-                                disabled={
-                                  withdrawAmount <= 0 ||
-                                  withdrawAmount > walletData.balance
-                                }
-                                icon={<SendOutlined />}
-                                size="large"
-                                className="mt-2"
-                              >
-                                Withdraw
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : isCreator ? (
-                        <div className="text-center py-6">
-                          <InfoCircleOutlined className="text-4xl text-gray-300 mb-4" />
-                          <Paragraph className="mb-4">
-                            You don't have a wallet yet
-                          </Paragraph>
-                          <Button
-                            type="primary"
-                            size="large"
-                            onClick={handleCreateWallet}
-                            loading={createWalletMutation.isPending}
-                            icon={<WalletOutlined />}
-                            block
-                          >
-                            Create Wallet Now
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="text-center py-6">
-                          <InfoCircleOutlined className="text-4xl text-gray-300 mb-4" />
-                          <Paragraph>You do not have wallet access</Paragraph>
-                        </div>
-                      )}
-                    </Card>
+                    <WalletComponent 
+                      userId={userData.id} 
+                      isCreator={isCreator} 
+                    />
                   </Col>
 
                   {!isCreator && (

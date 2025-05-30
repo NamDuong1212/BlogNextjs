@@ -270,12 +270,24 @@ export const walletApi = {
     const response = await api.get("/wallet");
     return response.data;
   },
+
   createWallet: async (): Promise<any> => {
     const response = await api.post("/wallet/create");
     return response.data;
   },
+
   requestWithdrawal: async ({ amount }: { amount: number }): Promise<any> => {
     const response = await api.post("/wallet/withdrawals", { amount });
+    return response.data;
+  },
+
+  linkPayPal: async ({ paypalEmail }: { paypalEmail: string }): Promise<any> => {
+    const response = await api.post("/wallet/link-paypal", { paypalEmail });
+    return response.data;
+  },
+
+  getWithdrawalHistory: async (): Promise<any> => {
+    const response = await api.get("/wallet/withdrawals");
     return response.data;
   },
 };

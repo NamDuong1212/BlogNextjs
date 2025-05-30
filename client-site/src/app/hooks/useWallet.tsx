@@ -18,12 +18,12 @@ export const useWallet = (userId: string) => {
     return useMutation({
       mutationFn: () => walletApi.createWallet(),
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["wallet", userId] });
+        queryClient.invalidateQueries({ queryKey: ["wallet"] });
         toast.success("Wallet created successfully");
         onSuccess?.();
       },
-      onError: (error: Error) => {
-        toast.error(error.message || "Error creating wallet");
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || "Error creating wallet");
       },
     });
   };
@@ -32,9 +32,9 @@ export const useWallet = (userId: string) => {
     return useMutation({
       mutationFn: (data: { amount: number }) =>
         walletApi.requestWithdrawal(data),
-      onSuccess: (_, variables) => {
+      onSuccess: (response, variables) => {
         queryClient.invalidateQueries({ queryKey: ["wallet"] });
-        toast.success(`Deposit ${variables.amount} $ successfully`);
+        toast.success(response.message || `Withdrawal request of $${variables.amount} submitted successfully`);
         onSuccess?.();
       },
       onError: (error: any) => {
@@ -45,9 +45,39 @@ export const useWallet = (userId: string) => {
     });
   };
 
+  // Add new hook for linking PayPal
+  const useLinkPayPal = (onSuccess?: () => void) => {
+    return useMutation({
+      mutationFn: (data: { paypalEmail: string }) =>
+        walletApi.linkPayPal(data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        toast.success("PayPal account linked successfully");
+        onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message || "Error linking PayPal account",
+        );
+      },
+    });
+  };
+
+  // Add new hook for withdrawal history
+  const useGetWithdrawalHistory = () => {
+    return useQuery({
+      queryKey: ["withdrawalHistory"],
+      queryFn: () => walletApi.getWithdrawalHistory(),
+      enabled: !!userId,
+      staleTime: 30000, // 30 seconds
+    });
+  };
+
   return {
     useCreateWallet,
     useGetWalletByUserId,
     useRequestWithdrawal,
+    useLinkPayPal,
+    useGetWithdrawalHistory,
   };
 };
