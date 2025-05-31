@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  
+
   const searchRef = useRef<HTMLDivElement>(null);
   const mobileSearchRef = useRef<HTMLDivElement>(null);
   const { useSearchPosts } = usePost();
@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
   const { data: searchResults, isLoading: isSearchLoading } = useSearchPosts(
     searchQuery,
     1,
-    8 // Limit results in dropdown
+    8, // Limit results in dropdown
   );
 
   // Handle scroll effect
@@ -61,17 +61,24 @@ const Navbar: React.FC = () => {
   // Close search results when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowSearchResults(false);
       }
-      if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target as Node)) {
+      if (
+        mobileSearchRef.current &&
+        !mobileSearchRef.current.contains(event.target as Node)
+      ) {
         setMobileSearchOpen(false);
       }
     };
 
     if (showSearchResults || mobileSearchOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showSearchResults, mobileSearchOpen]);
 
@@ -122,20 +129,22 @@ const Navbar: React.FC = () => {
     if (dropDown) {
       const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
-        if (!target.closest('.dropdown-container')) {
+        if (!target.closest(".dropdown-container")) {
           closeDropdown();
         }
       };
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
   }, [dropDown]);
 
   // Search Results Component (reusable for both desktop and mobile)
   const SearchResults = ({ isMobile = false }: { isMobile?: boolean }) => (
-    <div className={`${isMobile ? 'mt-2' : 'absolute top-full left-0 right-0 mt-2'} bg-white rounded-lg border border-gray-200 shadow-xl z-50 max-h-96 overflow-y-auto`}>
+    <div
+      className={`${isMobile ? "mt-2" : "absolute top-full left-0 right-0 mt-2"} bg-white rounded-lg border border-gray-200 shadow-xl z-50 max-h-96 overflow-y-auto`}
+    >
       {isSearchLoading ? (
         <div className="p-4 text-center text-gray-500">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
@@ -193,10 +202,10 @@ const Navbar: React.FC = () => {
   );
 
   return (
-    <nav 
+    <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled 
-          ? "bg-white bg-opacity-95 backdrop-blur-sm shadow-md py-2" 
+        scrolled
+          ? "bg-white bg-opacity-95 backdrop-blur-sm shadow-md py-2"
           : "bg-white/80 backdrop-blur-sm py-3"
       }`}
     >
@@ -219,19 +228,19 @@ const Navbar: React.FC = () => {
               className="p-2 text-gray-600 hover:text-blue-600 rounded-full hover:bg-gray-100 transition-all"
               title="Search"
             >
-              <SearchOutlined style={{ fontSize: '18px' }} />
+              <SearchOutlined style={{ fontSize: "18px" }} />
             </button>
-            
+
             {/* Mobile Notifications */}
             {userData && <NotificationDropdown isMobile={true} />}
-            
+
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none rounded-full hover:bg-gray-100 transition-all"
               title="Toggle mobile menu"
             >
-              <MenuOutlined style={{ fontSize: '18px' }} />
+              <MenuOutlined style={{ fontSize: "18px" }} />
             </button>
           </div>
 
@@ -251,7 +260,7 @@ const Navbar: React.FC = () => {
                   }
                 }}
                 className="rounded-full py-2 border border-gray-200 hover:border-blue-400 focus:border-blue-500 transition-all"
-                style={{ paddingLeft: '15px' }}
+                style={{ paddingLeft: "15px" }}
               />
               <button
                 onClick={handleSearch}
@@ -265,13 +274,11 @@ const Navbar: React.FC = () => {
               {showSearchResults && <SearchResults />}
             </div>
 
-            
-
             {/* User Menu */}
             <div className="flex items-center ml-4 space-x-2">
               {/* Desktop Notifications */}
               {userData && <NotificationDropdown />}
-              
+
               {userData ? (
                 <div className="relative dropdown-container">
                   <button
@@ -281,10 +288,14 @@ const Navbar: React.FC = () => {
                     <div className="flex items-center">
                       <ImageComponentAvatar
                         size={40}
-                        src={userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"}
+                        src={
+                          userData.avatar || "https://i.imgur.com/CzXTtJV.jpg"
+                        }
                         alt="User Avatar"
                       />
-                      <span className="ml-2 font-medium text-gray-700">{userData.username}</span>
+                      <span className="ml-2 font-medium text-gray-700">
+                        {userData.username}
+                      </span>
                     </div>
                   </button>
 
@@ -306,6 +317,17 @@ const Navbar: React.FC = () => {
                           Profile
                         </span>
                       </Link>
+                      <Link
+                        href="/liked-post"
+                        onClick={closeDropdown}
+                        className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all"
+                      >
+                        <span className="flex items-center">
+                          <i className="mr-2">❤️</i>
+                          Liked Posts
+                        </span>
+                      </Link>
+
                       {isCreator && (
                         <Link
                           href="/post-list"
@@ -323,9 +345,7 @@ const Navbar: React.FC = () => {
                           onClick={handleLogout}
                           className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-all"
                         >
-                          <span className="flex items-center">
-                            Log out
-                          </span>
+                          <span className="flex items-center">Log out</span>
                         </button>
                       </div>
                     </div>
@@ -355,7 +375,10 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Search Bar */}
         {mobileSearchOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4" ref={mobileSearchRef}>
+          <div
+            className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4"
+            ref={mobileSearchRef}
+          >
             <div className="relative">
               <Input
                 placeholder="Search posts..."
@@ -378,7 +401,7 @@ const Navbar: React.FC = () => {
               >
                 <SearchOutlined />
               </button>
-              
+
               {/* Mobile Search Results */}
               {showSearchResults && <SearchResults isMobile={true} />}
             </div>
@@ -389,7 +412,6 @@ const Navbar: React.FC = () => {
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
             <div className="flex flex-col space-y-1">
-              
               {userData ? (
                 <>
                   <div className="flex items-center px-3 py-2 space-x-3 border-b border-gray-100 mb-2">
@@ -399,7 +421,9 @@ const Navbar: React.FC = () => {
                       alt="User Avatar"
                     />
                     <div>
-                      <p className="font-medium text-gray-800">{userData.username}</p>
+                      <p className="font-medium text-gray-800">
+                        {userData.username}
+                      </p>
                       <p className="text-sm text-gray-500">{userData.email}</p>
                     </div>
                   </div>
@@ -410,6 +434,13 @@ const Navbar: React.FC = () => {
                   >
                     Profile
                   </Link>
+                  <Link
+                    href="/liked-post"
+                    className="px-3 py-2 text-gray-700 hover:text-blue-600 rounded-md hover:bg-gray-100"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Liked Posts
+                  </Link>
                   {isCreator && (
                     <Link
                       href="/post-list"
@@ -419,6 +450,7 @@ const Navbar: React.FC = () => {
                       My Posts
                     </Link>
                   )}
+
                   <button
                     onClick={handleLogout}
                     className="px-3 py-2 text-left text-red-600 hover:bg-red-50 rounded-md w-full"

@@ -70,6 +70,15 @@ export const usePost = () => {
     });
   };
 
+  // New hook for getting user's liked posts
+  const useGetUserLikedPosts = (page = 1, limit = 10) => {
+    return useQuery({
+      queryKey: ["userLikedPosts", page, limit],
+      queryFn: () => postApi.getUserLikedPosts(page, limit),
+      staleTime: 0,
+    });
+  };
+
   const useCreatePost = (onSuccess?: () => void) => {
     return useMutation({
       mutationFn: (data: any) => postApi.createPost(data),
@@ -163,5 +172,6 @@ export const usePost = () => {
     useGetRelatedPosts,
     useDeletePostImage,
     useSearchPosts,
+    useGetUserLikedPosts, // Add the new hook to exports
   };
 };

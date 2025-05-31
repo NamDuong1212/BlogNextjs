@@ -7,7 +7,7 @@ export const useWallet = (userId: string) => {
 
   const useGetWalletByUserId = () => {
     return useQuery({
-      queryKey: ["wallet"],
+      queryKey: ["wallet", userId],
       queryFn: () => walletApi.getWalletByUserId(),
       enabled: !!userId,
       staleTime: 0,
@@ -34,6 +34,7 @@ export const useWallet = (userId: string) => {
         walletApi.requestWithdrawal(data),
       onSuccess: (response, variables) => {
         queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        queryClient.invalidateQueries({ queryKey: ["withdrawalHistory"] });
         toast.success(response.message || `Withdrawal request of $${variables.amount} submitted successfully`);
         onSuccess?.();
       },
@@ -45,7 +46,6 @@ export const useWallet = (userId: string) => {
     });
   };
 
-  // Add new hook for linking PayPal
   const useLinkPayPal = (onSuccess?: () => void) => {
     return useMutation({
       mutationFn: (data: { paypalEmail: string }) =>
@@ -63,13 +63,30 @@ export const useWallet = (userId: string) => {
     });
   };
 
-  // Add new hook for withdrawal history
   const useGetWithdrawalHistory = () => {
     return useQuery({
-      queryKey: ["withdrawalHistory"],
+      queryKey: ["withdrawalHistory", userId],
       queryFn: () => walletApi.getWithdrawalHistory(),
       enabled: !!userId,
       staleTime: 30000, // 30 seconds
+    });
+  };
+
+  const useForceCheckWithdrawal = (onSuccess?: () => void) => {
+    return useMutation({
+      mutationFn: (withdrawalId: string) =>
+        walletApi.forceCheckWithdrawal(withdrawalId),
+      onSuccess: (response) => {
+        queryClient.invalidateQueries({ queryKey: ["withdrawalHistory"] });
+        queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        toast.success(response.message || "Withdrawal status updated");
+        onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message || "Error checking withdrawal status",
+        );
+      },
     });
   };
 
@@ -79,5 +96,6 @@ export const useWallet = (userId: string) => {
     useRequestWithdrawal,
     useLinkPayPal,
     useGetWithdrawalHistory,
+    useForceCheckWithdrawal,
   };
 };

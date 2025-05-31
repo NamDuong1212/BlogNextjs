@@ -202,6 +202,13 @@ export const postApi = {
     );
     return response.data;
   },
+
+  getUserLikedPosts: async (page = 1, limit = 10): Promise<any> => {
+    const response = await api.get(
+      `/post/user/liked?page=${page}&limit=${limit}`,
+    );
+    return response.data;
+  },
 };
 
 export const likeApi = {
@@ -281,13 +288,24 @@ export const walletApi = {
     return response.data;
   },
 
-  linkPayPal: async ({ paypalEmail }: { paypalEmail: string }): Promise<any> => {
+  linkPayPal: async ({
+    paypalEmail,
+  }: {
+    paypalEmail: string;
+  }): Promise<any> => {
     const response = await api.post("/wallet/link-paypal", { paypalEmail });
     return response.data;
   },
 
   getWithdrawalHistory: async (): Promise<any> => {
     const response = await api.get("/wallet/withdrawals");
+    return response.data;
+  },
+
+  forceCheckWithdrawal: async (
+    withdrawalId: string,
+  ): Promise<{ message: string; withdrawal?: any }> => {
+    const response = await api.post(`/wallet/force-check/${withdrawalId}`);
     return response.data;
   },
 };

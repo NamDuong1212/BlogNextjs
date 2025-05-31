@@ -15,6 +15,7 @@ import {
   Divider,
   Alert,
   InputNumber,
+  Popconfirm,
 } from "antd";
 import {
   WalletOutlined,
@@ -25,6 +26,7 @@ import {
   HistoryOutlined,
   LinkOutlined,
   MailOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import { useWallet } from "../hooks/useWallet";
 import { toast } from "react-hot-toast";
@@ -47,6 +49,7 @@ const WalletComponent: React.FC<WalletComponentProps> = ({
     useRequestWithdrawal,
     useLinkPayPal,
     useGetWithdrawalHistory,
+    useForceCheckWithdrawal,
   } = useWallet(userId);
 
   const { data: walletData, isPending: isWalletPending } =
@@ -57,6 +60,7 @@ const WalletComponent: React.FC<WalletComponentProps> = ({
   const createWalletMutation = useCreateWallet();
   const requestWithdrawalMutation = useRequestWithdrawal();
   const linkPayPalMutation = useLinkPayPal();
+  const forceCheckWithdrawalMutation = useForceCheckWithdrawal();
 
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
@@ -96,6 +100,14 @@ const WalletComponent: React.FC<WalletComponentProps> = ({
       setIsWithdrawalModalOpen(false);
       withdrawalForm.resetFields();
       setWithdrawAmount(0);
+    } catch (error) {
+      // Error handled by the hook
+    }
+  };
+
+  const handleForceCheckWithdrawal = async (withdrawalId: string) => {
+    try {
+      await forceCheckWithdrawalMutation.mutateAsync(withdrawalId);
     } catch (error) {
       // Error handled by the hook
     }
@@ -157,6 +169,39 @@ const WalletComponent: React.FC<WalletComponentProps> = ({
         ) : (
           "-"
         ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record: any) => (
+        <Space size="middle">
+          {record.status === "PROCESSING" && (
+            <Popconfirm
+              title="Force check withdrawal status?"
+              description="This will manually check the PayPal status for this withdrawal."
+              onConfirm={() => handleForceCheckWithdrawal(record.id)}
+              okText="Check"
+              cancelText="Cancel"
+            >
+              <Button
+                type="link"
+                size="small"
+                icon={<ReloadOutlined />}
+                loading={forceCheckWithdrawalMutation.isPending}
+              >
+                Check Status
+              </Button>
+            </Popconfirm>
+          )}
+          {record.paypalBatchId && (
+            <Tooltip title={`PayPal Batch ID: ${record.paypalBatchId}`}>
+              <Button type="link" size="small" icon={<InfoCircleOutlined />}>
+                Details
+              </Button>
+            </Tooltip>
+          )}
+        </Space>
+      ),
     },
   ];
 
@@ -494,7 +539,7 @@ const WalletComponent: React.FC<WalletComponentProps> = ({
         open={isHistoryModalOpen}
         onCancel={() => setIsHistoryModalOpen(false)}
         footer={null}
-        width={800}
+        width={1000}
         centered
       >
         {isHistoryPending ? (
@@ -513,6 +558,7 @@ const WalletComponent: React.FC<WalletComponentProps> = ({
             locale={{
               emptyText: "No withdrawal history found",
             }}
+            scroll={{ x: 800 }}
           />
         )}
       </Modal>

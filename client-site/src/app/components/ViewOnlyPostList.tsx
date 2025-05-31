@@ -287,7 +287,6 @@ export const ViewOnlyPostList: React.FC = () => {
     }
   };
 
-  // Calculate stats
   const totalViewCount =
     posts?.reduce(
       (sum: number, post: Post) => sum + (post.viewCount || 0),
